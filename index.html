@@ -108,7 +108,7 @@
 
                     <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 mb-8">
                         <h4 class="text-lg font-bold mb-6 flex items-center gap-2"><i data-lucide="bar-chart" class="w-5 h-5 text-indigo-600"></i> Produtividade Individual (Mês Atual)</h4>
-                        <div class="relative h-[350px]"><canvas id="chart-distribution"></canvas></div>
+                        <div class="relative h-[400px]"><canvas id="chart-distribution"></canvas></div>
                     </div>
 
                     <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 mb-8">
@@ -276,7 +276,7 @@
                         </div>
                     </div>
                     <div id="report-tab-charts" class="report-tab-content hidden">
-                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                        <div class="bg-white p-6 rounded-2 own shadow-sm border border-slate-200">
                             <div class="flex justify-between items-center mb-6">
                                 <h4 class="text-lg font-bold flex items-center gap-2"><i data-lucide="pie-chart" class="w-5 h-5 text-indigo-600"></i> Distribuição de Ações no Período</h4>
                                 <button onclick="renderReportChart()" class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-indigo-700 transition-all flex items-center gap-2">
@@ -704,14 +704,34 @@
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } }
             });
 
+            // GRÁFICO EMPILHADO (CORRIGIDO)
             const monthStr = DateEngine.getMonth();
+            const actionTypes = ['Ofício', 'Ofício Circular', 'E-mail', 'Traslado', 'Diligência', 'Comunicação'];
+            const colors = ['#4f46e5', '#10b981', '#f59e0b', '#ec4899', '#8b5cf6', '#64748b'];
+            
             const servantLabels = state.servants.map(s => s.name);
-            const servantData = state.servants.map(s => state.actions.filter(a => a.servantId == s.id && DateEngine.normalize(a.date).startsWith(monthStr)).length);
+            const datasets = actionTypes.map((type, idx) => {
+                return {
+                    label: type,
+                    data: state.servants.map(s => state.actions.filter(a => a.servantId == s.id && a.type === type && DateEngine.normalize(a.date).startsWith(monthStr)).length),
+                    backgroundColor: colors[idx]
+                };
+            });
 
             window.myChartDist = new Chart(ctxDist, {
                 type: 'bar',
-                data: { labels: servantLabels, datasets: [{ label: 'Ações no Mês', data: servantData, backgroundColor: '#6366f1' }] },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } }
+                data: { labels: servantLabels, datasets: datasets },
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false, 
+                    scales: { 
+                        x: { stacked: true }, 
+                        y: { stacked: true, beginAtZero: true, ticks: { stepSize: 1 } } 
+                    },
+                    plugins: {
+                        legend: { position: 'bottom' }
+                    }
+                }
             });
         }
 
@@ -779,6 +799,140 @@
             document.getElementById(`report-tab-${tab}`).classList.remove('hidden');
             document.getElementById(`tab-${tab}`).classList.add('bg-white', 'text-indigo-600', 'shadow-sm');
             document.getElementById(`tab-${tab}`).classList.remove('text-slate-600', 'hover:bg-slate-100');
+            if(tab === 'charts') renderReportChart();
+        }
+
+        // ANÁLISE DIÁRIA (CORRIGIDO)
+        window.updateAnalyticalReport = function() {
+            const start = document.getElementById('report-start-date').value;
+            const end = document.getElementById('report-end-date').value;
+            const container = document.getElementById('daily-reports-container');
+            if (!start || !end) return;
+
+            container.innerHTML = '';
+            let currentDate = new Date(start + 'T00:00:00');
+            const endDate = new Date(end + 'T00:00:00');
+
+            while (currentDate <= endDate) {
+                const dateStr = currentDate.toISOString().split('T')[0];
+                const dayActions = state.actions.filter(a => DateEngine.normalize(a.date) === dateStr);
+                
+                let dayHtml = `
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                        <h5 class="text-lg font-bold text-indigo-600 mb-4 flex items-center gap-2">
+                            <i data-lucide="calendar" class="w-5 h-5"></i> Data: ${dateStr.split('-').reverse().join('/')}
+                        </h5>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-sm">
+                                <thead class="bg-slate-50 text-slate-500 uppercase text-xs">
+                                    <tr>
+                                        <th class="px-4 py-2 font-semibold">Servidor</th>
+                                        <th class="px-4 py-2 font-semibold text-center">Total</th>
+                                        <th class="px-4 py-2 font-semibold text-center">Ofícios</th>
+                                        <th class="px-4 py-2 font-semibold text-center">Circulares</th>
+                                        <th class="px-4 py-2 font-semibold text-center">E-mails</th>
+                                        <th class="px-4 py-2 font-semibold text-center">Traslados</th>
+                                        <th class="px-4 py-2 font-semibold text-center">Diligências</th>
+                                        <th class="px-4 py-2 font-semibold text-center">Comun.</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100">
+                `;
+
+                state.servants.forEach(s => {
+                    const sActions = dayActions.filter(a => a.servantId == s.id);
+                    dayHtml += `
+                        <tr>
+                            <td class="px-4 py-2 font-medium">${s.name}</td>
+                            <td class="px-4 py-2 text-center font-bold">${sActions.length}</td>
+                            <td class="px-4 py-2 text-center">${sActions.filter(a => a.type === 'Ofício').length}</td>
+                            <td class="px-4 py-2 text-center">${sActions.filter(a => a.type === 'Ofício Circular').length}</td>
+                            <td class="px-4 py-2 text-center">${sActions.filter(a => a.type === 'E-mail').length}</td>
+                            <td class="px-4 py-2 text-center">${sActions.filter(a => a.type === 'Traslado').length}</td>
+                            <td class="px-4 py-2 text-center">${sActions.filter(a => a.type === 'Diligência').length}</td>
+                            <td class="px-4 py-2 text-center">${sActions.filter(a => a.type === 'Comunicação').length}</td>
+                        </tr>
+                    `;
+                });
+
+                dayHtml += `</tbody></table></div></div>`;
+                container.innerHTML += dayHtml;
+                currentDate.setDate(currentDate.getDate() + 1);
+            }
+            lucide.createIcons();
+        }
+
+        // GRÁFICOS ANALÍTICOS (CORRIGIDO)
+        window.renderReportChart = function() {
+            const ctx = document.getElementById('chart-report-servants').getContext('2d');
+            if (window.myReportChart) window.myReportChart.destroy();
+
+            const start = document.getElementById('report-start-date').value;
+            const end = document.getElementById('report-end-date').value;
+            if (!start || !end) return;
+
+            const filteredActions = state.actions.filter(a => DateEngine.normalize(a.date) >= start && DateEngine.normalize(a.date) <= end);
+            
+            const actionTypes = ['Ofício', 'Ofício Circular', 'E-mail', 'Traslado', 'Diligência', 'Comunicação'];
+            const colors = ['#4f46e5', '#10b981', '#f59e0b', '#ec4899', '#8b5cf6', '#64748b'];
+            
+            const dataCounts = actionTypes.map(type => filteredActions.filter(a => a.type === type).length);
+
+            windowP.myReportChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: actionTypes,
+                    datasets: [{
+                        data: dataCounts,
+                        backgroundColor: colors,
+                        borderWidth: 2,
+                        borderColor: '#fff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'right' }
+                    }
+                }
+            });
+        }
+        // Correção de escopo para a variável do gráfico de relatório
+        window.myReportChart = null; 
+        // Redefinindo a função para usar o escopo global correto
+        window.renderReportChart = function() {
+            const ctx = document.getElementById('chart-report-servants').getContext('2d');
+            if (window.myReportChart) window.myReportChart.destroy();
+
+            const start = document.getElementById('report-start-date').value;
+            const end = document.getElementById('report-end-date').value;
+            if (!start || !end) return;
+
+            const filteredActions = state.actions.filter(a => DateEngine.normalize(a.date) >= start && DateEngine.normalize(a.date) <= end);
+            const actionTypes = ['Ofício', 'Ofício Circular', 'E-mail', 'Traslado', 'Diligência', 'Comunicação'];
+            const colors = ['#4f46e5', '#10b981', '#f59e0b', '#ec4899', '#8b5cf6', '#64748b'];
+            const dataCounts = actionTypes.map(type => filteredActions.filter(a => a.type === type).length);
+
+            window.myReportChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: actionTypes,
+                    datasets: [{
+                        data: dataCounts,
+                        backgroundColor: colors,
+                        borderWidth: 2,
+                        borderColor: '#fff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'right' }
+                    }
+                }
+            });
         }
 
         // MODAL FORM SUBMISSIONS
@@ -795,23 +949,20 @@
         document.getElementById('form-servant').addEventListener('submit', async (e) => {
             e.preventDefault();
             const formData = new FormData(e.target);
-            const servant = Object.fromEntries(formData);
-            servant.status = 'Ativo';
-            await addDoc(collection(db, "servants"), servant);
+            const servant = Object the formData;
+            const servantObj = Object.fromEntries(formData);
+            servantObj.status = 'Ativo';
+            await addDoc(collection(db, "servants"), servantObj);
             closeModal('modal-servant');
             e.target.reset();
-            logAction('Servidor Criado', `Novo servidor cadastrado: ${servant.name}`);
+            logAction('Servidor Criado', `Novo servidor cadastrado: ${servantObj.name}`);
         });
 
         document.getElementById('form-process').addEventListener('submit', async (e) => {
             e.preventDefault();
             const formData = new FormData(e.target);
             const proc = Object.fromEntries(formData);
-            
-            // Salva o processo
             const procRef = await addDoc(collection(db, "processes"), proc);
-            
-            // Gera as ações planejadas automaticamente
             const actionTypes = {
                 qty_oficio: 'Ofício',
                 qty_oficio_circular: 'Ofício Circular',
@@ -820,7 +971,6 @@
                 qty_diligencia: 'Diligência',
                 qty_comunicacao: 'Comunicação'
             };
-
             for (let key in actionTypes) {
                 const qty = parseInt(proc[key] || 0);
                 for (let i = 0; i < qty; i++) {
@@ -834,7 +984,6 @@
                     });
                 }
             }
-
             closeModal('modal-process');
             e.target.reset();
             logAction('Processo Criado', `Processo ${proc.number} criado com planejamento de ações`);
@@ -884,7 +1033,6 @@
             btn.disabled = false;
         });
 
-        // INICIALIZAÇÃO DO SISTEMA
         setupRealtimeListeners();
         lucide.createIcons();
     </script>
