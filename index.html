@@ -711,8 +711,8 @@
                     responsive: true, 
                     maintainAspectRatio: false, 
                     scales: { 
-                        x: { stacked: true }, 
-                        y: { stacked: true, beginAtZero: true, ticks: { stepSize: 1 } } 
+                        x: { stacked: false }, // ALTERADO: De true para false para barras individuais
+                        y: { stacked: false, beginAtZero: true, ticks: { stepSize: 1 } } // ALTERADO: De true para false
                     },
                     plugins: { legend: { position: 'bottom' } }
                 }
