@@ -35,7 +35,9 @@
                 </div>
                 <h1 class="text-3xl font-bold text-slate-800">Orquestrador SecExecPres</h1>
                 <p class="text-slate-500">Gestão de Processos</p>
-                <div id="db-status" class="mt-4 text-xs font-medium px-3 py-1 rounded-full bg-slate-100 text-slate-500 inline-block">Conectando ao servidor...</div>
+                <div id="db-status" class="mt-4 text-xs font-medium px-3 py-1 rounded-full bg-slate-100 text-slate-500 inline-block">
+                    Conectando ao servidor...
+                </div>
             </div>
             <form id="login-form" class="space-y-6">
                 <div>
@@ -46,7 +48,9 @@
                     <label class="block text-sm font-medium text-slate-700 mb-1">Senha</label>
                     <input type="password" id="password" required class="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500 outline-none transition-all" placeholder="••••••••">
                 </div>
-                <button type="submit" id="btn-login" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-lg shadow-lg transition-all transform hover:scale-[1.02] active:scale-95">Entrar no Sistema</button>
+                <button type="submit" id="btn-login" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-lg shadow-lg transition-all transform hover:scale-[1.02] active:scale-95">
+                    Entrar no Sistema
+                </button>
             </form>
         </div>
     </div>
@@ -101,14 +105,17 @@
                             </div>
                         </div>
                     </div>
+
                     <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 mb-8">
                         <h4 class="text-lg font-bold mb-6 flex items-center gap-2"><i data-lucide="bar-chart" class="w-5 h-5 text-indigo-600"></i> Produtividade Individual (Mês Atual)</h4>
                         <div class="relative h-[400px]"><canvas id="chart-distribution"></canvas></div>
                     </div>
+
                     <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 mb-8">
                         <h4 class="text-lg font-bold mb-6 flex items-center gap-2"><i data-lucide="line-chart" class="w-5 h-5 text-indigo-600"></i> Processos por Prazo (Mês)</h4>
                         <div class="relative h-[200px]"><canvas id="chart-productivity"></canvas></div>
                     </div>
+
                     <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden mb-8">
                         <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
                             <h4 class="text-lg font-bold">Ranking de Produtividade (Mês Atual)</h4>
@@ -132,6 +139,7 @@
                             </table>
                         </div>
                     </div>
+
                     <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
                         <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-indigo-50/30">
                             <h4 class="text-lg font-bold text-indigo-900">Ranking de Produtividade Hoje</h4>
@@ -161,14 +169,19 @@
                 <section id="page-users" class="page-content hidden">
                     <div class="flex justify-between items-center mb-6">
                         <h3 class="text-xl font-bold text-slate-700">Gestão de Acessos ao Sistema</h3>
-                        <button id="btn-new-user" onclick="openModal('modal-user')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-all shadow-md">
+                        <button onclick="openModal('modal-user')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-all shadow-md">
                             <i data-lucide="user-plus" class="w-4 h-4"></i> Novo Usuário
                         </button>
                     </div>
                     <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
                         <table class="w-full text-left">
                             <thead class="bg-slate-50 text-slate-500 text-xs uppercase">
-                                <tr><th class="px-6 py-4">Nome</th><th class="px-6 py-4">Login/E-mail</th><th class="px-6 py-4">Nível de Acesso</th><th class="px-6 py-4 text-center">Ações</th></tr>
+                                <tr>
+                                    <th class="px-6 py-4">Nome</th>
+                                    <th class="px-6 py-4">Login/E-mail</th>
+                                    <th class="px-6 py-4">Nível de Acesso</th>
+                                    <th class="px-6 py-4 text-center">Ações</th>
+                                </tr>
                             </thead>
                             <tbody id="users-body" class="divide-y divide-slate-100"></tbody>
                         </table>
@@ -182,7 +195,7 @@
                             <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400"></i>
                             <input type="text" oninput="filterTable('servants-table', this.value)" placeholder="Buscar servidor..." class="w-full pl-10 pr-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500">
                         </div>
-                        <button id="btn-new-servant" onclick="openModal('modal-servant')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-all shadow-md"><i data-lucide="plus" class="w-4 h-4"></i> Novo Servidor</button>
+                        <button onclick="openModal('modal-servant')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-all shadow-md"><i data-lucide="plus" class="w-4 h-4"></i> Novo Servidor</button>
                     </div>
                     <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
                         <table id="servants-table" class="w-full text-left">
@@ -199,7 +212,7 @@
                             <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400"></i>
                             <input type="text" oninput="filterTable('processes-table', this.value)" placeholder="Buscar processo..." class="w-full pl-10 pr-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500">
                         </div>
-                        <button id="btn-new-process" onclick="openModal('modal-process')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-all shadow-md"><i data-lucide="plus" class="w-4 h-4"></i> Novo Processo</button>
+                        <button onclick="openModal('modal-process')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-all shadow-md"><i data-lucide="plus" class="w-4 h-4"></i> Novo Processo</button>
                     </div>
                     <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
                         <table id="processes-table" class="w-full text-left">
@@ -213,7 +226,7 @@
                 <section id="page-actions" class="page-content hidden">
                     <div class="flex justify-between items-center mb-6">
                         <h3 class="text-xl font-bold text-slate-700">Controle de Ações Operacionais</h3>
-                        <button id="btn-new-action" onclick="openModal('modal-action')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-all shadow-md"><i data-lucide="plus" class="w-4 h-4"></i> Registrar Ação Extra</button>
+                        <button onclick="openModal('modal-action')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-all shadow-md"><i data-lucide="plus" class="w-4 h-4"></i> Registrar Ação Extra</button>
                     </div>
                     <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
                         <table id="actions-table" class="w-full text-left">
@@ -448,4 +461,512 @@
         const firebaseConfig = {
             apiKey: 'AIzaSyBgaBMX2aHtiab1_7l64tSCSBQTn7e1Eak',
             authDomain: 'orquestrador-secexecpres.firebaseapp.com',
+            projectId: 'orquestrador-secexecpres',
+            storageBucket: 'orquestrador-secexecpres.firebasestorage.app',
+            messagingSenderId: '297721044357',
+            appId: '1:297721044357:web:3c4bece1e257667abbb8ec',
+            measurementId: 'G-W9QV684VZ3'
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        let state = { users: [], servants: [], processes: [], actions: [], audit: [] };
+        let currentUser = null;
+
+        const DateEngine = {
+            getToday: () => {
+                const now = new Date();
+                return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+            },
+            getMonth: () => {
+                const now = new Date();
+                return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+            },
+            normalize: (dateInput) => {
+                if (!dateInput) return "";
+                if (typeof dateInput === 'string' && dateInput.length === 10) return dateInput;
+                const d = new Date(dateInput);
+                if (isNaN(d.getTime())) return "";
+                return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+            },
+            getDateOfMonth: (day) => {
+                const now = new Date();
+                const d = new Date(now.getFullYear(), now.getMonth(), day);
+                return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+            }
+        };
+
+        function setupRealtimeListeners() {
+            const statusEl = document.getElementById('db-status');
+            onSnapshot(collection(db, "users"), (snapshot) => {
+                state.users = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                statusEl.innerText = "Conectado ao Servidor";
+                statusEl.className = "mt-4 text-xs font-medium px-3 py-1 rounded-full bg-emerald-100 text-emerald-600 inline-block";
+                renderUsers();
+            });
+            onSnapshot(collection(db, "servants"), (snapshot) => {
+                state.servants = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderServants();
+                populateSelects();
+            });
+            onSnapshot(collection(db, "processes"), (snapshot) => {
+                state.processes = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderProcesses();
+                renderDashboard();
+            });
+            onSnapshot(collection(db, "actions"), (snapshot) => {
+                state.actions = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderActions();
+                renderDashboard();
+            });
+            onSnapshot(query(collection(db, "audit"), orderBy("timestamp", "desc")), (snapshot) => {
+                state.audit = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderAudit();
+            });
+        }
+
+        window.showPage = function(pageId) {
+            if (!currentUser) { alert("Sessão expirada."); logout(); return; }
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+                if(link.dataset.page === pageId) link.classList.add('active');
+            });
+            document.querySelectorAll('.page-content').forEach(page => page.classList.add('hidden'));
+            document.getElementById(`page-${pageId}`).classList.remove('hidden');
+            const titles = { dashboard: 'Dashboard Gerencial', servants: 'Gestão de Servidores', processes: 'Controle de Processos', actions: 'Ações Operacionais', reports: 'Relatórios', audit: 'Auditoria', users: 'Usuários do Sistema' };
+            document.getElementById('page-title').innerText = titles[pageId] || 'Sistema';
+            if(pageId === 'dashboard') renderDashboard();
+            if(pageId === 'servants') renderServants();
+            if(pageId === 'processes') renderProcesses();
+            if(pageId === 'actions') renderActions();
+            if(pageId === 'audit') renderAudit();
+            if(pageId === 'users') renderUsers();
+        }
+
+        window.openModal = function(modalId) { document.getElementById(modalId).classList.remove('hidden'); populateSelects(); }
+        window.closeModal = function(modalId) { document.getElementById(modalId).classList.add('hidden'); }
+        window.toggleDarkMode = function() { document.body.classList.toggle('dark'); }
+        window.logout = function() {
+            currentUser = null;
+            document.getElementById('app-shell').classList.add('hidden');
+            document.getElementById('login-page').classList.remove('hidden');
+        }
+
+        async function logAction(action, details) {
+            try {
+                await addDoc(collection(db, "audit"), {
+                    timestamp: new Date().toLocaleString(),
+                    user: currentUser ? currentUser.name : 'Sistema',
+                    action: action,
+                    details: details,
+                    createdAt: serverTimestamp()
+                });
+            } catch (e) { console.error("Erro log:", e); }
+        }
+
+        function renderUsers() {
+            const body = document.getElementById('users-body');
+            if(!body) return;
+            body.innerHTML = state.users.map(u => `<tr class="hover:bg-slate-50 transition-colors"><td class="px-6 py-4 font-medium">${u.name}</td><td class="px-6 py-4 text-slate-500">${u.username}</td><td class="px-6 py-4"><span class="badge ${u.role === 'Admin' ? 'badge-success' : 'badge-info'}">${u.role}</span></td><td class="px-6 py-4 text-center"><button onclick="deleteItem('users', '${u.id}')" class="text-rose-500 hover:text-rose-700 p-2"><i data-lucide="trash-2" class="w-4 h-4"></i></button></td></tr>`).join('');
+            lucide.createIcons();
+        }
+
+        function renderServants() {
+            const body = document.getElementById('servants-body');
+            if(!body) return;
+            body.innerHTML = state.servants.map(s => `<tr class="hover:bg-slate-50 transition-colors"><td class="px-6 py-4 font-medium">${s.name}</td><td class="px-6 py-4 text-slate-500">${s.registration}</td><td class="px-6 py-4 text-slate-500">${s.sector}</td><td class="px-6 py-4"><span class="badge ${s.status === 'Ativo' ? 'badge-success' : 'badge-danger'}">${s.status}</span></td><td class="px-6 py-4 text-center"><button onclick="deleteItem('servants', '${s.id}')" class="text-rose-500 hover:text-rose-700 p-2"><i data-lucide="trash-2" class="w-4 h-4"></i></button></td></tr>`).join('');
+            lucide.createIcons();
+        }
+
+        function renderProcesses() {
+            const body = document.getElementById('processes-body');
+            if(!body) return;
+            body.innerHTML = state.processes.map(p => {
+                const servant = state.servants.find(s => s.id == p.servantId);
+                return `<tr class="hover:bg-slate-50 transition-colors"><td class="px-6 py-4 font-bold text-indigo-600">${p.number}</td><td class="px-6 py-4">${p.type}</td><td class="px-6 py-4">${servant ? servant.name : 'N/A'}</td><td class="px-6 py-4 text-slate-500">${p.deadline}</td><td class="px-6 py-4"><span class="badge badge-success">Concluído</span></td><td class="px-6 py-4 text-center"><button onclick="deleteItem('processes', '${p.id}')" class="text-rose-500 hover:text-rose-700 p-2"><i data-lucide="trash-2" class="w-4 h-4"></i></button></td></tr>`;
+            }).join('');
+            lucide.createIcons();
+        }
+
+        function renderActions() {
+            const body = document.getElementById('actions-body');
+            if(!body) return;
+            body.innerHTML = state.actions.map(a => {
+                const proc = state.processes.find(p => p.id == a.processId);
+                const servant = state.servants.find(s => s.id == a.servantId);
+                return `<tr class="hover:bg-slate-50 transition-colors"><td class="px-6 py-4 font-medium">${proc ? proc.number : 'N/A'}</td><td class="px-6 py-4">${a.type}</td><td class="px-6 py-4">${servant ? servant.name : 'N/A'}</td><td class="px-6 py-4 text-slate-500">${a.date}</td><td class="px-6 py-4"><span class="badge badge-success">Concluído</span></td><td class="px-6 py-4 text-center"><button onclick="deleteItem('actions', '${a.id}')" class="text-rose-500 hover:text-rose-700 p-2"><i data-lucide="trash-2" class="w-4 h-4"></i></button></td></tr>`;
+            }).join('');
+            lucide.createIcons();
+        }
+
+        function renderAudit() {
+            const body = document.getElementById('audit-body');
+            if(!body) return;
+            body.innerHTML = state.audit.map(l => `<tr class="hover:bg-slate-50 transition-colors"><td class="px-6 py-4 text-slate-400">${l.timestamp}</td><td class="px-6 py-4 font-medium">${l.user}</td><td class="px-6 py-4"><span class="text-indigo-600 font-semibold">${l.action}</span></td><td class="px-6 py-4 text-slate-500">${l.details}</td></tr>`).join('');
+        }
+
+        window.deleteItem = async function(collectionName, id) {
+            if(confirm('Excluir registro permanentemente?')) {
+                await deleteDoc(doc(db, collectionName, id));
+                logAction('Exclusão', `Item removido da coleção ${collectionName} ID: ${id}`);
+            }
+        }
+
+        function populateSelects() {
+            const sSelectProcess = document.getElementById('select-servant-process');
+            const sSelectAction = document.getElementById('select-servant-action');
+            const pSelectAction = document.getElementById('select-process-action');
+            const servantOptions = state.servants.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+            if(sSelectProcess) sSelectProcess.innerHTML = servantOptions;
+            if(sSelectAction) sSelectAction.innerHTML = servantOptions;
+            const processOptions = state.processes.map(p => `<option value="${p.id}">${p.number}</option>`).join('');
+            if(pSelectAction) pSelectAction.innerHTML = processOptions;
+        }
+
+        window.filterTable = function(tableId, query) {
+            const rows = document.querySelectorAll(`#${tableId} tbody tr`);
+            rows.forEach(row => { row.style.display = row.innerText.toLowerCase().includes(query.toLowerCase()) ? '' : 'none'; });
+        }
+
+        function renderDashboard() {
+            const todayStr = DateEngine.getToday();
+            const monthStr = DateEngine.getMonth();
+            const procsToday = state.processes.filter(p => {
+                const dateToCheck = p.createdAt ? p.createdAt : p.deadline;
+                return DateEngine.normalize(dateToCheck) === todayStr;
+            }).length;
+            document.getElementById('kpi-total-proc').innerText = procsToday;
+
+            const rankingBody = document.getElementById('ranking-body');
+            const servantMonthlyStats = state.servants.map(s => {
+                const sActionsMonth = state.actions.filter(a => s.id == a.servantId && DateEngine.normalize(a.date).startsWith(monthStr));
+                return {
+                    ...s,
+                    total: sActionsMonth.length,
+                    oficio: sActionsMonth.filter(a => a.type === 'Ofício').length,
+                    circular: sActionsMonth.filter(a => a.type === 'Ofício Circular').length,
+                    email: sActionsMonth.filter(a => a.type === 'E-mail').length,
+                    traslado: sActionsMonth.filter(a => a.type === 'Traslado').length,
+                    diligencia: sActionsMonth.filter(a => a.type === 'Diligência').length,
+                    comunicacao: sActionsMonth.filter(a => a.type === 'Comunicação').length,
+                };
+            }).sort((a, b) => b.total - a.total);
+            rankingBody.innerHTML = servantMonthlyStats.map(s => `<tr class="hover:bg-slate-50 transition-colors"><td class="px-6 py-4 font-medium">${s.name}</td><td class="px-6 py-4 text-center font-bold text-indigo-700 bg-indigo-50">${s.total}</td><td class="px-6 py-4 text-center">${s.oficio}</td><td class="px-6 py-4 text-center">${s.circular}</td><td class="px-6 py-4 text-center">${s.email}</td><td class="px-6 py-4 text-center">${s.traslado}</td><td class="px-6 py-4 text-center">${s.diligencia}</td><td class="px-6 py-4 text-center">${s.comunicacao}</td></tr>`).join('');
+
+            const rankingTodayBody = document.getElementById('ranking-today-body');
+            const servantTodayStats = state.servants.map(s => {
+                const sActionsToday = state.actions.filter(a => s.id == a.servantId && DateEngine.normalize(a.date) === todayStr);
+                return {
+                    ...s,
+                    total: sActionsToday.length,
+                    oficio: sActionsToday.filter(a => a.type === 'Ofício').length,
+                    circular: sActionsToday.filter(a => a.type === 'Ofício Circular').length,
+                    email: sActionsToday.filter(a => a.type === 'E-mail').length,
+                    traslado: sActionsToday.filter(a => a.type === 'Traslado').length,
+                    diligencia: sActionsToday.filter(a => a.type === 'Diligência').length,
+                    comunicacao: sActionsToday.filter(a => a.type === 'Comunicação').length,
+                };
+            }).sort((a, b) => b.total - a.total);
+            rankingTodayBody.innerHTML = servantTodayStats.map(s => `<tr class="hover:bg-slate-50 transition-colors"><td class="px-6 py-4 font-medium">${s.name}</td><td class="px-6 py-4 text-center font-bold text-indigo-700 bg-indigo-100">${s.total}</td><td class="px-6 py-4 text-center">${s.oficio}</td><td class="px-6 py-4 text-center">${s.circular}</td><td class="px-6 py-4 text-center">${s.email}</td><td class="px-6 py-4 text-center">${s.traslado}</td><td class="px-6 py-4 text-center">${s.diligencia}</td><td class="px-6 py-4 text-center">${s.comunicacao}</td></tr>`).join('');
+            initCharts();
+        }
+
+        function initCharts() {
+            const ctxProd = document.getElementById('chart-productivity').getContext('2d');
+            const ctxDist = document.getElementById('chart-distribution').getContext('2d');
+            if (window.myChartProd) window.myChartProd.destroy();
+            if (window.myChartDist) window.myChartDist.destroy();
             
+            const now = new Date();
+            const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+            const labelsDays = Array.from({length: daysInMonth}, (_, i) => i + 1);
+            const dataDays = labelsDays.map(day => {
+                const dateToCompare = DateEngine.getDateOfMonth(day);
+                return state.processes.filter(p => DateEngine.normalize(p.deadline) === dateToCompare).length;
+            });
+            window.myChartProd = new Chart(ctxProd, {
+                type: 'line',
+                data: { labels: labelsDays, datasets: [{ label: 'Processos', data: dataDays, borderColor: '#4f46e5', backgroundColor: 'rgba(79, 70, 229, 0.1)', fill: true, tension: 0.4 }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } }
+            });
+
+            const monthStr = DateEngine.getMonth();
+            const actionTypes = ['Ofício', 'Ofício Circular', 'E-mail', 'Traslado', 'Diligência', 'Comunicação'];
+            const colors = ['#4f46e5', '#10b981', '#f59e0b', '#ec4899', '#8b5cf6', '#64748b'];
+            
+            const servantLabels = state.servants.map(s => s.name);
+            const datasets = actionTypes.map((type, idx) => {
+                return {
+                    label: type,
+                    data: state.servants.map(s => state.actions.filter(a => a.servantId == s.id && a.type === type && DateEngine.normalize(a.date).startsWith(monthStr)).length),
+                    backgroundColor: colors[idx]
+                };
+            });
+
+            window.myChartDist = new Chart(ctxDist, {
+                type: 'bar',
+                data: { labels: servantLabels, datasets: datasets },
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false, 
+                    scales: { 
+                        x: { stacked: true }, 
+                        y: { stacked: true, beginAtZero: true, ticks: { stepSize: 1 } } 
+                    },
+                    plugins: { legend: { position: 'bottom' } }
+                }
+            });
+        }
+
+        function getFilteredData() {
+            const start = document.getElementById('report-start-date').value;
+            const end = document.getElementById('report-end-date').value;
+            if (!start || !end) { alert("Selecione as datas."); return null; }
+            const filteredActions = state.actions.filter(a => DateEngine.normalize(a.date) >= start && DateEngine.normalize(a.date) <= end);
+            const filteredProcesses = state.processes.filter(p => {
+                const d = DateEngine.normalize(p.deadline);
+                return d >= start && d <= end;
+            });
+            return state.servants.map(s => {
+                const sActions = filteredActions.filter(a => a.servantId == s.id);
+                const sProcs = filteredProcesses.filter(p => p.servantId == s.id);
+                return {
+                    name: s.name, processesReceived: sProcs.length, totalActions: sActions.length,
+                    oficio: sActions.filter(a => a.type === 'Ofício').length,
+                    circular: sActions.filter(a => a.type === 'Ofício Circular').length,
+                    email: sActions.filter(a => a.type === 'E-mail').length,
+                    traslado: sActions.filter(a => a.type === 'Traslado').length,
+                    diligencia: sActions.filter(a => a.type === 'Diligência').length,
+                    comunicacao: sActions.filter(a => a.type === 'Comunicação').length,
+                };
+            });
+        }
+
+        window.exportData = function(type) {
+            const data = getFilteredData();
+            if (!data) return;
+            const start = document.getElementById('report-start-date').value;
+            const end = document.getElementById('report-end-date').value;
+
+            if (type === 'pdf') {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                doc.setFontSize(18);
+                doc.text('Relatório de Produtividade - SecExecPres', 14, 20);
+                doc.setFontSize(11);
+                doc.text(`Período: ${start} até ${end}`, 14, 30);
+
+                const rows = data.map(s => [s.name, s.processesReceived, s.totalActions, s.oficio, s.circular, s.email, s.traslado, s.diligencia, s.comunicacao]);
+                doc.autoTable({
+                    startY: 35,
+                    head: [['Servidor', 'Proc. Rec.', 'Total Ações', 'Ofíc.', 'Circ.', 'Email', 'Tras.', 'Dil.', 'Comun.']],
+                    body: rows,
+                    theme: 'grid',
+                    headStyles: { fillColor: [79, 70, 229] }
+                });
+                doc.save(`produtividade_${start}_${end}.pdf`);
+            } else {
+                const worksheet = XLSX.utils.json_to_sheet(data);
+                const workbook = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(workbook, worksheet, "Produtividade");
+                XLSX.writeFile(workbook, `produtividade_${start}_${end}.xlsx`);
+            }
+        }
+
+        window.switchReportTab = function(tab) {
+            document.querySelectorAll('.report-tab-content').forEach(c => c.classList.add('hidden'));
+            document.querySelectorAll('[id^="tab-"]').forEach(b => {
+                b.classList.remove('bg-white', 'text-indigo-600', 'shadow-sm');
+                b.classList.add('text-slate-600', 'hover:bg-slate-100');
+            });
+            document.getElementById(`report-tab-${tab}`).classList.remove('hidden');
+            document.getElementById(`tab-${tab}`).classList.add('bg-white', 'text-indigo-600', 'shadow-sm');
+            document.getElementById(`tab-${tab}`).classList.remove('text-slate-600', 'hover:bg-slate-100');
+            if(tab === 'charts') renderReportChart();
+        }
+
+        window.updateAnalyticalReport = function() {
+            const start = document.getElementById('report-start-date').value;
+            const end = document.getElementById('report-end-date').value;
+            const container = document.getElementById('daily-reports-container');
+            if (!start || !end) return;
+
+            container.innerHTML = '';
+            let currentDate = new Date(start + 'T00:00:00');
+            const endDate = new Date(end + 'T00:00:00');
+
+            while (currentDate <= endDate) {
+                const dateStr = currentDate.toISOString().split('T')[0];
+                const dayActions = state.actions.filter(a => DateEngine.normalize(a.date) === dateStr);
+                
+                let dayHtml = `
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                        <h5 class="text-lg font-bold text-indigo-600 mb-4 flex items-center gap-2">
+                            <i data-lucide="calendar" class="w-5 h-5"></i> Data: ${dateStr.split('-').reverse().join('/')}
+                        </h5>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-sm">
+                                <thead class="bg-slate-50 text-slate-500 uppercase text-xs">
+                                    <tr>
+                                        <th class="px-4 py-2 font-semibold">Servidor</th>
+                                        <th class="px-4 py-2 font-semibold text-center">Total</th>
+                                        <th class="px-4 py-2 font-semibold text-center">Ofícios</th>
+                                        <th class="px-4 py-2 font-semibold text-center">Circulares</th>
+                                        <th class="px-4 py-2 font-semibold text-center">E-mails</th>
+                                        <th class="px-4 py-2 font-semibold text-center">Traslados</th>
+                                        <th class="px-4 py-2 font-semibold text-center">Diligências</th>
+                                        <th class="px-4 py-2 font-semibold text-center">Comun.</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100">
+                `;
+
+                state.servants.forEach(s => {
+                    const sActions = dayActions.filter(a => a.servantId == s.id);
+                    dayHtml += `
+                        <tr class="hover:bg-slate-50">
+                            <td class="px-4 py-2 font-medium">${s.name}</td>
+                            <td class="px-4 py-2 text-center font-bold">${sActions.length}</td>
+                            <td class="px-4 py-2 text-center">${sActions.filter(a => a.type === 'Ofício').length}</td>
+                            <td class="px-4 py-2 text-center">${sActions.filter(a => a.type === 'Ofício Circular').length}</td>
+                            <td class="px-4 py-2 text-center">${sActions.filter(a => a.type === 'E-mail').length}</td>
+                            <td class="px-4 py-2 text-center">${sActions.filter(a => a.type === 'Traslado').length}</td>
+                            <td class="px-4 py-2 text-center">${sActions.filter(a => a.type === 'Diligência').length}</td>
+                            <td class="px-4 py-2 text-center">${sActions.filter(a => a.type === 'Comunicação').length}</td>
+                        </tr>
+                    `;
+                });
+
+                dayHtml += `</tbody></table></div></div>`;
+                container.innerHTML += dayHtml;
+                currentDate.setDate(currentDate.getDate() + 1);
+            }
+            lucide.createIcons();
+        }
+
+        window.renderReportChart = function() {
+            const ctx = document.getElementById('chart-report-servants').getContext('2d');
+            if (window.myReportChart) window.myReportChart.destroy();
+
+            const start = document.getElementById('report-start-date').value;
+            const end = document.getElementById('report-end-date').value;
+            if (!start || !end) return;
+
+            const filteredActions = state.actions.filter(a => DateEngine.normalize(a.date) >= start && DateEngine.normalize(a.date) <= end);
+            const actionTypes = ['Ofício', 'Ofício Circular', 'E-mail', 'Traslado', 'Diligência', 'Comunicação'];
+            const colors = ['#4f46e5', '#10b981', '#f59e0b', '#ec4899', '#8b5cf6', '#64748b'];
+            const dataCounts = actionTypes.map(type => filteredActions.filter(a => a.type === type).length);
+
+            window.myReportChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: actionTypes,
+                    datasets: [{
+                        data: dataCounts,
+                        backgroundColor: colors,
+                        borderWidth: 2,
+                        borderColor: '#fff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'right' } }
+                }
+            });
+        }
+
+        document.getElementById('form-user').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const user = Object.fromEntries(formData);
+            await addDoc(collection(db, "users"), user);
+            closeModal('modal-user');
+            e.target.reset();
+            logAction('Usuário Criado', `Novo usuário cadastrado: ${user.username}`);
+        });
+
+        document.getElementById('form-servant').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const servantObj = Object.fromEntries(formData);
+            servantObj.status = 'Ativo';
+            await addDoc(collection(db, "servants"), servantObj);
+            closeModal('modal-servant');
+            e.target.reset();
+            logAction('Servidor Criado', `Novo servidor cadastrado: ${servantObj.name}`);
+        });
+
+        document.getElementById('form-process').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const proc = Object.fromEntries(formData);
+            const procRef = await addDoc(collection(db, "processes"), proc);
+            const actionTypes = {
+                qty_oficio: 'Ofício',
+                qty_oficio_circular: 'Ofício Circular',
+                qty_email: 'E-mail',
+                qty_traslado: 'Traslado',
+                qty_diligencia: 'Diligência',
+                qty_comunicacao: 'Comunicação'
+            };
+            for (let key in actionTypes) {
+                const qty = parseInt(proc[key] || 0);
+                for (let i = 0; i < qty; i++) {
+                    await addDoc(collection(db, "actions"), {
+                        processId: procRef.id,
+                        servantId: proc.servantId,
+                        type: actionTypes[key],
+                        date: proc.deadline,
+                        status: 'Pendente',
+                        obs: 'Planejado via Cadastro de Processo'
+                    });
+                }
+            }
+            closeModal('modal-process');
+            e.target.reset();
+            logAction('Processo Criado', `Processo ${proc.number} criado com planejamento de ações`);
+        });
+
+        document.getElementById('form-action').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const action = Object.fromEntries(formData);
+            action.status = 'Concluído';
+            await addDoc(collection(db, "actions"), action);
+            closeModal('modal-action');
+            e.target.reset();
+            logAction('Ação Registrada', `Ação ${action.type} lançada para o processo ${action.processId}`);
+        });
+
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const userInp = document.getElementById('username').value;
+            const passInp = document.getElementById('password').value;
+            const btn = document.getElementById('btn-login');
+            btn.innerText = "Autenticando...";
+            btn.disabled = true;
+            const q = query(collection(db, "users"), where("username", "==", userInp));
+            const querySnapshot = await getDocs(q);
+            if (!querySnapshot.empty) {
+                const userDoc = querySnapshot.docs[0].data();
+                if (userDoc.password === passInp) {
+                    currentUser = { id: querySnapshot.docs[0].id, ...userDoc };
+                    document.getElementById('login-page').classList.add('hidden');
+                    document.getElementById('app-shell').classList.remove('hidden');
+                    document.getElementById('user-display-name').innerText = currentUser.name;
+                    document.getElementById('user-display-role').innerText = currentUser.role;
+                    await logAction('Login', 'Usuário entrou no sistema');
+                    showPage('dashboard');
+                } else { alert("Senha incorreta!"); }
+            } else { alert("Usuário não encontrado!"); }
+            btn.innerText = "Entrar no Sistema";
+            btn.disabled = false;
+        });
+
+        setupRealtimeListeners();
+        lucide.createIcons();
+    </script>
+</body>
+</html>
