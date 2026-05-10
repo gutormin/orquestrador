@@ -26,7 +26,7 @@
 </head>
 <body class="bg-slate-50 text-slate-900 font-sans transition-colors duration-300">
 
-    <!-- TELA DE LOGIN (BASE ESTÁVEL) -->
+    <!-- TELA DE LOGIN -->
     <div id="login-page" class="flex items-center justify-center min-h-screen bg-slate-900 px-4">
         <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md transform transition-all">
             <div class="text-center mb-8">
@@ -35,9 +35,7 @@
                 </div>
                 <h1 class="text-3xl font-bold text-slate-800">Orquestrador SecExecPres</h1>
                 <p class="text-slate-500">Gestão de Processos</p>
-                <div id="db-status" class="mt-4 text-xs font-medium px-3 py-1 rounded-full bg-slate-100 text-slate-500 inline-block">
-                    Conectando ao servidor...
-                </div>
+                <div id="db-status" class="mt-4 text-xs font-medium px-3 py-1 rounded-full bg-slate-100 text-slate-500 inline-block">Conectando ao servidor...</div>
             </div>
             <form id="login-form" class="space-y-6">
                 <div>
@@ -48,9 +46,7 @@
                     <label class="block text-sm font-medium text-slate-700 mb-1">Senha</label>
                     <input type="password" id="password" required class="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500 outline-none transition-all" placeholder="••••••••">
                 </div>
-                <button type="submit" id="btn-login" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-lg shadow-lg transition-all transform hover:scale-[1.02] active:scale-95">
-                    Entrar no Sistema
-                </button>
+                <button type="submit" id="btn-login" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-lg shadow-lg transition-all transform hover:scale-[1.02] active:scale-95">Entrar no Sistema</button>
             </form>
         </div>
     </div>
@@ -105,17 +101,14 @@
                             </div>
                         </div>
                     </div>
-
                     <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 mb-8">
                         <h4 class="text-lg font-bold mb-6 flex items-center gap-2"><i data-lucide="bar-chart" class="w-5 h-5 text-indigo-600"></i> Produtividade Individual (Mês Atual)</h4>
                         <div class="relative h-[400px]"><canvas id="chart-distribution"></canvas></div>
                     </div>
-
                     <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 mb-8">
                         <h4 class="text-lg font-bold mb-6 flex items-center gap-2"><i data-lucide="line-chart" class="w-5 h-5 text-indigo-600"></i> Processos por Prazo (Mês)</h4>
                         <div class="relative h-[200px]"><canvas id="chart-productivity"></canvas></div>
                     </div>
-
                     <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden mb-8">
                         <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
                             <h4 class="text-lg font-bold">Ranking de Produtividade (Mês Atual)</h4>
@@ -139,7 +132,6 @@
                             </table>
                         </div>
                     </div>
-
                     <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
                         <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-indigo-50/30">
                             <h4 class="text-lg font-bold text-indigo-900">Ranking de Produtividade Hoje</h4>
@@ -176,12 +168,7 @@
                     <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
                         <table class="w-full text-left">
                             <thead class="bg-slate-50 text-slate-500 text-xs uppercase">
-                                <tr>
-                                    <th class="px-6 py-4">Nome</th>
-                                    <th class="px-6 py-4">Login/E-mail</th>
-                                    <th class="px-6 py-4">Nível de Acesso</th>
-                                    <th class="px-6 py-4 text-center">Ações</th>
-                                </tr>
+                                <tr><th class="px-6 py-4">Nome</th><th class="px-6 py-4">Login/E-mail</th><th class="px-6 py-4">Nível de Acesso</th><th class="px-6 py-4 text-center">Ações</th></tr>
                             </thead>
                             <tbody id="users-body" class="divide-y divide-slate-100"></tbody>
                         </table>
@@ -461,251 +448,4 @@
         const firebaseConfig = {
             apiKey: 'AIzaSyBgaBMX2aHtiab1_7l64tSCSBQTn7e1Eak',
             authDomain: 'orquestrador-secexecpres.firebaseapp.com',
-            projectId: 'orquestrador-secexecpres',
-            storageBucket: 'orquestrador-secexecpres.firebasestorage.app',
-            messagingSenderId: '297721044357',
-            appId: '1:297721044357:web:3c4bece1e257667abbb8ec',
-            measurementId: 'G-W9QV684VZ3'
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-
-        let state = { users: [], servants: [], processes: [], actions: [], audit: [] };
-        let currentUser = null;
-
-        const DateEngine = {
-            getToday: () => {
-                const now = new Date();
-                return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
-            },
-            getMonth: () => {
-                const now = new Date();
-                return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
-            },
-            normalize: (dateInput) => {
-                if (!dateInput) return "";
-                if (typeof dateInput === 'string' && dateInput.length === 10) return dateInput;
-                const d = new Date(dateInput);
-                if (isNaN(d.getTime())) return "";
-                return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-            },
-            getDateOfMonth: (day) => {
-                const now = new Date();
-                const d = new Date(now.getFullYear(), now.getMonth(), day);
-                return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-            }
-        };
-
-        // CONTROLE DE ACESSO (RBAC)
-        function hasAccess(action) {
-            if (!currentUser) return false;
-            const role = currentUser.role;
-            if (role === 'Admin') return true;
-            if (role === 'Servidor') {
-                // Servidor não pode gerenciar usuários nem deletar registros
-                const restricted = ['manage_users', 'delete_all', 'manage_servants'];
-                return !restricted.includes(action);
-            }
-            if (role === 'Visualizador') return action === 'view';
-            return false;
-        }
-
-        function applyRoleRestrictions() {
-            // Botões de criação
-            document.getElementById('btn-new-user')?.classList.toggle('hidden', !hasAccess('manage_users'));
-            document.getElementById('btn-new-servant')?.classList.toggle('hidden', !hasAccess('manage_servants'));
-            document.getElementById('btn-new-process')?.classList.toggle('hidden', !hasAccess('create_process'));
-            document.getElementById('btn-new-action')?.classList.toggle('hidden', !hasAccess('create_action'));
-        }
-
-        function setupRealtimeListeners() {
-            const statusEl = document.getElementById('db-status');
-            onSnapshot(collection(db, "users"), (snapshot) => {
-                state.users = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                statusEl.innerText = "Conectado ao Servidor";
-                statusEl.className = "mt-4 text-xs font-medium px-3 py-1 rounded-full bg-emerald-100 text-emerald-600 inline-block";
-                renderUsers();
-            });
-            onSnapshot(collection(db, "servants"), (snapshot) => {
-                state.servants = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                renderServants();
-                populateSelects();
-            });
-            onSnapshot(collection(db, "processes"), (snapshot) => {
-                state.processes = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                renderProcesses();
-                renderDashboard();
-            });
-            onSnapshot(collection(db, "actions"), (snapshot) => {
-                state.actions = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                renderActions();
-                renderDashboard();
-            });
-            onSnapshot(query(collection(db, "audit"), orderBy("timestamp", "desc")), (snapshot) => {
-                state.audit = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                renderAudit();
-            });
-        }
-
-        window.showPage = function(pageId) {
-            if (!currentUser) { alert("Sessão expirada."); logout(); return; }
-            document.querySelectorAll('.nav-link').forEach(link => {
-                link.classList.remove('active');
-                if(link.dataset.page === pageId) link.classList.add('active');
-            });
-            document.querySelectorAll('.page-content').forEach(page => page.classList.add('hidden'));
-            document.getElementById(`page-${pageId}`).classList.remove('hidden');
-            const titles = { dashboard: 'Dashboard Gerencial', servants: 'Gestão de Servidores', processes: 'Controle de Processos', actions: 'Ações Operacionais', reports: 'Relatórios', audit: 'Auditoria', users: 'Usuários do Sistema' };
-            document.getElementById('page-title').innerText = titles[pageId] || 'Sistema';
             
-            applyRoleRestrictions(); // Aplica restrições sempre que muda de página
-
-            if(pageId === 'dashboard') renderDashboard();
-            if(pageId === 'servants') renderServants();
-            if(pageId === 'processes') renderProcesses();
-            if(pageId === 'actions') renderActions();
-            if(pageId === 'audit') renderAudit();
-            if(pageId === 'users') renderUsers();
-        }
-
-        window.openModal = function(modalId) { 
-            if(!hasAccess('create_action')) {
-                alert("Seu nível de acesso não permite esta operação.");
-                return;
-            }
-            document.getElementById(modalId).classList.remove('hidden'); 
-            populateSelects(); 
-        }
-        window.closeModal = function(modalId) { document.getElementById(modalId).classList.add('hidden'); }
-        window.toggleDarkMode = function() { document.body.classList.toggle('dark'); }
-        window.logout = function() {
-            currentUser = null;
-            document.getElementById('app-shell').classList.add('hidden');
-            document.getElementById('login-page').classList.remove('hidden');
-        }
-
-        async function logAction(action, details) {
-            try {
-                await addDoc(collection(db, "audit"), {
-                    timestamp: new Date().toLocaleString(),
-                    user: currentUser ? currentUser.name : 'Sistema',
-                    action: action,
-                    details: details,
-                    createdAt: serverTimestamp()
-                });
-            } catch (e) { console.error("Erro log:", e); }
-        }
-
-        function renderUsers() {
-            const body = document.getElementById('users-body');
-            if(!body) return;
-            body.innerHTML = state.users.map(u => `<tr class="hover:bg-slate-50 transition-colors"><td class="px-6 py-4 font-medium">${u.name}</td><td class="px-6 py-4 text-slate-500">${u.username}</td><td class="px-6 py-4"><span class="badge ${u.role === 'Admin' ? 'badge-success' : 'badge-info'}">${u.role}</span></td><td class="px-6 py-4 text-center">${hasAccess('manage_users') ? `<button onclick="deleteItem('users', '${u.id}')" class="text-rose-500 hover:text-rose-700 p-2"><i data-lucide="trash-2" class="w-4 h-4"></i></button>` : '<span class="text-slate-300 text-xs italic">S/ Permissão</span>'}</td>></tr>`).join('');
-            lucide.createIcons();
-        }
-
-        function renderServants() {
-            const body = document.getElementById('servants-body');
-            if(!body) return;
-            body.innerHTML = state.servants.map(s => `<tr class="hover:bg-slate-50 transition-colors"><td class="px-6 py-4 font-medium">${s.name}</td><td class="px-6 py-4 text-slate-500">${s.registration}</td><td class="px-6 py-4 text-slate-500">${s.sector}</td><td class="px-6 py-4"><span class="badge ${s.status === 'Ativo' ? 'badge-success' : 'badge-danger'}">${s.status}</span></td><td class="px-6 py-4 text-center">${hasAccess('manage_servants') ? `<button onclick="deleteItem('servants', '${s.id}')" class="text-rose-500 hover:text-rose-700 p-2"><i data-lucide="trash-2" class="w-4 h-4"></i></button>` : '<span class="text-slate-300 text-xs italic">S/ Permissão</span>'}</td>></tr>`).join('');
-            lucide.createIcons();
-        }
-
-        function renderProcesses() {
-            const body = document.getElementById('processes-body');
-            if(!body) return;
-            body.innerHTML = state.processes.map(p => {
-                const servant = state.servants.find(s => s.id == p.servantId);
-                return `<tr class="hover:bg-slate-50 transition-colors"><td class="px-6 py-4 font-bold text-indigo-600">${p.number}</td><td class="px-6 py-4">${p.type}</td><td class="px-6 py-4">${servant ? servant.name : 'N/A'}</td><td class="px-6 py-4 text-slate-500">${p.deadline}</td><td class="px-6 py-4"><span class="badge badge-success">Concluído</span></td><td class="px-6 py-4 text-center">${hasAccess('delete_all') ? `<button onclick="deleteItem('processes', '${p.id}')" class="text-rose-500 hover:text-rose-700 p-2"><i data-lucide="trash-2" class="w-4 h-4"></i></button>` : '<span class="text-slate-300 text-xs italic">S/ Permissão</span>'}</td>></tr>`;
-            }).join('');
-            lucide.createIcons();
-        }
-
-        function renderActions() {
-            const body = document.getElementById('actions-body');
-            if(!body) return;
-            body.innerHTML = state.actions.map(a => {
-                const proc = state.processes.find(p => p.id == a.processId);
-                const servant = state.servants.find(s => s.id == a.servantId);
-                return `<tr class="hover:bg-slate-50 transition-colors"><td class="px-6 py-4 font-medium">${proc ? proc.number : 'N/A'}</td><td class="px-6 py-4">${a.type}</td><td class="px-6 py-4">${servant ? servant.name : 'N/A'}</td><td class="px-6 py-4 text-slate-500">${a.date}</td><td class="px-6 py-4"><span class="badge badge-success">Concluído</span></td><td class="px-6 py-4 text-center">${hasAccess('delete_all') ? `<button onclick="deleteItem('actions', '${a.id}')" class="text-rose-500 hover:text-rose-700 p-2"><i data-lucide="trash-2" class="w-4 h-4"></i></button>` : '<span class="text-slate-300 text-xs italic">S/ Permissão</span>'}</td>></tr>`;
-            }).join('');
-            lucide.createIcons();
-        }
-
-        function renderAudit() {
-            const body = document.getElementById('audit-body');
-            if(!body) return;
-            body.innerHTML = state.audit.map(l => `<tr class="hover:bg-slate-50 transition-colors"><td class="px-6 py-4 text-slate-400">${l.timestamp}</td><td class="px-6 py-4 font-medium">${l.user}</td><td class="px-6 py-4"><span class="text-indigo-600 font-semibold">${l.action}</span></td><td class="px-6 py-4 text-slate-500">${l.details}</td></tr>`).join('');
-        }
-
-        window.deleteItem = async function(collectionName, id) {
-            if(!hasAccess('delete_all')) { alert("Acesso Negado!"); return; }
-            if(confirm('Excluir registro permanentemente?')) {
-                await deleteDoc(doc(db, collectionName, id));
-                logAction('Exclusão', `Item removido da coleção ${collectionName} ID: ${id}`);
-            }
-        }
-
-        function populateSelects() {
-            const sSelectProcess = document.getElementById('select-servant-process');
-            const sSelectAction = document.getElementById('select-servant-action');
-            const pSelectAction = document.getElementById('select-process-action');
-            const servantOptions = state.servants.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
-            if(sSelectProcess) sSelectProcess.innerHTML = servantOptions;
-            if(sSelectAction) sSelectAction.innerHTML = servantOptions;
-            const processOptions = state.processes.map(p => `<option value="${p.id}">${p.number}</option>`).join('');
-            if(pSelectAction) pSelectAction.innerHTML = processOptions;
-        }
-
-        window.filterTable = function(tableId, query) {
-            const rows = document.querySelectorAll(`#${tableId} tbody tr`);
-            rows.forEach(row => { row.style.display = row.innerText.toLowerCase().includes(query.toLowerCase()) ? '' : 'none'; });
-        }
-
-        function renderDashboard() {
-            const todayStr = DateEngine.getToday();
-            const monthStr = DateEngine.getMonth();
-            const procsToday = state.processes.filter(p => {
-                const dateToCheck = p.createdAt ? p.createdAt : p.deadline;
-                return DateEngine.normalize(dateToCheck) === todayStr;
-            }).length;
-            document.getElementById('kpi-total-proc').innerText = procsToday;
-
-            const rankingBody = document.getElementById('ranking-body');
-            const servantMonthlyStats = state.servants.map(s => {
-                const sActionsMonth = state.actions.filter(a => s.id == a.servantId && DateEngine.normalize(a.date).startsWith(monthStr));
-                return {
-                    ...s,
-                    total: sActionsMonth.length,
-                    oficio: sActionsMonth.filter(a => a.type === 'Ofício').length,
-                    circular: sActionsMonth.filter(a => a.type === 'Ofício Circular').length,
-                    email: sActionsMonth.filter(a => a.type === 'E-mail').length,
-                    traslado: sActionsMonth.filter(a => a.type === 'Traslado').length,
-                    diligencia: sActionsMonth.filter(a => a.type === 'Diligência').length,
-                    comunicacao: sActionsMonth.filter(a => a.type === 'Comunicação').length,
-                };
-            }).sort((a, b) => b.total - a.total);
-            rankingBody.innerHTML = servantMonthlyStats.map(s => `<tr class="hover:bg-slate-50 transition-colors"><td class="px-6 py-4 font-medium">${s.name}</td><td class="px-6 py-4 text-center font-bold text-indigo-700 bg-indigo-50">${s.total}</td><td class="px-6 py-4 text-center">${s.oficio}</td><td class="px-6 py-4 text-center">${s.circular}</td><td class="px-6 py-4 text-center">${s.email}</td><td class="px-6 py-4 text-center">${s.traslado}</td><td class="px-6 py-4 text-center">${s.diligencia}</td><td class="px-6 py-4 text-center">${s.comunicacao}</td></tr>`).join('');
-
-            const rankingTodayBody = document.getElementById('ranking-today-body');
-            const servantTodayStats = state.servants.map(s => {
-                const sActionsToday = state.actions.filter(a => s.id == a.servantId && DateEngine.normalize(a.date) === todayStr);
-                return {
-                    ...s,
-                    total: sActionsToday.length,
-                    oficio: sActionsToday.filter(a => a.type === 'Ofício').length,
-                    circular: sActionsToday.filter(a => a.type === 'Ofício Circular').length,
-                    email: sActionsToday.filter(a => a.type === 'E-mail').length,
-                    traslado: sActionsToday.filter(a => a.type === 'Traslado').length,
-                    diligencia: sActionsToday.filter(a => a.type === 'Diligência').length,
-                    comunicacao: sActionsToday.filter(a => a.type === 'Comunicação').length,
-                };
-            }).sort((a, b) => b.total - a.total);
-            rankingTodayBody.innerHTML = servantTodayStats.map(s => `<tr class="hover:bg-slate-50 transition-colors"><td class="px-6 py-4 font-medium">${s.name}</td><td class="px-6 py-4 text-center font-bold text-indigo-700 bg-indigo-100">${s.total}</td><td class="px-6 py-4 text-center">${s.oficio}</td><td class="px-6 py-4 text-center">${s.circular}</td><td class="px-6 py-4 text-center">${s.email}</td><td class="px-6 py-4 text-center">${s.traslado}</td><td class="px-6 py-4 text-center">${s.diligencia}</td><td class="px-6 py-4 text-center">${s.comunicacao}</td></tr>`).join('');
-            initCharts();
-        }
-
-        function initCharts() {
-            const ctxProd = document.getElementById('chart-productivity').getContext('2d');
-            const ctxDist = document.getElementById('chart-distribution').getContext('2d');
-            if (
