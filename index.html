@@ -35,7 +35,6 @@
                 </div>
                 <h1 class="text-3xl font-bold text-slate-800">Orquestrador SecExecPres</h1>
                 <p class="text-slate-500">Gestão de Processos</p>
-                <!-- Indicador de Status -->
                 <div id="db-status" class="mt-4 text-xs font-medium px-3 py-1 rounded-full bg-slate-100 text-slate-500 inline-block">
                     Conectando ao servidor...
                 </div>
@@ -107,13 +106,11 @@
                         </div>
                     </div>
 
-                    <!-- GRÁFICO DE PRODUTIVIDADE (Mês) - EM DESTAQUE TOTAL -->
                     <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 mb-8">
                         <h4 class="text-lg font-bold mb-6 flex items-center gap-2"><i data-lucide="bar-chart" class="w-5 h-5 text-indigo-600"></i> Produtividade Individual (Mês Atual)</h4>
                         <div class="relative h-[350px]"><canvas id="chart-distribution"></canvas></div>
                     </div>
 
-                    <!-- GRÁFICO de PRAZO (Movido para baixo) -->
                     <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 mb-8">
                         <h4 class="text-lg font-bold mb-6 flex items-center gap-2"><i data-lucide="line-chart" class="w-5 h-5 text-indigo-600"></i> Processos por Prazo (Mês)</h4>
                         <div class="relative h-[200px]"><canvas id="chart-productivity"></canvas></div>
@@ -747,13 +744,149 @@
             if (!data) return;
             const start = document.getElementById('report-start-date').value;
             const end = document.getElementById('report-end-date').value;
-            const totals = data.reduce((acc, curr) => {
-                acc.proc += curr.processesReceived; acc.total += curr.totalActions;
-                acc.ofic += curr.oficio; acc.circ += curr.circular; acc.email += curr.email;
-                acc.tras += curr.traslado; acc.dilig += curr.diligencia; acc.comun += curr.comunicacao;
-                return acc;
-            }, { proc:0, total:0, ofic:0, circ:0, email:0, tras:0, dilig:0, comun:0 });
+
             if (type === 'pdf') {
                 const { jsPDF } = window.jspdf;
                 const doc = new jsPDF();
-                doc.setFontSize(18); doc.text('
+                doc.setFontSize(18);
+                doc.text('Relatório de Produtividade - SecExecPres', 14, 20);
+                doc.setFontSize(11);
+                doc.text(`Período: ${start} até ${end}`, 14, 30);
+
+                const rows = data.map(s => [s.name, s.processesReceived, s.totalActions, s.oficio, s.circular, s.email, s.traslado, s.diligencia, s.comunicacao]);
+                doc.autoTable({
+                    startY: 35,
+                    head: [['Servidor', 'Proc. Rec.', 'Total Ações', 'Ofíc.', 'Circ.', 'Email', 'Tras.', 'Dil.', 'Comun.']],
+                    body: rows,
+                    theme: 'grid',
+                    headStyles: { fillColor: [79, 70, 229] }
+                });
+                doc.save(`produtividade_${start}_${end}.pdf`);
+            } else {
+                const worksheet = XLSX.utils.json_to_sheet(data);
+                const workbook = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(workbook, worksheet, "Produtividade");
+                XLSX.writeFile(workbook, `produtividade_${start}_${end}.xlsx`);
+            }
+        }
+
+        window.switchReportTab = function(tab) {
+            document.querySelectorAll('.report-tab-content').forEach(c => c.classList.add('hidden'));
+            document.querySelectorAll('[id^="tab-"]').forEach(b => {
+                b.classList.remove('bg-white', 'text-indigo-600', 'shadow-sm');
+                b.classList.add('text-slate-600', 'hover:bg-slate-100');
+            });
+            document.getElementById(`report-tab-${tab}`).classList.remove('hidden');
+            document.getElementById(`tab-${tab}`).classList.add('bg-white', 'text-indigo-600', 'shadow-sm');
+            document.getElementById(`tab-${tab}`).classList.remove('text-slate-600', 'hover:bg-slate-100');
+        }
+
+        // MODAL FORM SUBMISSIONS
+        document.getElementById('form-user').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const user = Object.fromEntries(formData);
+            await addDoc(collection(db, "users"), user);
+            closeModal('modal-user');
+            e.target.reset();
+            logAction('Usuário Criado', `Novo usuário cadastrado: ${user.username}`);
+        });
+
+        document.getElementById('form-servant').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const servant = Object.fromEntries(formData);
+            servant.status = 'Ativo';
+            await addDoc(collection(db, "servants"), servant);
+            closeModal('modal-servant');
+            e.target.reset();
+            logAction('Servidor Criado', `Novo servidor cadastrado: ${servant.name}`);
+        });
+
+        document.getElementById('form-process').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const proc = Object.fromEntries(formData);
+            
+            // Salva o processo
+            const procRef = await addDoc(collection(db, "processes"), proc);
+            
+            // Gera as ações planejadas automaticamente
+            const actionTypes = {
+                qty_oficio: 'Ofício',
+                qty_oficio_circular: 'Ofício Circular',
+                qty_email: 'E-mail',
+                qty_traslado: 'Traslado',
+                qty_diligencia: 'Diligência',
+                qty_comunicacao: 'Comunicação'
+            };
+
+            for (let key in actionTypes) {
+                const qty = parseInt(proc[key] || 0);
+                for (let i = 0; i < qty; i++) {
+                    await addDoc(collection(db, "actions"), {
+                        processId: procRef.id,
+                        servantId: proc.servantId,
+                        type: actionTypes[key],
+                        date: proc.deadline,
+                        status: 'Pendente',
+                        obs: 'Planejado via Cadastro de Processo'
+                    });
+                }
+            }
+
+            closeModal('modal-process');
+            e.target.reset();
+            logAction('Processo Criado', `Processo ${proc.number} criado com planejamento de ações`);
+        });
+
+        document.getElementById('form-action').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const action = Object.fromEntries(formData);
+            action.status = 'Concluído';
+            await addDoc(collection(db, "actions"), action);
+            closeModal('modal-action');
+            e.target.reset();
+            logAction('Ação Registrada', `Ação ${action.type} lançada para o processo ${action.processId}`);
+        });
+
+        // LÓGICA DE LOGIN
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const userInp = document.getElementById('username').value;
+            const passInp = document.getElementById('password').value;
+            const btn = document.getElementById('btn-login');
+
+            btn.innerText = "Autenticando...";
+            btn.disabled = true;
+
+            const q = query(collection(db, "users"), where("username", "==", userInp));
+            const querySnapshot = await getDocs(q);
+
+            if (!querySnapshot.empty) {
+                const userDoc = querySnapshot.docs[0].data();
+                if (userDoc.password === passInp) {
+                    currentUser = { id: querySnapshot.docs[0].id, ...userDoc };
+                    document.getElementById('login-page').classList.add('hidden');
+                    document.getElementById('app-shell').classList.remove('hidden');
+                    document.getElementById('user-display-name').innerText = currentUser.name;
+                    document.getElementById('user-display-role').innerText = currentUser.role;
+                    await logAction('Login', 'Usuário entrou no sistema');
+                    showPage('dashboard');
+                } else {
+                    alert("Senha incorreta!");
+                }
+            } else {
+                alert("Usuário não encontrado!");
+            }
+            btn.innerText = "Entrar no Sistema";
+            btn.disabled = false;
+        });
+
+        // INICIALIZAÇÃO DO SISTEMA
+        setupRealtimeListeners();
+        lucide.createIcons();
+    </script>
+</body>
+</html>
