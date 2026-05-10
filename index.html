@@ -35,6 +35,10 @@
                 </div>
                 <h1 class="text-3xl font-bold text-slate-800">Orquestrador SecExecPres</h1>
                 <p class="text-slate-500">Gestão de Processos</p>
+                <!-- Indicador de Status -->
+                <div id="db-status" class="mt-4 text-xs font-medium px-3 py-1 rounded-full bg-slate-100 text-slate-500 inline-block">
+                    Conectando ao servidor...
+                </div>
             </div>
             <form id="login-form" class="space-y-6">
                 <div>
@@ -45,7 +49,7 @@
                     <label class="block text-sm font-medium text-slate-700 mb-1">Senha</label>
                     <input type="password" id="password" required class="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500 outline-none transition-all" placeholder="••••••••">
                 </div>
-                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-lg shadow-lg transition-all transform hover:scale-[1.02] active:scale-95">
+                <button type="submit" id="btn-login" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-lg shadow-lg transition-all transform hover:scale-[1.02] active:scale-95">
                     Entrar no Sistema
                 </button>
             </form>
@@ -103,7 +107,7 @@
                         </div>
                     </div>
 
-                    <!-- GRÁFICO DE PRODUTIVIDADE (Mês) - AGORA EM DESTAQUE TOTAL -->
+                    <!-- GRÁFICO DE PRODUTIVIDADE (Mês) - EM DESTAQUE TOTAL -->
                     <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 mb-8">
                         <h4 class="text-lg font-bold mb-6 flex items-center gap-2"><i data-lucide="bar-chart" class="w-5 h-5 text-indigo-600"></i> Produtividade Individual (Mês Atual)</h4>
                         <div class="relative h-[350px]"><canvas id="chart-distribution"></canvas></div>
@@ -500,10 +504,19 @@
         };
 
         function setupRealtimeListeners() {
+            const statusEl = document.getElementById('db-status');
+            
             onSnapshot(collection(db, "users"), (snapshot) => {
                 state.users = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                statusEl.innerText = "Conectado ao Servidor";
+                statusEl.className = "mt-4 text-xs font-medium px-3 py-1 rounded-full bg-emerald-100 text-emerald-600 inline-block";
                 renderUsers();
+            }, (err) => {
+                console.error("Erro Firestore Users:", err);
+                statusEl.innerText = "Erro de Conexão";
+                statusEl.className = "mt-4 text-xs font-medium px-3 py-1 rounded-full bg-rose-100 text-rose-600 inline-block";
             });
+
             onSnapshot(collection(db, "servants"), (snapshot) => {
                 state.servants = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 renderServants();
@@ -683,4 +696,64 @@
             
             const now = new Date();
             const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
-            const labelsDays = Array.from({length: daysIn
+            const labelsDays = Array.from({length: daysInMonth}, (_, i) => i + 1);
+            const dataDays = labelsDays.map(day => {
+                const dateToCompare = DateEngine.getDateOfMonth(day);
+                return state.processes.filter(p => DateEngine.normalize(p.deadline) === dateToCompare).length;
+            });
+            window.myChartProd = new Chart(ctxProd, {
+                type: 'line',
+                data: { labels: labelsDays, datasets: [{ label: 'Processos', data: dataDays, borderColor: '#4f46e5', backgroundColor: 'rgba(79, 70, 229, 0.1)', fill: true, tension: 0.4 }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } }
+            });
+
+            const monthStr = DateEngine.getMonth();
+            const servantLabels = state.servants.map(s => s.name);
+            const servantData = state.servants.map(s => state.actions.filter(a => a.servantId == s.id && DateEngine.normalize(a.date).startsWith(monthStr)).length);
+
+            window.myChartDist = new Chart(ctxDist, {
+                type: 'bar',
+                data: { labels: servantLabels, datasets: [{ label: 'Ações no Mês', data: servantData, backgroundColor: '#6366f1' }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } }
+            });
+        }
+
+        function getFilteredData() {
+            const start = document.getElementById('report-start-date').value;
+            const end = document.getElementById('report-end-date').value;
+            if (!start || !end) { alert("Selecione as datas."); return null; }
+            const filteredActions = state.actions.filter(a => DateEngine.normalize(a.date) >= start && DateEngine.normalize(a.date) <= end);
+            const filteredProcesses = state.processes.filter(p => {
+                const d = DateEngine.normalize(p.deadline);
+                return d >= start && d <= end;
+            });
+            return state.servants.map(s => {
+                const sActions = filteredActions.filter(a => a.servantId == s.id);
+                const sProcs = filteredProcesses.filter(p => p.servantId == s.id);
+                return {
+                    name: s.name, processesReceived: sProcs.length, totalActions: sActions.length,
+                    oficio: sActions.filter(a => a.type === 'Ofício').length,
+                    circular: sActions.filter(a => a.type === 'Ofício Circular').length,
+                    email: sActions.filter(a => a.type === 'E-mail').length,
+                    traslado: sActions.filter(a => a.type === 'Traslado').length,
+                    diligencia: sActions.filter(a => a.type === 'Diligência').length,
+                    comunicacao: sActions.filter(a => a.type === 'Comunicação').length,
+                };
+            });
+        }
+
+        window.exportData = function(type) {
+            const data = getFilteredData();
+            if (!data) return;
+            const start = document.getElementById('report-start-date').value;
+            const end = document.getElementById('report-end-date').value;
+            const totals = data.reduce((acc, curr) => {
+                acc.proc += curr.processesReceived; acc.total += curr.totalActions;
+                acc.ofic += curr.oficio; acc.circ += curr.circular; acc.email += curr.email;
+                acc.tras += curr.traslado; acc.dilig += curr.diligencia; acc.comun += curr.comunicacao;
+                return acc;
+            }, { proc:0, total:0, ofic:0, circ:0, email:0, tras:0, dilig:0, comun:0 });
+            if (type === 'pdf') {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                doc.setFontSize(18); doc.text('
