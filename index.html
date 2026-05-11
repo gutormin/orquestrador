@@ -526,20 +526,16 @@
             });
         }
 
-        // --- SISTEMA DE CONTROLE DE ACESSO (RBAC) ---
         function checkPermission(action) {
             if (!currentUser) return false;
             const role = currentUser.role;
-
             if (role === 'Admin') return true;
-
             if (role === 'Servidor') {
                 const forbiddenPages = ['users', 'servants'];
                 if (forbiddenPages.includes(action)) return false;
                 if (action === 'delete') return false;
                 return true;
             }
-
             if (role === 'Visualizador') {
                 const forbiddenActions = ['delete', 'create', 'users', 'servants'];
                 if (forbiddenActions.includes(action)) return false;
@@ -550,12 +546,10 @@
 
         window.showPage = function(pageId) {
             if (!currentUser) { alert("Sessão expirada."); logout(); return; }
-            
             if (!checkPermission(pageId)) {
                 alert("Você não possui permissão para acessar esta área.");
                 return;
             }
-
             document.querySelectorAll('.nav-link').forEach(link => {
                 link.classList.remove('active');
                 if(link.dataset.page === pageId) link.classList.add('active');
@@ -580,7 +574,6 @@
             document.getElementById(modalId).classList.remove('hidden'); 
             populateSelects(); 
         }
-        
         window.closeModal = function(modalId) { document.getElementById(modalId).classList.add('hidden'); }
         window.toggleDarkMode = function() { document.body.classList.toggle('dark'); }
         window.logout = function() {
@@ -734,7 +727,6 @@
             const monthStr = DateEngine.getMonth();
             const actionTypes = ['Ofício', 'Ofício Circular', 'E-mail', 'Traslado', 'Diligência', 'Comunicação'];
             const colors = ['#4f46e5', '#10b981', '#f59e0b', '#ec4899', '#8b5cf6', '#64748b'];
-            
             const servantLabels = state.servants.map(s => s.name);
             const datasets = actionTypes.map((type, idx) => {
                 return {
@@ -914,7 +906,11 @@
 
         window.renderReportChart = function() {
             const ctx = document.getElementById('chart-report-servants').getContext('2d');
-            if (window.myReportChart) window.myReportChart.destroy();
+            
+            // CORREÇÃO: Agora a variável coincide com a verificação
+            if (window.myReportChart) {
+                window.myReportChart.destroy();
+            }
 
             const start = document.getElementById('report-start-date').value;
             const end = document.getElementById('report-end-date').value;
@@ -925,7 +921,8 @@
             const colors = ['#4f46e5', '#10b981', '#f59e0b', '#ec4899', '#8b5cf6', '#64748b'];
             const dataCounts = actionTypes.map(type => filteredActions.filter(a => a.type === type).length);
 
-            windowPReportChart = new Chart(ctx, {
+            // CORREÇÃO: Alterado de windowPReportChart para window.myReportChart
+            window.myReportChart = new Chart(ctx, {
                 type: 'doughnut',
                 data: {
                     labels: actionTypes,
