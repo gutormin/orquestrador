@@ -409,7 +409,7 @@
             </form>
         </div>
     </div>
-
+        
     <div id="modal-process" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
         <div class="bg-white w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden">
             <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50">
@@ -420,26 +420,72 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                     <div class="space-y-4">
                         <h4 class="font-bold text-indigo-600 flex items-center gap-2 mb-2"><i data-lucide="file-text" class="w-4 h-4"></i> Dados do Processo</h4>
-                        <div><label class="block text-xs font-bold uppercase text-slate-500 mb-1">Nº Processo</label><input type="text" name="number" required class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500"></div
-                        <div><label class="block text-xs font-bold uppercase text-slate-500 mb-1">Tipo</label><select name="type" class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500"><option>Administrativo</option><option>Judicial</option><option>Disciplinar</option><option>Outros</option></select></div
-                        <div><label class="block text-xs font-bold uppercase text-slate-500 mb-1">Data (Prazo)</label><input type="date" name="deadline" required class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500"></div
-                        <div><label class="block text-xs font-bold uppercase text-slate-500 mb-1">Prioridade</label><select name="priority" class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500"><option value="Baixa">Baixa</option><option value="Média" selected>Média</option><option value="Alta">Alta</option><option value="Urgente">Urgente</option></select></div
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Nº Processo</label>
+                            <input type="text" name="number" required class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Tipo</label>
+                            <select name="type" class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500">
+                                <option>Administrativo</option>
+                                <option>Judicial</option>
+                                <option>Disciplinar</option>
+                                <option>Outros</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Data (Prazo)</label>
+                            <input type="date" name="deadline" required class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Prioridade</label>
+                            <select name="priority" class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500">
+                                <option value="Baixa">Baixa</option>
+                                <option value="Média" selected>Média</option>
+                                <option value="Alta">Alta</option>
+                                <option value="Urgente">Urgente</option>
+                            </select>
+                        </div>
                     </div>
                     <div class="space-y-4">
                         <h4 class="font-bold text-indigo-600 flex items-center gap-2 mb-2"><i data-lucide="user" class="w-4 h-4"></i> Responsável</h4>
-                        <div><label class="block text-xs font-bold uppercase text-slate-500 mb-1">Servidor Designado</label><select id="select-servant-process" name="servantId" required class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500"></select></div
-                        <div><label class="block text-xs font-bold uppercase text-slate-500 mb-1">Observações Gerais</label><textarea name="obs" class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500" rows="4"></textarea></div
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Servidor Designado</label>
+                            <select id="select-servant-process" name="servantId" required class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500"></select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Observações Gerais</label>
+                            <textarea name="obs" class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500" rows="4"></textarea>
+                        </div>
                     </div>
                 </div>
                 <div class="border-t border-slate-200 pt-6">
                     <h4 class="font-bold text-indigo-600 flex items-center gap-2 mb-4"><i data-lucide="list-checks" class="w-4 h-4"></i> Planejamento de Ações (Quantidade)</h4>
                     <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
-                        <div><label class="block text-xs font-medium text-slate-600 mb-1">Ofícios</label><input type="number" name="qty_oficio" min="0" value="0" class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500"></div
-                        <div><label class="block text-xs font-medium text-slate-600 mb-1">Ofício Circular</label><input type="number" name="qty_oficio_circular" min="0" value="0" class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500"></div
-                        <div><label class="block text-xs font-medium text-slate-600 mb-1">E-mails</label><input type="number" name="qty_email" min="0" value="0" class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500"></div
-                        <div><label class="block text-xs font-medium text-slate-600 mb-1">Traslados</label><input type="number" name="qty_traslado" min="0" value="0" class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500"></div
-                        <div><label class="block text-xs font-medium text-slate-600 mb-1">Diligências</label><input type="number" name="qty_diligencia" min="0" value="0" class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500"></div
-                        <div><label class="block text-xs font-medium text-slate-600 mb-1">Comunicações</label><input type="number" name="qty_comunicacao" min="0" value="0" class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500"></div>
+                        <div>
+                            <label class="block text-xs font-medium text-slate-600 mb-1">Ofícios</label>
+                            <input type="number" name="qty_oficio" min="0" value="0" class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-slate-600 mb-1">Ofício Circular</label>
+                            <input type="number" name="qty_oficio_circular" min="0" value="0" class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-slate-600 mb-1">E-mails</label>
+                            <input type="number" name="qty_email" min="0" value="0" class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-slate-600 mb-1">Traslados</label>
+                            <input type="number" name="qty_traslado" min="0" value="0" class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-slate-600 mb-1">Diligências</label>
+                            <input type="number" name="qty_diligencia" min="0" value="0" class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-slate-600 mb-1">Comunicações</label>
+                            <input type="number" name="qty_comunicacao" min="0" value="0" class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500">
+                        </div>
                     </div>
                 </div>
                 <div class="flex justify-end gap-3 mt-8">
