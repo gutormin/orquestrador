@@ -67,6 +67,7 @@
                 <a href="#" onclick="showPage('users')" class="nav-link" data-page="users"><i data-lucide="user-cog" class="w-5 h-5"></i> <span>Usuários do Sistema</span></a>
                 <a href="#" onclick="showPage('servants')" class="nav-link" data-page="servants"><i data-lucide="users" class="w-5 h-5"></i> <span>Servidores</span></a>
                 <a href="#" onclick="showPage('processes')" class="nav-link" data-page="processes"><i data-lucide="file-text" class="w-5 h-5"></i> <span>Processos</span></a>
+                <a href="#" onclick="showPage('deadlines')" class="nav-link" data-page="deadlines"><i data-lucide="clock" class="w-5 h-5"></i> <span>Controle de Prazos</span></a>
                 <a href="#" onclick="showPage('actions')" class="nav-link" data-page="actions"><i data-lucide="activity" class="w-5 h-5"></i> <span>Ações/Tarefas</span></a>
                 <a href="#" onclick="showPage('reports')" class="nav-link" data-page="reports"><i data-lucide="bar-chart-3" class="w-5 h-5"></i> <span>Relatórios</span></a>
                 <a href="#" onclick="showPage('audit')" class="nav-link" data-page="audit"><i data-lucide="history" class="w-5 h-5"></i> <span>Auditoria</span></a>
@@ -214,7 +215,7 @@
                         </div>
                         <button id="btn-new-process" onclick="openModal('modal-process')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-all shadow-md"><i data-lucide="plus" class="w-4 h-4"></i> Novo Processo</button>
                     </div>
-                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                                        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
                         <table id="processes-table" class="w-full text-left">
                             <thead class="bg-slate-50 text-slate-500 text-xs uppercase">
                                 <tr>
@@ -228,6 +229,32 @@
                                 </tr>
                             </thead>
                             <tbody id="processes-body" class="divide-y divide-slate-100"></tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- CONTROLE DE PRAZOS -->
+                <section id="page-deadlines" class="page-content hidden">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-xl font-bold text-slate-700">Controle de Prazos de Processos</h3>
+                        <button onclick="openModal('modal-deadline')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-all shadow-md">
+                            <i data-lucide="calendar-plus" class="w-4 h-4"></i> Cadastrar Prazo
+                        </button>
+                    </div>
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                        <table class="w-full text-left">
+                            <thead class="bg-slate-50 text-slate-500 text-xs uppercase">
+                                <tr>
+                                    <th class="px-6 py-4">Data Distribuição</th>
+                                    <th class="px-6 py-4">Distribuidor</th>
+                                    <th class="px-6 py-4">Nº Processo</th>
+                                    <th class="px-6 py-4">Unidade de Destino</th>
+                                    <th class="px-6 py-4 text-center">Prazo (Dias)</th>
+                                    <th class="px-6 py-4 text-center">Vencimento</th>
+                                    <th class="px-6 py-4 text-center">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="deadlines-body" class="divide-y divide-slate-100"></tbody>
                         </table>
                     </div>
                 </section>
@@ -393,25 +420,25 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                     <div class="space-y-4">
                         <h4 class="font-bold text-indigo-600 flex items-center gap-2 mb-2"><i data-lucide="file-text" class="w-4 h-4"></i> Dados do Processo</h4>
-                        <div><label class="block text-xs font-bold uppercase text-slate-500 mb-1">Nº Processo</label><input type="text" name="number" required class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500"></div>
-                        <div><label class="block text-xs font-bold uppercase text-slate-500 mb-1">Tipo</label><select name="type" class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500"><option>Administrativo</option><option>Judicial</option><option>Disciplinar</option><option>Outros</option></select></div>
-                        <div><label class="block text-xs font-bold uppercase text-slate-500 mb-1">Data (Prazo)</label><input type="date" name="deadline" required class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500"></div>
-                        <div><label class="block text-xs font-bold uppercase text-slate-500 mb-1">Prioridade</label><select name="priority" class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500"><option value="Baixa">Baixa</option><option value="Média" selected>Média</option><option value="Alta">Alta</option><option value="Urgente">Urgente</option></select></div>
+                        <div><label class="block text-xs font-bold uppercase text-slate-500 mb-1">Nº Processo</label><input type="text" name="number" required class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500"></div
+                        <div><label class="block text-xs font-bold uppercase text-slate-500 mb-1">Tipo</label><select name="type" class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500"><option>Administrativo</option><option>Judicial</option><option>Disciplinar</option><option>Outros</option></select></div
+                        <div><label class="block text-xs font-bold uppercase text-slate-500 mb-1">Data (Prazo)</label><input type="date" name="deadline" required class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500"></div
+                        <div><label class="block text-xs font-bold uppercase text-slate-500 mb-1">Prioridade</label><select name="priority" class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500"><option value="Baixa">Baixa</option><option value="Média" selected>Média</option><option value="Alta">Alta</option><option value="Urgente">Urgente</option></select></div
                     </div>
                     <div class="space-y-4">
                         <h4 class="font-bold text-indigo-600 flex items-center gap-2 mb-2"><i data-lucide="user" class="w-4 h-4"></i> Responsável</h4>
-                        <div><label class="block text-xs font-bold uppercase text-slate-500 mb-1">Servidor Designado</label><select id="select-servant-process" name="servantId" required class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500"></select></div>
-                        <div><label class="block text-xs font-bold uppercase text-slate-500 mb-1">Observações Gerais</label><textarea name="obs" class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500" rows="4"></textarea></div>
+                        <div><label class="block text-xs font-bold uppercase text-slate-500 mb-1">Servidor Designado</label><select id="select-servant-process" name="servantId" required class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500"></select></div
+                        <div><label class="block text-xs font-bold uppercase text-slate-500 mb-1">Observações Gerais</label><textarea name="obs" class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500" rows="4"></textarea></div
                     </div>
                 </div>
                 <div class="border-t border-slate-200 pt-6">
                     <h4 class="font-bold text-indigo-600 flex items-center gap-2 mb-4"><i data-lucide="list-checks" class="w-4 h-4"></i> Planejamento de Ações (Quantidade)</h4>
                     <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
-                        <div><label class="block text-xs font-medium text-slate-600 mb-1">Ofícios</label><input type="number" name="qty_oficio" min="0" value="0" class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500"></div>
-                        <div><label class="block text-xs font-medium text-slate-600 mb-1">Ofício Circular</label><input type="number" name="qty_oficio_circular" min="0" value="0" class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500"></div>
-                        <div><label class="block text-xs font-medium text-slate-600 mb-1">E-mails</label><input type="number" name="qty_email" min="0" value="0" class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500"></div>
-                        <div><label class="block text-xs font-medium text-slate-600 mb-1">Traslados</label><input type="number" name="qty_traslado" min="0" value="0" class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500"></div>
-                        <div><label class="block text-xs font-medium text-slate-600 mb-1">Diligências</label><input type="number" name="qty_diligencia" min="0" value="0" class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500"></div>
+                        <div><label class="block text-xs font-medium text-slate-600 mb-1">Ofícios</label><input type="number" name="qty_oficio" min="0" value="0" class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500"></div
+                        <div><label class="block text-xs font-medium text-slate-600 mb-1">Ofício Circular</label><input type="number" name="qty_oficio_circular" min="0" value="0" class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500"></div
+                        <div><label class="block text-xs font-medium text-slate-600 mb-1">E-mails</label><input type="number" name="qty_email" min="0" value="0" class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500"></div
+                        <div><label class="block text-xs font-medium text-slate-600 mb-1">Traslados</label><input type="number" name="qty_traslado" min="0" value="0" class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500"></div
+                        <div><label class="block text-xs font-medium text-slate-600 mb-1">Diligências</label><input type="number" name="qty_diligencia" min="0" value="0" class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500"></div
                         <div><label class="block text-xs font-medium text-slate-600 mb-1">Comunicações</label><input type="number" name="qty_comunicacao" min="0" value="0" class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500"></div>
                     </div>
                 </div>
@@ -460,6 +487,41 @@
         </div>
     </div>
 
+    <div id="modal-deadline" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden">
+            <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+                <h3 class="text-xl font-bold text-slate-800">Cadastrar Controle de Prazo</h3>
+                <button onclick="closeModal('modal-deadline')" class="text-slate-400 hover:text-rose-500"><i data-lucide="x" class="w-6 h-6"></i></button>
+            </div>
+            <form id="form-deadline" class="p-6 grid grid-cols-2 gap-4">
+                <div class="col-span-1">
+                    <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Data Distribuição</label>
+                    <input type="date" name="dateDist" required class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <div class="col-span-1">
+                    <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Distribuidor</label>
+                    <input type="text" name="distributor" required class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <div class="col-span-1">
+                    <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Nº Processo</label>
+                    <input type="text" name="processNumber" required class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <div class="col-span-1">
+                    <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Unidade de Destino</label>
+                    <input type="text" name="destinationUnit" required class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <div class="col-span-2">
+                    <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Prazo (Dias Úteis)</label>
+                    <input type="number" name="daysLimit" required min="0" class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <div class="col-span-2 flex justify-end gap-3 mt-4">
+                    <button type="button" onclick="closeModal('modal-deadline')" class="px-4 py-2 text-slate-500 font-medium hover:text-slate-700">Cancelar</button>
+                    <button type="submit" class="px-6 py-2 bg-indigo-600 text-white rounded-lg font-bold shadow-lg hover:bg-indigo-700 transition-all">Calcular e Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { 
@@ -481,7 +543,7 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        let state = { users: [], servants: [], processes: [], actions: [], audit: [] };
+        let state = { users: [], servants: [], processes: [], actions: [], audit: [], deadlines: [] };
         let currentUser = null;
 
         const DateEngine = {
@@ -530,6 +592,10 @@
                 renderActions();
                 renderDashboard();
             });
+            onSnapshot(collection(db, "deadlines"), (snapshot) => {
+                state.deadlines = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderDeadlines();
+            });
             onSnapshot(query(collection(db, "audit"), orderBy("timestamp", "desc")), (snapshot) => {
                 state.audit = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 renderAudit();
@@ -566,11 +632,21 @@
             });
             document.querySelectorAll('.page-content').forEach(page => page.classList.add('hidden'));
             document.getElementById(`page-${pageId}`).classList.remove('hidden');
-            const titles = { dashboard: 'Dashboard Gerencial', servants: 'Gestão de Servidores', processes: 'Controle de Processos', actions: 'Ações Operacionais', reports: 'Relatórios', audit: 'Auditoria', users: 'Usuários do Sistema' };
+            const titles = { 
+                dashboard: 'Dashboard Gerencial', 
+                servants: 'Gestão de Servidores', 
+                processes: 'Controle de Processos', 
+                deadlines: 'Controle de Prazos',
+                actions: 'Ações Operacionais', 
+                reports: 'Relatórios', 
+                audit: 'Auditoria', 
+                users: 'Usuários do Sistema' 
+            };
             document.getElementById('page-title').innerText = titles[pageId] || 'Sistema';
             if(pageId === 'dashboard') renderDashboard();
             if(pageId === 'servants') renderServants();
             if(pageId === 'processes') renderProcesses();
+            if(pageId === 'deadlines') renderDeadlines();
             if(pageId === 'actions') renderActions();
             if(pageId === 'audit') renderAudit();
             if(pageId === 'users') renderUsers();
@@ -621,23 +697,18 @@
         function renderProcesses() {
             const body = document.getElementById('processes-body');
             if(!body) return;
-
-            // ORDENAÇÃO DECRESCENTE: 1º Data, 2º Hora Cadastro
             const sortedProcesses = [...state.processes].sort((a, b) => {
                 if (a.deadline < b.deadline) return 1;
                 if (a.deadline > b.deadline) return -1;
-
                 const timeA = a.createdAt ? a.createdAt.seconds : 0;
                 const timeB = b.createdAt ? b.createdAt.seconds : 0;
                 return timeB - timeA;
             });
-
             body.innerHTML = sortedProcesses.map(p => {
                 const servant = state.servants.find(s => s.id == p.servantId);
                 const registrationTime = (p.createdAt && p.createdAt.seconds) 
                     ? new Date(p.createdAt.seconds * 1000).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) 
                     : '---';
-
                 return `<tr class="hover:bg-slate-50 transition-colors">
                     <td class="px-6 py-4 font-bold text-indigo-600">${p.number}</td>
                     <td class="px-6 py-4">${p.type}</td>
@@ -996,9 +1067,7 @@
             e.preventDefault();
             const formData = new FormData(e.target);
             const proc = Object.fromEntries(formData);
-            
             proc.createdAt = serverTimestamp();
-            
             const procRef = await addDoc(collection(db, "processes"), proc);
             const actionTypes = {
                 qty_oficio: 'Ofício',
@@ -1037,6 +1106,75 @@
             logAction('Ação Registrada', `Ação ${action.type} lançada para o processo ${action.processId}`);
         });
 
+        // --- Lógica de Controle de Prazos ---
+        function calculateBusinessDays(startDateStr, days) {
+            let date = new Date(startDateStr + 'T00:00:00');
+            let count = 0;
+            while (count < days) {
+                date.setDate(date.getDate() + 1);
+                if (date.getDay() !== 0 && date.getDay() !== 6) {
+                    count++;
+                }
+            }
+            return date.toISOString().split('T')[0];
+        }
+
+        function getDeadlineColor(dueDateStr) {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const due = new Date(dueDateStr + 'T00:00:00');
+            const diffTime = due - today;
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            if (diffDays <= 2) return 'bg-red-100 text-red-700 font-bold'; 
+            if (diffDays <= 5) return 'bg-orange-100 text-orange-700 font-bold';
+            return 'bg-yellow-100 text-yellow-700'; 
+        }
+
+        window.renderDeadlines = function() {
+            const body = document.getElementById('deadlines-body');
+            if(!body) return;
+            body.innerHTML = state.deadlines.map(d => {
+                const colorClass = getDeadlineColor(d.dueDate);
+                return `
+                    <tr class="hover:bg-slate-50 transition-colors">
+                        <td class="px-6 py-4">${d.dateDist.split('-').reverse().join('/')}</td>
+                        <td class="px-6 py-4">${d.distributor}</td>
+                        <td class="px-6 py-4 font-medium">${d.processNumber}</td>
+                        <td class="px-6 py-4">${d.destinationUnit}</td>
+                        <td class="px-6 py-4 text-center">${d.daysLimit}</td>
+                        <td class="px-6 py-4 text-center">
+                            <span class="px-3 py-1 rounded-full text-xs ${colorClass}">
+                                ${d.dueDate.split('-').reverse().join('/')}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 text-center">
+                            ${checkPermission('delete') ? `<button onclick="deleteItem('deadlines', '${d.id}')" class="text-rose-500 hover:text-rose-700 p-2"><i data-lucide="trash-2" class="w-4 h-4"></i></button>` : '---'}
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+            lucide.createIcons();
+        }
+
+        document.getElementById('form-deadline').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData);
+            const calculatedDate = calculateBusinessDays(data.dateDist, parseInt(data.daysLimit));
+            const deadlineObj = {
+                dateDist: data.dateDist,
+                distributor: data.distributor,
+                processNumber: data.processNumber,
+                destinationUnit: data.destinationUnit,
+                daysLimit: data.daysLimit,
+                dueDate: calculatedDate
+            };
+            await addDoc(collection(db, "deadlines"), deadlineObj);
+            closeModal('modal-deadline');
+            e.target.reset();
+            logAction('Prazo Cadastrado', `Processo ${data.processNumber} com vencimento em ${calculatedDate}`);
+        });
+
         document.getElementById('login-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const userInp = document.getElementById('username').value;
@@ -1065,5 +1203,6 @@
         setupRealtimeListeners();
         lucide.createIcons();
     </script>
-</body
+</body>
 </html>
+
