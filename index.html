@@ -64,11 +64,11 @@
             </div>
             <nav class="flex-1 px-4 space-y-2 mt-4">
                 <a href="#" onclick="showPage('dashboard')" class="nav-link active" data-page="dashboard"><i data-lucide="grid" class="w-5 h-5"></i> <span>Dashboard</span></a>
-                <a href="#" onclick="showPage('users')" class="nav-link" data-page="users"><i data-lucide="user-cog" class="w-5 h-5"></i> <span>Usuários</span></a>
+                <a href="#" onclick="showPage('users')" class="nav-link" data-page="users"><i data-lucide="user-cog" class="w-5 h-5"></i> <span>Usuários do Sistema</span></a>
                 <a href="#" onclick="showPage('servants')" class="nav-link" data-page="servants"><i data-lucide="users" class="w-5 h-5"></i> <span>Servidores</span></a>
                 <a href="#" onclick="showPage('processes')" class="nav-link" data-page="processes"><i data-lucide="file-text" class="w-5 h-5"></i> <span>Processos</span></a>
-                <a href="#" onclick="showPage('deadlines')" class="nav-link" data-page="deadlines"><i data-lucide="clock" class="w-5 h-5"></i> <span>Prazos</span></a>
-                <a href="#" onclick="showPage('actions')" class="nav-link" data-page="actions"><i data-lucide="activity" class="w-5 h-5"></i> <span>Ações</span></a>
+                <a href="#" onclick="showPage('deadlines')" class="nav-link" data-page="deadlines"><i data-lucide="clock" class="w-5 h-5"></i> <span>Controle de Prazos</span></a>
+                <a href="#" onclick="showPage('actions')" class="nav-link" data-page="actions"><i data-lucide="activity" class="w-5 h-5"></i> <span>Ações/Tarefas</span></a>
                 <a href="#" onclick="showPage('reports')" class="nav-link" data-page="reports"><i data-lucide="bar-chart-3" class="w-5 h-5"></i> <span>Relatórios</span></a>
                 <a href="#" onclick="showPage('audit')" class="nav-link" data-page="audit"><i data-lucide="history" class="w-5 h-5"></i> <span>Auditoria</span></a>
             </nav>
@@ -99,44 +99,66 @@
                         <div class="kpi-card bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
                             <div class="flex justify-between items-start">
                                 <div>
-                                    <p class="text-slate-500 text-sm font-medium">Processos Hoje</p>
+                                    <p class="text-slate-500 text-sm font-medium">Processos Distribuídos Hoje</p>
                                     <h3 class="text-3xl font-bold mt-1" id="kpi-total-proc">0</h3>
                                 </div>
                                 <div class="p-3 bg-blue-100 text-blue-600 rounded-lg"><i data-lucide="folder" class="w-6 h-6"></i></div>
                             </div>
                         </div>
                     </div>
+
                     <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 mb-8">
-                        <h4 class="text-lg font-bold mb-6 flex items-center gap-2"><i data-lucide="bar-chart" class="w-5 h-5 text-indigo-600"></i> Produtividade Individual (Mês)</h4>
+                        <h4 class="text-lg font-bold mb-6 flex items-center gap-2"><i data-lucide="bar-chart" class="w-5 h-5 text-indigo-600"></i> Produtividade Individual (Mês Atual)</h4>
                         <div class="relative h-[400px]"><canvas id="chart-distribution"></canvas></div>
                     </div>
+
                     <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 mb-8">
-                        <h4 class="text-lg font-bold mb-6 flex items-center gap-2"><i data-lucide="line-chart" class="w-5 h-5 text-indigo-600"></i> Fluxo de Prazos (Mês)</h4>
+                        <h4 class="text-lg font-bold mb-6 flex items-center gap-2"><i data-lucide="line-chart" class="w-5 h-5 text-indigo-600"></i> Processos por Prazo (Mês)</h4>
                         <div class="relative h-[200px]"><canvas id="chart-productivity"></canvas></div>
                     </div>
+
                     <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden mb-8">
                         <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
-                            <h4 class="text-lg font-bold">Ranking Mensal</h4>
+                            <h4 class="text-lg font-bold">Ranking de Produtividade (Mês Atual)</h4>
                             <button onclick="showPage('servants')" class="text-indigo-600 text-sm font-medium hover:underline">Ver todos</button>
                         </div>
                         <div class="overflow-x-auto">
                             <table class="w-full text-left">
                                 <thead class="bg-slate-50 text-slate-500 text-xs uppercase">
-                                    <tr><th class="px-6 py-4">Servidor</th><th class="px-6 py-4 text-center bg-indigo-50 text-indigo-700">Total</th><th class="px-6 py-4 text-center">Ofíc.</th><th class="px-6 py-4 text-center">Circ.</th><th class="px-6 py-4 text-center">Email</th><th class="px-6 py-4 text-center">Tras.</th><th class="px-6 py-4 text-center">Dil.</th><th class="px-6 py-4 text-center">Comu.</th></tr>
+                                    <tr>
+                                        <th class="px-6 py-4 font-semibold">Servidor</th>
+                                        <th class="px-6 py-4 font-semibold text-center bg-indigo-50 text-indigo-700">Total</th>
+                                        <th class="px-6 py-4 font-semibold text-center">Ofícios</th>
+                                        <th class="px-6 py-4 font-semibold text-center">Circulares</th>
+                                        <th class="px-6 py-4 font-semibold text-center">E-mails</th>
+                                        <th class="px-6 py-4 font-semibold text-center">Traslados</th>
+                                        <th class="px-6 py-4 font-semibold text-center">Diligências</th>
+                                        <th class="px-6 py-4 font-semibold text-center">Comun.</th>
+                                    </tr>
                                 </thead>
                                 <tbody id="ranking-body" class="divide-y divide-slate-100"></tbody>
                             </table>
                         </div>
                     </div>
+
                     <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
                         <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-indigo-50/30">
-                            <h4 class="text-lg font-bold text-indigo-900">Produtividade Hoje</h4>
-                            <span class="px-3 py-1 bg-indigo-100 text-indigo-600 text-xs font-bold rounded-full">Real-time</span>
+                            <h4 class="text-lg font-bold text-indigo-900">Ranking de Produtividade Hoje</h4>
+                            <span class="px-3 py-1 bg-indigo-100 text-indigo-600 text-xs font-bold rounded-full">Tempo Real</span>
                         </div>
                         <div class="overflow-x-auto">
                             <table class="w-full text-left">
                                 <thead class="bg-slate-50 text-slate-500 text-xs uppercase">
-                                    <tr><th class="px-6 py-4">Servidor</th><th class="px-6 py-4 text-center bg-indigo-100 text-indigo-700">Total Hoje</th><th class="px-6 py-4 text-center">Ofíc.</th><th class="px-6 py-4 text-center">Circ.</th><th class="px-6 py-4 text-center">Email</th><th class="px-6 py-4 text-center">Tras.</th><th class="px-6 py-4 text-center">Dil.</th><th class="px-6 py-4 text-center">Comu.</th></tr>
+                                    <tr>
+                                        <th class="px-6 py-4 font-semibold">Servidor</th>
+                                        <th class="px-6 py-4 font-semibold text-center bg-indigo-100 text-indigo-700">Total Hoje</th>
+                                        <th class="px-6 py-4 font-semibold text-center">Ofícios</th>
+                                        <th class="px-6 py-4 font-semibold text-center">Circulares</th>
+                                        <th class="px-6 py-4 font-semibold text-center">E-mails</th>
+                                        <th class="px-6 py-4 font-semibold text-center">Traslados</th>
+                                        <th class="px-6 py-4 font-semibold text-center">Diligências</th>
+                                        <th class="px-6 py-4 font-semibold text-center">Comun.</th>
+                                    </tr>
                                 </thead>
                                 <tbody id="ranking-today-body" class="divide-y divide-slate-100"></tbody>
                             </table>
@@ -147,12 +169,21 @@
                 <!-- USUÁRIOS -->
                 <section id="page-users" class="page-content hidden">
                     <div class="flex justify-between items-center mb-6">
-                        <h3 class="text-xl font-bold text-slate-700">Acessos ao Sistema</h3>
-                        <button onclick="openModal('modal-user')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-all shadow-md"><i data-lucide="user-plus" class="w-4 h-4"></i> Novo Usuário</button>
+                        <h3 class="text-xl font-bold text-slate-700">Gestão de Acessos ao Sistema</h3>
+                        <button id="btn-new-user" onclick="openModal('modal-user')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-all shadow-md">
+                            <i data-lucide="user-plus" class="w-4 h-4"></i> Novo Usuário
+                        </button>
                     </div>
                     <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
                         <table class="w-full text-left">
-                            <thead class="bg-slate-50 text-slate-500 text-xs uppercase"><tr><th class="px-6 py-4">Nome</th><th class="px-6 py-4">Login</th><th class="px-6 py-4">Nível</th><th class="px-6 py-4 text-center">Ações</th></tr></thead>
+                            <thead class="bg-slate-50 text-slate-500 text-xs uppercase">
+                                <tr>
+                                    <th class="px-6 py-4">Nome</th>
+                                    <th class="px-6 py-4">Login/E-mail</th>
+                                    <th class="px-6 py-4">Nível de Acesso</th>
+                                    <th class="px-6 py-4 text-center">Ações</th>
+                                </tr>
+                            </thead>
                             <tbody id="users-body" class="divide-y divide-slate-100"></tbody>
                         </table>
                     </div>
@@ -165,7 +196,7 @@
                             <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400"></i>
                             <input type="text" oninput="filterTable('servants-table', this.value)" placeholder="Buscar servidor..." class="w-full pl-10 pr-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500">
                         </div>
-                        <button onclick="openModal('modal-servant')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-all shadow-md"><i data-lucide="plus" class="w-4 h-4"></i> Novo Servidor</button>
+                        <button id="btn-new-servant" onclick="openModal('modal-servant')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-all shadow-md"><i data-lucide="plus" class="w-4 h-4"></i> Novo Servidor</button>
                     </div>
                     <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
                         <table id="servants-table" class="w-full text-left">
@@ -182,27 +213,47 @@
                             <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400"></i>
                             <input type="text" oninput="filterTable('processes-table', this.value)" placeholder="Buscar processo..." class="w-full pl-10 pr-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500">
                         </div>
-                        <button onclick="openModal('modal-process')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-all shadow-md"><i data-lucide="plus" class="w-4 h-4"></i> Novo Processo</button>
+                        <button id="btn-new-process" onclick="openModal('modal-process')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-all shadow-md"><i data-lucide="plus" class="w-4 h-4"></i> Novo Processo</button>
                     </div>
-                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                                        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
                         <table id="processes-table" class="w-full text-left">
                             <thead class="bg-slate-50 text-slate-500 text-xs uppercase">
-                                <tr><th class="px-6 py-4">Nº Processo</th><th class="px-6 py-4">Tipo</th><th class="px-6 py-4">Servidor</th><th class="px-6 py-4">Prazo</th><th class="px-6 py-4">Prioridade</th><th class="px-6 py-4">Planejado</th><th class="px-6 py-4 text-center">Ações</th></tr>
+                                <tr>
+                                    <th class="px-6 py-4">Nº Processo</th>
+                                    <th class="px-6 py-4">Tipo</th>
+                                    <th class="px-6 py-4">Servidor</th>
+                                    <th class="px-6 py-4">Data</th>
+                                    <th class="px-6 py-4">Hora Cadastro</th>
+                                    <th class="px-6 py-4">Status</th>
+                                    <th class="px-6 py-4 text-center">Ações</th>
+                                </tr>
                             </thead>
                             <tbody id="processes-body" class="divide-y divide-slate-100"></tbody>
                         </table>
                     </div>
                 </section>
 
-                <!-- PRAZOS -->
+                <!-- CONTROLE DE PRAZOS -->
                 <section id="page-deadlines" class="page-content hidden">
                     <div class="flex justify-between items-center mb-6">
-                        <h3 class="text-xl font-bold text-slate-700">Controle de Vencimentos</h3>
-                        <button onclick="openModal('modal-deadline')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-all shadow-md"><i data-lucide="calendar-plus" class="w-4 h-4"></i> Novo Prazo</button>
+                        <h3 class="text-xl font-bold text-slate-700">Controle de Prazos de Processos</h3>
+                        <button onclick="openModal('modal-deadline')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-all shadow-md">
+                            <i data-lucide="calendar-plus" class="w-4 h-4"></i> Cadastrar Prazo
+                        </button>
                     </div>
                     <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
                         <table class="w-full text-left">
-                            <thead class="bg-slate-50 text-slate-500 text-xs uppercase"><tr><th class="px-6 py-4">Distribuído</th><th class="px-6 py-4">Distribuidor</th><th class="px-6 py-4">Processo</th><th class="px-6 py-4">Destino</th><th class="px-6 py-4 text-center">Dias</th><th class="px-6 py-4 text-center">Vencimento</th><th class="px-6 py-4 text-center">Ações</th></tr></thead>
+                            <thead class="bg-slate-50 text-slate-500 text-xs uppercase">
+                                <tr>
+                                    <th class="px-6 py-4">Data Distribuição</th>
+                                    <th class="px-6 py-4">Distribuidor</th>
+                                    <th class="px-6 py-4">Nº Processo</th>
+                                    <th class="px-6 py-4">Unidade de Destino</th>
+                                    <th class="px-6 py-4 text-center">Prazo (Dias)</th>
+                                    <th class="px-6 py-4 text-center">Vencimento</th>
+                                    <th class="px-6 py-4 text-center">Ações</th>
+                                </tr>
+                            </thead>
                             <tbody id="deadlines-body" class="divide-y divide-slate-100"></tbody>
                         </table>
                     </div>
@@ -211,8 +262,8 @@
                 <!-- AÇÕES -->
                 <section id="page-actions" class="page-content hidden">
                     <div class="flex justify-between items-center mb-6">
-                        <h3 class="text-xl font-bold text-slate-700">Ações Operacionais</h3>
-                        <button onclick="openModal('modal-action')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-all shadow-md"><i data-lucide="plus" class="w-4 h-4"></i> Registrar Ação</button>
+                        <h3 class="text-xl font-bold text-slate-700">Controle de Ações Operacionais</h3>
+                        <button id="btn-new-action" onclick="openModal('modal-action')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-all shadow-md"><i data-lucide="plus" class="w-4 h-4"></i> Registrar Ação Extra</button>
                     </div>
                     <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
                         <table id="actions-table" class="w-full text-left">
@@ -225,47 +276,49 @@
                 <!-- RELATÓRIOS -->
                 <section id="page-reports" class="page-content hidden">
                     <div class="flex gap-2 mb-6 p-1 bg-slate-200 rounded-xl w-fit">
-                        <button onclick="switchReportTab('tables')" id="tab-tables" class="px-6 py-2 rounded-lg font-bold transition-all bg-white text-indigo-600 shadow-sm">Docs</button>
-                        <button onclick="switchReportTab('daily')" id="tab-daily" class="px-6 py-2 rounded-lg font-bold transition-all text-slate-600 hover:bg-slate-100">Diário</button>
-                        <button onclick="switchReportTab('charts')" id="tab-charts" class="px-6 py-2 rounded-lg font-bold transition-all text-slate-600 hover:bg-slate-100">Gráficos</button>
+                        <button onclick="switchReportTab('tables')" id="tab-tables" class="px-6 py-2 rounded-lg font-bold transition-all bg-white text-indigo-600 shadow-sm">Tabelas & Docs</button>
+                        <button onclick="switchReportTab('daily')" id="tab-daily" class="px-6 py-2 rounded-lg font-bold transition-all text-slate-600 hover:bg-slate-100">Análise Diária</button>
+                        <button onclick="switchReportTab('charts')" id="tab-charts" class="px-6 py-2 rounded-lg font-bold transition-all text-slate-600 hover:bg-slate-100">Gráficos Analíticos</button>
                     </div>
                     <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 mb-8">
-                        <h4 class="text-lg font-bold mb-4 flex items-center gap-2"><i data-lucide="calendar-days" class="w-5 h-5 text-indigo-600"></i> Período do Relatório</h4>
+                        <h4 class="text-lg font-bold mb-4 flex items-center gap-2"><i data-lucide="calendar-days" class="w-5 h-5 text-indigo-600"></i> Filtrar Período do Relatório</h4>
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-end">
-                            <div><label class="block text-xs font-bold uppercase text-slate-500 mb-1">Início</label><input type="date" id="report-start-date" onchange="updateAnalyticalReport()" class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500"></div>
-                            <div><label class="block text-xs font-bold uppercase text-slate-500 mb-1">Fim</label><input type="date" id="report-end-date" onchange="updateAnalyticalReport()" class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500"></div>
-                            <div class="text-slate-400 text-sm italic pb-2">Defina as datas para gerar as tabelas.</div>
+                            <div><label class="block text-xs font-bold uppercase text-slate-500 mb-1">Data Início</label><input type="date" id="report-start-date" onchange="updateAnalyticalReport()" class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500"></div>
+                            <div><label class="block text-xs font-bold uppercase text-slate-500 mb-1">Data Fim</label><input type="date" id="report-end-date" onchange="updateAnalyticalReport()" class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500"></div>
+                            <div class="text-slate-400 text-sm italic pb-2"> * Defina o período para atualizar as tabelas.</div>
                         </div>
                     </div>
                     <div id="report-tab-tables" class="report-tab-content">
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                             <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 text-center">
                                 <div class="w-12 h-12 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4"><i data-lucide="file-text" class="w-6 h-6"></i></div>
-                                <h4 class="font-bold mb-2">PDF Produtividade</h4>
+                                <h4 class="font-bold mb-2">Relatório Produtividade (PDF)</h4>
                                 <button onclick="exportData('pdf')" class="w-full py-2 px-4 bg-indigo-600 text-white rounded-lg transition-all font-medium hover:bg-indigo-700">Download PDF</button>
                             </div>
                             <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 text-center">
                                 <div class="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4"><i data-lucide="table" class="w-6 h-6"></i></div>
-                                <h4 class="font-bold mb-2">Excel Produtividade</h4>
+                                <h4 class="font-bold mb-2">Relatório Produtividade (Excel)</h4>
                                 <button onclick="exportData('excel')" class="w-full py-2 px-4 bg-emerald-600 text-white rounded-lg transition-all font-medium hover:bg-emerald-700">Download Excel</button>
                             </div>
                             <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 text-center">
                                 <div class="w-12 h-12 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mx-auto mb-4"><i data-lucide="printer" class="w-6 h-6"></i></div>
-                                <h4 class="font-bold mb-2">Imprimir</h4>
+                                <h4 class="font-bold mb-2">Impressão Geral</h4>
                                 <button onclick="window.print()" class="w-full py-2 px-4 bg-amber-600 text-white rounded-lg transition-all font-medium hover:bg-amber-700">Imprimir Agora</button>
                             </div>
                         </div>
                     </div>
                     <div id="report-tab-daily" class="report-tab-content hidden">
                         <div id="daily-reports-container" class="space-y-12">
-                            <div class="text-center py-10 text-slate-400">Selecione o período acima.</div>
+                            <div class="text-center py-10 text-slate-400">Selecione o período acima para gerar as tabelas diárias.</div>
                         </div>
                     </div>
                     <div id="report-tab-charts" class="report-tab-content hidden">
                         <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
                             <div class="flex justify-between items-center mb-6">
-                                <h4 class="text-lg font-bold flex items-center gap-2"><i data-lucide="pie-chart" class="w-5 h-5 text-indigo-600"></i> Distribuição de Ações</h4>
-                                <button onclick="renderReportChart()" class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-indigo-700 transition-all flex items-center gap-2"><i data-lucide="refresh-cw" class="w-4 h-4"></i> Atualizar</button>
+                                <h4 class="text-lg font-bold flex items-center gap-2"><i data-lucide="pie-chart" class="w-5 h-5 text-indigo-600"></i> Distribuição de Ações no Período</h4>
+                                <button onclick="renderReportChart()" class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-indigo-700 transition-all flex items-center gap-2">
+                                    <i data-lucide="refresh-cw" class="w-4 h-4"></i> Atualizar
+                                </button>
                             </div>
                             <div class="relative h-[500px]"><canvas id="chart-report-servants"></canvas></div>
                         </div>
@@ -275,7 +328,7 @@
                 <!-- AUDITORIA -->
                 <section id="page-audit" class="page-content hidden">
                     <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-                        <div class="p-6 border-b border-slate-100"><h4 class="text-lg font-bold">Log de Atividades</h4></div>
+                        <div class="p-6 border-b border-slate-100"><h4 class="text-lg font-bold">Log de Atividades do Sistema</h4></div>
                         <table class="w-full text-left">
                             <thead class="bg-slate-50 text-slate-500 text-xs uppercase"><tr><th class="px-6 py-4">Data/Hora</th><th class="px-6 py-4">Usuário</th><th class="px-6 py-4">Ação</th><th class="px-6 py-4">Detalhes</th></tr></thead>
                             <tbody id="audit-body" class="divide-y divide-slate-100 text-sm"></tbody>
@@ -285,11 +338,12 @@
             </div>
         </main>
     </div>
+
     <!-- MODAIS -->
     <div id="modal-user" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
         <div class="bg-white w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden">
             <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50">
-                <h3 class="text-xl font-bold text-slate-800">Cadastrar Usuário</h3>
+                <h3 class="text-xl font-bold text-slate-800">Cadastrar Usuário do Sistema</h3>
                 <button onclick="closeModal('modal-user')" class="text-slate-400 hover:text-rose-500"><i data-lucide="x" class="w-6 h-6"></i></button>
             </div>
             <form id="form-user" class="p-6 grid grid-cols-2 gap-4">
@@ -308,14 +362,14 @@
                 <div class="col-span-2">
                     <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Nível de Acesso</label>
                     <select name="role" class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500">
-                        <option value="Admin">Administrador</option>
-                        <option value="Servidor">Servidor</option>
-                        <option value="Visualizador">Visualizador</option>
+                        <option value="Admin">Administrador (Acesso Total)</option>
+                        <option value="Servidor">Servidor (Acesso Limitado)</option>
+                        <option value="Visualizador">Visualizador (Apenas Leitura)</option>
                     </select>
                 </div>
                 <div class="col-span-2 flex justify-end gap-3 mt-4">
                     <button type="button" onclick="closeModal('modal-user')" class="px-4 py-2 text-slate-500 font-medium hover:text-slate-700">Cancelar</button>
-                    <button type="submit" class="px-6 py-2 bg-indigo-600 text-white rounded-lg font-bold shadow-lg hover:bg-indigo-700 transition-all">Salvar</button>
+                    <button type="submit" class="px-6 py-2 bg-indigo-600 text-white rounded-lg font-bold shadow-lg hover:bg-indigo-700 transition-all">Salvar Usuário</button>
                 </div>
             </form>
         </div>
@@ -350,12 +404,12 @@
                 </div>
                 <div class="col-span-2 flex justify-end gap-3 mt-4">
                     <button type="button" onclick="closeModal('modal-servant')" class="px-4 py-2 text-slate-500 font-medium hover:text-slate-700">Cancelar</button>
-                    <button type="submit" class="px-6 py-2 bg-indigo-600 text-white rounded-lg font-bold shadow-lg hover:bg-indigo-700 transition-all">Salvar</button>
+                    <button type="submit" class="px-6 py-2 bg-indigo-600 text-white rounded-lg font-bold shadow-lg hover:bg-indigo-700 transition-all">Salvar Servidor</button>
                 </div>
             </form>
         </div>
     </div>
-
+        
     <div id="modal-process" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
         <div class="bg-white w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden">
             <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50">
@@ -365,32 +419,78 @@
             <form id="form-process" class="p-6 overflow-y-auto max-h-[85vh]">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                     <div class="space-y-4">
-                        <h4 class="font-bold text-indigo-600 flex items-center gap-2 mb-2"><i data-lucide="file-text" class="w-4 h-4"></i> Dados</h4>
-                        <div><label class="block text-xs font-bold uppercase text-slate-500 mb-1">Nº Processo</label><input type="text" name="number" required class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500"></div>
-                        <div><label class="block text-xs font-bold uppercase text-slate-500 mb-1">Tipo</label><select name="type" class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500"><option>Administrativo</option><option>Judicial</option><option>Disciplinar</option><option>Outros</option></select></div>
-                        <div><label class="block text-xs font-bold uppercase text-slate-500 mb-1">Prazo</label><input type="date" name="deadline" required class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500"></div>
-                        <div><label class="block text-xs font-bold uppercase text-slate-500 mb-1">Prioridade</label><select name="priority" class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500"><option value="Baixa">Baixa</option><option value="Média" selected>Média</option><option value="Alta">Alta</option><option value="Urgente">Urgente</option></select></div>
+                        <h4 class="font-bold text-indigo-600 flex items-center gap-2 mb-2"><i data-lucide="file-text" class="w-4 h-4"></i> Dados do Processo</h4>
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Nº Processo</label>
+                            <input type="text" name="number" required class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Tipo</label>
+                            <select name="type" class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500">
+                                <option>Administrativo</option>
+                                <option>Judicial</option>
+                                <option>Disciplinar</option>
+                                <option>Outros</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Data (Prazo)</label>
+                            <input type="date" name="deadline" required class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Prioridade</label>
+                            <select name="priority" class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500">
+                                <option value="Baixa">Baixa</option>
+                                <option value="Média" selected>Média</option>
+                                <option value="Alta">Alta</option>
+                                <option value="Urgente">Urgente</option>
+                            </select>
+                        </div>
                     </div>
                     <div class="space-y-4">
                         <h4 class="font-bold text-indigo-600 flex items-center gap-2 mb-2"><i data-lucide="user" class="w-4 h-4"></i> Responsável</h4>
-                        <div><label class="block text-xs font-bold uppercase text-slate-500 mb-1">Servidor</label><select id="select-servant-process" name="servantId" required class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500"></select></div>
-                        <div><label class="block text-xs font-bold uppercase text-slate-500 mb-1">Observações</label><textarea name="obs" class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500" rows="4"></textarea></div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Servidor Designado</label>
+                            <select id="select-servant-process" name="servantId" required class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500"></select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Observações Gerais</label>
+                            <textarea name="obs" class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500" rows="4"></textarea>
+                        </div>
                     </div>
                 </div>
                 <div class="border-t border-slate-200 pt-6">
-                    <h4 class="font-bold text-indigo-600 flex items-center gap-2 mb-4"><i data-lucide="list-checks" class="w-4 h-4"></i> Planejamento de Quantidades</h4>
+                    <h4 class="font-bold text-indigo-600 flex items-center gap-2 mb-4"><i data-lucide="list-checks" class="w-4 h-4"></i> Planejamento de Ações (Quantidade)</h4>
                     <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
-                        <div><label class="block text-xs font-medium text-slate-600 mb-1">Ofícios</label><input type="number" name="qty_oficio" min="0" value="0" class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500"></div>
-                        <div><label class="block text-xs font-medium text-slate-600 mb-1">Circulares</label><input type="number" name="qty_oficio_circular" min="0" value="0" class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500"></div>
-                        <div><label class="block text-xs font-medium text-slate-600 mb-1">E-mails</label><input type="number" name="qty_email" min="0" value="0" class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500"></div>
-                        <div><label class="block text-xs font-medium text-slate-600 mb-1">Traslados</label><input type="number" name="qty_traslado" min="0" value="0" class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500"></div>
-                        <div><label class="block text-xs font-medium text-slate-600 mb-1">Diligências</label><input type="number" name="qty_diligencia" min="0" value="0" class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500"></div>
-                        <div><label class="block text-xs font-medium text-slate-600 mb-1">Comunicações</label><input type="number" name="qty_comunicacao" min="0" value="0" class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500"></div>
+                        <div>
+                            <label class="block text-xs font-medium text-slate-600 mb-1">Ofícios</label>
+                            <input type="number" name="qty_oficio" min="0" value="0" class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-slate-600 mb-1">Ofício Circular</label>
+                            <input type="number" name="qty_oficio_circular" min="0" value="0" class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-slate-600 mb-1">E-mails</label>
+                            <input type="number" name="qty_email" min="0" value="0" class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-slate-600 mb-1">Traslados</label>
+                            <input type="number" name="qty_traslado" min="0" value="0" class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-slate-600 mb-1">Diligências</label>
+                            <input type="number" name="qty_diligencia" min="0" value="0" class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-slate-600 mb-1">Comunicações</label>
+                            <input type="number" name="qty_comunicacao" min="0" value="0" class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500">
+                        </div>
                     </div>
-                    <div class="flex justify-end gap-3 mt-8">
-                        <button type="button" onclick="closeModal('modal-process')" class="px-4 py-2 text-slate-500 font-medium hover:text-slate-700">Cancelar</button>
-                        <button type="submit" class="px-6 py-2 bg-indigo-600 text-white rounded-lg font-bold shadow-lg hover:bg-indigo-700 transition-all">Lançar Processo</button>
-                    </div>
+                </div>
+                <div class="flex justify-end gap-3 mt-8">
+                    <button type="button" onclick="closeModal('modal-process')" class="px-4 py-2 text-slate-500 font-medium hover:text-slate-700">Cancelar</button>
+                    <button type="submit" class="px-6 py-2 bg-indigo-600 text-white rounded-lg font-bold shadow-lg hover:bg-indigo-700 transition-all">Cadastrar Processo e Ações</button>
                 </div>
             </form>
         </div>
@@ -399,19 +499,35 @@
     <div id="modal-action" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
         <div class="bg-white w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden">
             <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50">
-                <h3 class="text-xl font-bold text-slate-800">Registrar Ação</h3>
+                <h3 class="text-xl font-bold text-slate-800">Registrar Ação Operacional</h3>
                 <button onclick="closeModal('modal-action')" class="text-slate-400 hover:text-rose-500"><i data-lucide="x" class="w-6 h-6"></i></button>
             </div>
-            <form id="form-action" class="p-6 space-y-4">
-                <div><label class="block text-xs font-bold uppercase text-slate-500 mb-1">Processo</label><select id="select-process-action" name="processId" required class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500"></select></div>
-                <div><label class="block text-xs font-bold uppercase text-slate-500 mb-1">Tipo de Ação</label><select name="type" class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500">
+            <form id="form-action" class="p-6 grid grid-cols-2 gap-4">
+                <div class="col-span-1">
+                    <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Processo</label>
+                    <select id="select-process-action" name="processId" class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500"></select>
+                </div>
+                <div class="col-span-1">
+                    <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Tipo de Ação</label>
+                    <select name="type" class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500">
                         <option>Ofício</option><option>Ofício Circular</option><option>E-mail</option><option>Traslado</option><option>Diligência</option><option>Comunicação</option>
-                    </select></div>
-                <div><label class="block text-xs font-bold uppercase text-slate-500 mb-1">Responsável</label><select id="select-servant-action" name="servantId" required class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500"></select></div>
-                <div><label class="block text-xs font-bold uppercase text-slate-500 mb-1">Data da Ação</label><input type="date" name="date" required class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500"></div>
-                <div class="flex justify-end gap-3 mt-4">
+                    </select>
+                </div>
+                <div class="col-span-1">
+                    <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Responsável</label>
+                    <select id="select-servant-action" name="servantId" class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500"></select>
+                </div>
+                <div class="col-span-1">
+                    <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Data</label>
+                    <input type="date" name="date" required class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <div class="col-span-2">
+                    <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Observações</label>
+                    <textarea name="obs" class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500" rows="2"></textarea>
+                </div>
+                <div class="col-span-2 flex justify-end gap-3 mt-4">
                     <button type="button" onclick="closeModal('modal-action')" class="px-4 py-2 text-slate-500 font-medium hover:text-slate-700">Cancelar</button>
-                    <button type="submit" class="px-6 py-2 bg-indigo-600 text-white rounded-lg font-bold shadow-lg hover:bg-indigo-700 transition-all">Registrar</button>
+                    <button type="submit" class="px-6 py-2 bg-indigo-600 text-white rounded-lg font-bold shadow-lg hover:bg-indigo-700 transition-all">Lançar Ação</button>
                 </div>
             </form>
         </div>
@@ -420,18 +536,31 @@
     <div id="modal-deadline" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
         <div class="bg-white w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden">
             <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50">
-                <h3 class="text-xl font-bold text-slate-800">Novo Prazo de Vencimento</h3>
+                <h3 class="text-xl font-bold text-slate-800">Cadastrar Controle de Prazo</h3>
                 <button onclick="closeModal('modal-deadline')" class="text-slate-400 hover:text-rose-500"><i data-lucide="x" class="w-6 h-6"></i></button>
             </div>
-            <form id="form-deadline" class="p-6 space-y-4">
-                <div class="grid grid-cols-2 gap-4">
-                    <div><label class="block text-xs font-bold uppercase text-slate-500 mb-1">Data Distribuição</label><input type="date" name="dateDist" required class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500"></div>
-                    <div><label class="block text-xs font-bold uppercase text-slate-500 mb-1">Distribuidor</label><input type="text" name="distributor" required class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500"></div>
+            <form id="form-deadline" class="p-6 grid grid-cols-2 gap-4">
+                <div class="col-span-1">
+                    <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Data Distribuição</label>
+                    <input type="date" name="dateDist" required class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500">
                 </div>
-                <div><label class="block text-xs font-bold uppercase text-slate-500 mb-1">Nº Processo</label><input type="text" name="processNumber" required class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500"></div>
-                <div><label class="block text-xs font-bold uppercase text-slate-500 mb-1">Unidade de Destino</label><input type="text" name="destinationUnit" required class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500"></div>
-                <div><label class="block text-xs font-bold uppercase text-slate-500 mb-1">Prazo Limite (Dias Úteis)</label><input type="number" name="daysLimit" required class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500"></div>
-                <div class="flex justify-end gap-3 mt-4">
+                <div class="col-span-1">
+                    <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Distribuidor</label>
+                    <input type="text" name="distributor" required class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <div class="col-span-1">
+                    <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Nº Processo</label>
+                    <input type="text" name="processNumber" required class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <div class="col-span-1">
+                    <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Unidade de Destino</label>
+                    <input type="text" name="destinationUnit" required class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <div class="col-span-2">
+                    <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Prazo (Dias Úteis)</label>
+                    <input type="number" name="daysLimit" required min="0" class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <div class="col-span-2 flex justify-end gap-3 mt-4">
                     <button type="button" onclick="closeModal('modal-deadline')" class="px-4 py-2 text-slate-500 font-medium hover:text-slate-700">Cancelar</button>
                     <button type="submit" class="px-6 py-2 bg-indigo-600 text-white rounded-lg font-bold shadow-lg hover:bg-indigo-700 transition-all">Calcular e Salvar</button>
                 </div>
@@ -464,302 +593,662 @@
         let currentUser = null;
 
         const DateEngine = {
-            getToday: () => new Date().toISOString().split('T')[0],
-            getMonth: () => new Date().toISOString().slice(0, 7),
-            normalize: (date) => date ? new Date(date).toISOString().split('T')[0] : "",
+            getToday: () => {
+                const now = new Date();
+                return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+            },
+            getMonth: () => {
+                const now = new Date();
+                return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+            },
+            normalize: (dateInput) => {
+                if (!dateInput) return "";
+                if (typeof dateInput === 'string' && dateInput.length === 10) return dateInput;
+                const d = new Date(dateInput);
+                if (isNaN(d.getTime())) return "";
+                return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+            },
             getDateOfMonth: (day) => {
                 const now = new Date();
                 const d = new Date(now.getFullYear(), now.getMonth(), day);
-                return d.toISOString().split('T')[0];
+                return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
             }
         };
 
         function setupRealtimeListeners() {
             const statusEl = document.getElementById('db-status');
-            onSnapshot(collection(db, "users"), (snap) => {
-                state.users = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            onSnapshot(collection(db, "users"), (snapshot) => {
+                state.users = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 statusEl.innerText = "Conectado ao Servidor";
                 statusEl.className = "mt-4 text-xs font-medium px-3 py-1 rounded-full bg-emerald-100 text-emerald-600 inline-block";
                 renderUsers();
             });
-            onSnapshot(collection(db, "servants"), (snap) => {
-                state.servants = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            onSnapshot(collection(db, "servants"), (snapshot) => {
+                state.servants = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 renderServants();
                 populateSelects();
             });
-            onSnapshot(collection(db, "processes"), (snap) => {
-                state.processes = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            onSnapshot(collection(db, "processes"), (snapshot) => {
+                state.processes = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 renderProcesses();
                 renderDashboard();
             });
-            onSnapshot(collection(db, "actions"), (snap) => {
-                state.actions = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            onSnapshot(collection(db, "actions"), (snapshot) => {
+                state.actions = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 renderActions();
                 renderDashboard();
             });
-            onSnapshot(collection(db, "deadlines"), (snap) => {
-                state.deadlines = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            onSnapshot(collection(db, "deadlines"), (snapshot) => {
+                state.deadlines = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 renderDeadlines();
             });
-            onSnapshot(query(collection(db, "audit"), orderBy("timestamp", "desc")), (snap) => {
-                state.audit = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            onSnapshot(query(collection(db, "audit"), orderBy("timestamp", "desc")), (snapshot) => {
+                state.audit = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 renderAudit();
             });
         }
 
         function checkPermission(action) {
             if (!currentUser) return false;
-            if (currentUser.role === 'Admin') return true;
-            if (currentUser.role === 'Servidor') {
-                return !['users', 'servants', 'delete'].includes(action);
+            const role = currentUser.role;
+            if (role === 'Admin') return true;
+            if (role === 'Servidor') {
+                const forbiddenPages = ['users', 'servants'];
+                if (forbiddenPages.includes(action)) return false;
+                if (action === 'delete') return false;
+                return true;
             }
-            return !['create', 'delete', 'users', 'servants'].includes(action);
+            if (role === 'Visualizador') {
+                const forbiddenActions = ['delete', 'create', 'users', 'servants'];
+                if (forbiddenActions.includes(action)) return false;
+                return true;
+            }
+            return false;
         }
 
         window.showPage = function(pageId) {
-            if (!currentUser) return;
-            if (!checkPermission(pageId)) return alert("Acesso Negado");
-            document.querySelectorAll('.nav-link').forEach(l => l.classList.toggle('active', l.dataset.page === pageId));
-            document.querySelectorAll('.page-content').forEach(p => p.classList.add('hidden'));
+            if (!currentUser) { alert("Sessão expirada."); logout(); return; }
+            if (!checkPermission(pageId)) {
+                alert("Você não possui permissão para acessar esta área.");
+                return;
+            }
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+                if(link.dataset.page === pageId) link.classList.add('active');
+            });
+            document.querySelectorAll('.page-content').forEach(page => page.classList.add('hidden'));
             document.getElementById(`page-${pageId}`).classList.remove('hidden');
-            const titles = { dashboard: 'Dashboard Gerencial', users: 'Gestão de Acessos', servants: 'Servidores', processes: 'Processos', deadlines: 'Prazos', actions: 'Ações', reports: 'Relatórios', audit: 'Auditoria' };
-            document.getElementById('page-title').innerText = titles[pageId];
+            const titles = { 
+                dashboard: 'Dashboard Gerencial', 
+                servants: 'Gestão de Servidores', 
+                processes: 'Controle de Processos', 
+                deadlines: 'Controle de Prazos',
+                actions: 'Ações Operacionais', 
+                reports: 'Relatórios', 
+                audit: 'Auditoria', 
+                users: 'Usuários do Sistema' 
+            };
+            document.getElementById('page-title').innerText = titles[pageId] || 'Sistema';
             if(pageId === 'dashboard') renderDashboard();
+            if(pageId === 'servants') renderServants();
+            if(pageId === 'processes') renderProcesses();
+            if(pageId === 'deadlines') renderDeadlines();
+            if(pageId === 'actions') renderActions();
+            if(pageId === 'audit') renderAudit();
+            if(pageId === 'users') renderUsers();
         }
 
-        window.openModal = function(id) { if(checkPermission('create')) document.getElementById(id).classList.remove('hidden'); else alert("Sem permissão"); }
-        window.closeModal = function(id) { document.getElementById(id).classList.add('hidden'); }
+        window.openModal = function(modalId) { 
+            if (!checkPermission('create')) {
+                alert("Seu nível de acesso não permite criar novos registros.");
+                return;
+            }
+            document.getElementById(modalId).classList.remove('hidden'); 
+            populateSelects(); 
+        }
+        window.closeModal = function(modalId) { document.getElementById(modalId).classList.add('hidden'); }
         window.toggleDarkMode = function() { document.body.classList.toggle('dark'); }
-        window.logout = function() { location.reload(); }
+        window.logout = function() {
+            currentUser = null;
+            document.getElementById('app-shell').classList.add('hidden');
+            document.getElementById('login-page').classList.remove('hidden');
+        }
 
         async function logAction(action, details) {
-            await addDoc(collection(db, "audit"), { timestamp: new Date().toLocaleString(), user: currentUser?.name || 'Sistema', action, details, createdAt: serverTimestamp() });
+            try {
+                await addDoc(collection(db, "audit"), {
+                    timestamp: new Date().toLocaleString(),
+                    user: currentUser ? currentUser.name : 'Sistema',
+                    action: action,
+                    details: details,
+                    createdAt: serverTimestamp()
+                });
+            } catch (e) { console.error("Erro log:", e); }
         }
 
         function renderUsers() {
-            document.getElementById('users-body').innerHTML = state.users.map(u => `<tr class="hover:bg-slate-50"><td class="px-6 py-4 font-medium">${u.name}</td><td class="px-6 py-4 text-slate-500">${u.username}</td><td class="px-6 py-4"><span class="badge ${u.role === 'Admin' ? 'badge-success' : 'badge-info'}">${u.role}</span></td><td class="px-6 py-4 text-center">${checkPermission('delete') ? `<button onclick="deleteItem('users', '${u.id}')" class="text-rose-500"><i data-lucide="trash-2" class="w-4 h-4"></i></button>` : '---'}</td></tr>`).join('');
+            const body = document.getElementById('users-body');
+            if(!body) return;
+            body.innerHTML = state.users.map(u => `<tr class="hover:bg-slate-50 transition-colors"><td class="px-6 py-4 font-medium">${u.name}</td><td class="px-6 py-4 text-slate-500">${u.username}</td><td class="px-6 py-4"><span class="badge ${u.role === 'Admin' ? 'badge-success' : 'badge-info'}">${u.role}</span></td><td class="px-6 py-4 text-center">${checkPermission('delete') ? `<button onclick="deleteItem('users', '${u.id}')" class="text-rose-500 hover:text-rose-700 p-2"><i data-lucide="trash-2" class="w-4 h-4"></i></button>` : '---'}</td></tr>`).join('');
             lucide.createIcons();
         }
 
         function renderServants() {
-            document.getElementById('servants-body').innerHTML = state.servants.map(s => `<tr class="hover:bg-slate-50"><td class="px-6 py-4 font-medium">${s.name}</td><td class="px-6 py-4">${s.registration}</td><td class="px-6 py-4">${s.sector}</td><td class="px-6 py-4"><span class="badge ${s.status === 'Ativo' ? 'badge-success' : 'badge-danger'}">${s.status}</span></td><td class="px-6 py-4 text-center">${checkPermission('delete') ? `<button onclick="deleteItem('servants', '${s.id}')" class="text-rose-500"><i data-lucide="trash-2" class="w-4 h-4"></i></button>` : '---'}</td></tr>`).join('');
+            const body = document.getElementById('servants-body');
+            if(!body) return;
+            body.innerHTML = state.servants.map(s => `<tr class="hover:bg-slate-50 transition-colors"><td class="px-6 py-4 font-medium">${s.name}</td><td class="px-6 py-4 text-slate-500">${s.registration}</td><td class="px-6 py-4 text-slate-500">${s.sector}</td><td class="px-6 py-4"><span class="badge ${s.status === 'Ativo' ? 'badge-success' : 'badge-danger'}">${s.status}</span></td><td class="px-6 py-4 text-center">${checkPermission('delete') ? `<button onclick="deleteItem('servants', '${s.id}')" class="text-rose-500 hover:text-rose-700 p-2"><i data-lucide="trash-2" class="w-4 h-4"></i></button>` : '---'}</td></tr>`).join('');
             lucide.createIcons();
         }
 
         function renderProcesses() {
             const body = document.getElementById('processes-body');
-            body.innerHTML = state.processes.map(p => {
-                const s = state.servants.find(sv => sv.id == p.servantId);
-                return `<tr class="hover:bg-slate-50"><td class="px-6 py-4 font-bold text-indigo-600">${p.number}</td><td class="px-6 py-4">${p.type}</td><td class="px-6 py-4">${s ? s.name : '---'}</td><td class="px-6 py-4">${p.deadline}</td><td class="px-6 py-4"><span class="px-2 py-1 rounded-full text-xs ${p.priority === 'Urgente' ? 'bg-red-100 text-red-700' : 'bg-slate-100'}">${p.priority}</span></td><td class="px-6 py-4 text-xs text-slate-500">${(p.qty_oficio || 0) + (p.qty_email || 0)} itens</td><td class="px-6 py-4 text-center">${checkPermission('delete') ? `<button onclick="deleteItem('processes', '${p.id}')" class="text-rose-500"><i data-lucide="trash-2" class="w-4 h-4"></i></button>` : '---'}</td></tr>`;
+            if(!body) return;
+            const sortedProcesses = [...state.processes].sort((a, b) => {
+                if (a.deadline < b.deadline) return 1;
+                if (a.deadline > b.deadline) return -1;
+                const timeA = a.createdAt ? a.createdAt.seconds : 0;
+                const timeB = b.createdAt ? b.createdAt.seconds : 0;
+                return timeB - timeA;
+            });
+            body.innerHTML = sortedProcesses.map(p => {
+                const servant = state.servants.find(s => s.id == p.servantId);
+                const registrationTime = (p.createdAt && p.createdAt.seconds) 
+                    ? new Date(p.createdAt.seconds * 1000).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) 
+                    : '---';
+                return `<tr class="hover:bg-slate-50 transition-colors">
+                    <td class="px-6 py-4 font-bold text-indigo-600">${p.number}</td>
+                    <td class="px-6 py-4">${p.type}</td>
+                    <td class="px-6 py-4">${servant ? servant.name : 'N/A'}</td>
+                    <td class="px-6 py-4 text-slate-500">${p.deadline}</td>
+                    <td class="px-6 py-4 text-slate-500">${registrationTime}</td>
+                    <td class="px-6 py-4"><span class="badge badge-success">Concluído</span></td>
+                    <td class="px-6 py-4 text-center">${checkPermission('delete') ? `<button onclick="deleteItem('processes', '${p.id}')" class="text-rose-500 hover:text-rose-700 p-2"><i data-lucide="trash-2" class="w-4 h-4"></i></button>` : '---'}</td>
+                </tr>`;
             }).join('');
             lucide.createIcons();
         }
 
         function renderActions() {
-            document.getElementById('actions-body').innerHTML = state.actions.map(a => {
-                const p = state.processes.find(pr => pr.id == a.processId);
-                const s = state.servants.find(sv => sv.id == a.servantId);
-                return `<tr class="hover:bg-slate-50"><td class="px-6 py-4 font-medium">${p ? p.number : '---'}</td><td class="px-6 py-4">${a.type}</td><td class="px-6 py-4">${s ? s.name : '---'}</td><td class="px-6 py-4">${a.date}</td><td class="px-6 py-4"><span class="badge badge-success">Ok</span></td><td class="px-6 py-4 text-center">${checkPermission('delete') ? `<button onclick="deleteItem('actions', '${a.id}')" class="text-rose-500"><i data-lucide="trash-2" class="w-4 h-4"></i></button>` : '---'}</td></tr>`;
+            const body = document.getElementById('actions-body');
+            if(!body) return;
+            body.innerHTML = state.actions.map(a => {
+                const proc = state.processes.find(p => p.id == a.processId);
+                const servant = state.servants.find(s => s.id == a.servantId);
+                return `<tr class="hover:bg-slate-50 transition-colors"><td class="px-6 py-4 font-medium">${proc ? proc.number : 'N/A'}</td><td class="px-6 py-4">${a.type}</td><td class="px-6 py-4">${servant ? servant.name : 'N/A'}</td><td class="px-6 py-4 text-slate-500">${a.date}</td><td class="px-6 py-4"><span class="badge badge-success">Concluído</span></td><td class="px-6 py-4 text-center">${checkPermission('delete') ? `<button onclick="deleteItem('actions', '${a.id}')" class="text-rose-500 hover:text-rose-700 p-2"><i data-lucide="trash-2" class="w-4 h-4"></i></button>` : '---'}</td></tr>`;
             }).join('');
             lucide.createIcons();
         }
 
-        window.deleteItem = async function(col, id) {
-            if(confirm('Excluir registro?')) { await deleteDoc(doc(db, col, id)); logAction('Exclusão', `ID ${id} de ${col}`); }
+        function renderAudit() {
+            const body = document.getElementById('audit-body');
+            if(!body) return;
+            body.innerHTML = state.audit.map(l => `<tr class="hover:bg-slate-50 transition-colors"><td class="px-6 py-4 text-slate-400">${l.timestamp}</td><td class="px-6 py-4 font-medium">${l.user}</td><td class="px-6 py-4"><span class="text-indigo-600 font-semibold">${l.action}</span></td><td class="px-6 py-4 text-slate-500">${l.details}</td></tr>`).join('');
+        }
+
+        window.deleteItem = async function(collectionName, id) {
+            if(!checkPermission('delete')) {
+                alert("Você não tem permissão para excluir registros.");
+                return;
+            }
+            if(confirm('Excluir registro permanentemente?')) {
+                await deleteDoc(doc(db, collectionName, id));
+                logAction('Exclusão', `Item removido da coleção ${collectionName} ID: ${id}`);
+            }
         }
 
         function populateSelects() {
-            const optS = state.servants.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
-            const optP = state.processes.map(p => `<option value="${p.id}">${p.number}</option>`).join('');
-            if(document.getElementById('select-servant-process')) document.getElementById('select-servant-process').innerHTML = optS;
-            if(document.getElementById('select-servant-action')) document.getElementById('select-servant-action').innerHTML = optS;
-            if(document.getElementById('select-process-action')) document.getElementById('select-process-action').innerHTML = optP;
+            const sSelectProcess = document.getElementById('select-servant-process');
+            const sSelectAction = document.getElementById('select-servant-action');
+            const pSelectAction = document.getElementById('select-process-action');
+            const servantOptions = state.servants.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+            if(sSelectProcess) sSelectProcess.innerHTML = servantOptions;
+            if(sSelectAction) sSelectAction.innerHTML = servantOptions;
+            const processOptions = state.processes.map(p => `<option value="${p.id}">${p.number}</option>`).join('');
+            if(pSelectAction) pSelectAction.innerHTML = processOptions;
         }
 
-        window.filterTable = function(id, q) {
-            document.querySelectorAll(`#${id} tbody tr`).forEach(r => r.style.display = r.innerText.toLowerCase().includes(q.toLowerCase()) ? '' : 'none');
+        window.filterTable = function(tableId, query) {
+            const rows = document.querySelectorAll(`#${tableId} tbody tr`);
+            rows.forEach(row => { row.style.display = row.innerText.toLowerCase().includes(query.toLowerCase()) ? '' : 'none'; });
         }
 
         function renderDashboard() {
-            const today = DateEngine.getToday();
-            const month = DateEngine.getMonth();
-            document.getElementById('kpi-total-proc').innerText = state.processes.filter(p => DateEngine.normalize(p.deadline) === today).length;
+            const todayStr = DateEngine.getToday();
+            const monthStr = DateEngine.getMonth();
+            const procsToday = state.processes.filter(p => {
+                const dateToCheck = p.createdAt ? p.createdAt : p.deadline;
+                return DateEngine.normalize(dateToCheck) === todayStr;
+            }).length;
+            document.getElementById('kpi-total-proc').innerText = procsToday;
 
-            const getStats = (dateFilter) => state.servants.map(s => {
-                const acts = state.actions.filter(a => a.servantId == s.id && DateEngine.normalize(a.date).startsWith(dateFilter));
-                return { name: s.name, total: acts.length, 
-                    of: acts.filter(a => a.type === 'Ofício').length, 
-                    ci: acts.filter(a => a.type === 'Ofício Circular').length, 
-                    em: acts.filter(a => a.type === 'E-mail').length, 
-                    tr: acts.filter(a => a.type === 'Traslado').length, 
-                    di: acts.filter(a => a.type === 'Diligência').length, 
-                    co: acts.filter(a => a.type === 'Comunicação').length 
+            const rankingBody = document.getElementById('ranking-body');
+            const servantMonthlyStats = state.servants.map(s => {
+                const sActionsMonth = state.actions.filter(a => s.id == a.servantId && DateEngine.normalize(a.date).startsWith(monthStr));
+                return {
+                    ...s,
+                    total: sActionsMonth.length,
+                    oficio: sActionsMonth.filter(a => a.type === 'Ofício').length,
+                    circular: sActionsMonth.filter(a => a.type === 'Ofício Circular').length,
+                    email: sActionsMonth.filter(a => a.type === 'E-mail').length,
+                    traslado: sActionsMonth.filter(a => a.type === 'Traslado').length,
+                    diligencia: sActionsMonth.filter(a => a.type === 'Diligência').length,
+                    comunicacao: sActionsMonth.filter(a => a.type === 'Comunicação').length,
                 };
-            }).sort((a,b) => b.total - a.total);
+            }).sort((a, b) => b.total - a.total);
+            rankingBody.innerHTML = servantMonthlyStats.map(s => `<tr class="hover:bg-slate-50 transition-colors"><td class="px-6 py-4 font-medium">${s.name}</td><td class="px-6 py-4 text-center font-bold text-indigo-700 bg-indigo-50">${s.total}</td><td class="px-6 py-4 text-center">${s.oficio}</td><td class="px-6 py-4 text-center">${s.circular}</td><td class="px-6 py-4 text-center">${s.email}</td><td class="px-6 py-4 text-center">${s.traslado}</td><td class="px-6 py-4 text-center">${s.diligencia}</td><td class="px-6 py-4 text-center">${s.comunicacao}</td></tr>`).join('');
 
-            document.getElementById('ranking-body').innerHTML = getStats(month).map(s => `<tr class="hover:bg-slate-50"><td class="px-6 py-4 font-medium">${s.name}</td><td class="px-6 py-4 text-center font-bold bg-indigo-50">${s.total}</td><td class="px-6 py-4 text-center">${s.of}</td><td class="px-6 py-4 text-center">${s.ci}</td><td class="px-6 py-4 text-center">${s.em}</td><td class="px-6 py-4 text-center">${s.tr}</td><td class="px-6 py-4 text-center">${s.di}</td><td class="px-6 py-4 text-center">${s.co}</td></tr>`).join('');
-            document.getElementById('ranking-today-body').innerHTML = getStats(today).map(s => `<tr class="hover:bg-slate-50"><td class="px-6 py-4 font-medium">${s.name}</td><td class="px-6 py-4 text-center font-bold bg-indigo-100">${s.total}</td><td class="px-6 py-4 text-center">${s.of}</td><td class="px-6 py-4 text-center">${s.ci}</td><td class="px-6 py-4 text-center">${s.em}</td><td class="px-6 py-4 text-center">${s.tr}</td><td class="px-6 py-4 text-center">${s.di}</td><td class="px-6 py-4 text-center">${s.co}</td></tr>`).join('');
+            const rankingTodayBody = document.getElementById('ranking-today-body');
+            const servantTodayStats = state.servants.map(s => {
+                const sActionsToday = state.actions.filter(a => s.id == a.servantId && DateEngine.normalize(a.date) === todayStr);
+                return {
+                    ...s,
+                    total: sActionsToday.length,
+                    oficio: sActionsToday.filter(a => a.type === 'Ofício').length,
+                    circular: sActionsToday.filter(a => a.type === 'Ofício Circular').length,
+                    email: sActionsToday.filter(a => a.type === 'E-mail').length,
+                    traslado: sActionsToday.filter(a => a.type === 'Traslado').length,
+                    diligencia: sActionsToday.filter(a => a.type === 'Diligência').length,
+                    comunicacao: sActionsToday.filter(a => a.type === 'Comunicação').length,
+                };
+            }).sort((a, b) => b.total - a.total);
+            rankingTodayBody.innerHTML = servantTodayStats.map(s => `<tr class="hover:bg-slate-50 transition-colors"><td class="px-6 py-4 font-medium">${s.name}</td><td class="px-6 py-4 text-center font-bold text-indigo-700 bg-indigo-100">${s.total}</td><td class="px-6 py-4 text-center">${s.oficio}</td><td class="px-6 py-4 text-center">${s.circular}</td><td class="px-6 py-4 text-center">${s.email}</td><td class="px-6 py-4 text-center">${s.traslado}</td><td class="px-6 py-4 text-center">${s.diligencia}</td><td class="px-6 py-4 text-center">${s.comunicacao}</td></tr>`).join('');
             initCharts();
         }
 
         function initCharts() {
-            const ctxP = document.getElementById('chart-productivity').getContext('2d');
-            if(window.myCP) window.myCP.destroy();
-            window.myCP = new Chart(ctxP, {
+            const ctxProd = document.getElementById('chart-productivity').getContext('2d');
+            const ctxDist = document.getElementById('chart-distribution').getContext('2d');
+            if (window.myChartProd) window.myChartProd.destroy();
+            if (window.myChartDist) window.myChartDist.destroy();
+            
+            const now = new Date();
+            const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+            const labelsDays = Array.from({length: daysInMonth}, (_, i) => i + 1);
+            const dataDays = labelsDays.map(day => {
+                const dateToCompare = DateEngine.getDateOfMonth(day);
+                return state.processes.filter(p => DateEngine.normalize(p.deadline) === dateToCompare).length;
+            });
+            window.myChartProd = new Chart(ctxProd, {
                 type: 'line',
-                data: { labels: [1,5,10,15,20,25,30], datasets: [{ label: 'Vencimentos', data: state.processes.map((_,i) => Math.floor(Math.random()*10)), borderColor: '#4f46e5', fill: true, tension: 0.4 }] },
-                options: { responsive: true, maintainAspectRatio: false }
+                data: { labels: labelsDays, datasets: [{ label: 'Processos', data: dataDays, borderColor: '#4f46e5', backgroundColor: 'rgba(79, 70, 229, 0.1)', fill: true, tension: 0.4 }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } }
             });
 
-            const ctxD = document.getElementById('chart-distribution').getContext('2d');
-            if(window.myCD) window.myCD.destroy();
-            window.myCD = new Chart(ctxD, {
+            const monthStr = DateEngine.getMonth();
+            const actionTypes = ['Ofício', 'Ofício Circular', 'E-mail', 'Traslado', 'Diligência', 'Comunicação'];
+            const colors = ['#4f46e5', '#10b981', '#f59e0b', '#ec4899', '#8b5cf6', '#64748b'];
+            const servantLabels = state.servants.map(s => s.name);
+            const datasets = actionTypes.map((type, idx) => {
+                return {
+                    label: type,
+                    data: state.servants.map(s => state.actions.filter(a => a.servantId == s.id && a.type === type && DateEngine.normalize(a.date).startsWith(monthStr)).length),
+                    backgroundColor: colors[idx]
+                };
+            });
+
+            window.myChartDist = new Chart(ctxDist, {
                 type: 'bar',
-                data: { labels: state.servants.map(s => s.name), datasets: [{ label: 'Ações', data: state.servants.map(s => state.actions.filter(a => a.servantId == s.id).length), backgroundColor: '#4f46e5' }] },
-                options: { responsive: true, maintainAspectRatio: false }
+                data: { labels: servantLabels, datasets: datasets },
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false, 
+                    scales: { 
+                        x: { stacked: false }, 
+                        y: { stacked: false, beginAtZero: true, ticks: { stepSize: 1 } } 
+                    },
+                    plugins: { legend: { position: 'bottom' } }
+                }
             });
         }
 
-        function renderDeadlines() {
-            document.getElementById('deadlines-body').innerHTML = state.deadlines.map(d => `<tr class="hover:bg-slate-50"><td class="px-6 py-4">${d.dateDist}</td><td class="px-6 py-4">${d.distributor}</td><td class="px-6 py-4">${d.processNumber}</td><td class="px-6 py-4">${d.destinationUnit}</td><td class="px-6 py-4 text-center">${d.daysLimit}</td><td class="px-6 py-4 text-center font-bold text-red-600">${d.dueDate}</td><td class="px-6 py-4 text-center">${checkPermission('delete') ? `<button onclick="deleteItem('deadlines', '${d.id}')" class="text-rose-500"><i data-lucide="trash-2" class="w-4 h-4"></i></button>` : '---'}</td></tr>`).join('');
-            lucide.createIcons();
+        function getFilteredData() {
+            const start = document.getElementById('report-start-date').value;
+            const end = document.getElementById('report-end-date').value;
+            if (!start || !end) { alert("Selecione as datas."); return null; }
+            const filteredActions = state.actions.filter(a => DateEngine.normalize(a.date) >= start && DateEngine.normalize(a.date) <= end);
+            const filteredProcesses = state.processes.filter(p => {
+                const d = DateEngine.normalize(p.deadline);
+                return d >= start && d <= end;
+            });
+            return state.servants.map(s => {
+                const sActions = filteredActions.filter(a => a.servantId == s.id);
+                const sProcs = filteredProcesses.filter(p => p.servantId == s.id);
+                return {
+                    name: s.name, processesReceived: sProcs.length, totalActions: sActions.length,
+                    oficio: sActions.filter(a => a.type === 'Ofício').length,
+                    circular: sActions.filter(a => a.type === 'Ofício Circular').length,
+                    email: sActions.filter(a => a.type === 'E-mail').length,
+                    traslado: sActions.filter(a => a.type === 'Traslado').length,
+                    diligencia: sActions.filter(a => a.type === 'Diligência').length,
+                    comunicacao: sActions.filter(a => a.type === 'Comunicação').length,
+                };
+            });
         }
 
-        function renderAudit() {
-            document.getElementById('audit-body').innerHTML = state.audit.map(l => `<tr class="hover:bg-slate-50"><td class="px-6 py-4 text-slate-400">${l.timestamp}</td><td class="px-6 py-4 font-medium">${l.user}</td><td class="px-6 py-4 text-indigo-600 font-bold">${l.action}</td><td class="px-6 py-4 text-slate-500">${l.details}</td></tr>`).join('');
-        }
+        window.exportData = function(type) {
+            const data = getFilteredData();
+            if (!data) return;
+            const start = document.getElementById('report-start-date').value;
+            const end = document.getElementById('report-end-date').value;
 
-        document.getElementById('form-user').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const fd = new FormData(e.target);
-            await addDoc(collection(db, "users"), Object.fromEntries(fd));
-            closeModal('modal-user'); e.target.reset(); logAction('Usuário', 'Criado');
-        });
+            if (type === 'pdf') {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                doc.setFontSize(18);
+                doc.text('Relatório de Produtividade - SecExecPres', 14, 20);
+                doc.setFontSize(11);
+                doc.text(`Período: ${start} até ${end}`, 14, 30);
 
-        document.getElementById('form-servant').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const fd = new FormData(e.target);
-            const data = Object.fromEntries(fd); data.status = 'Ativo';
-            await addDoc(collection(db, "servants"), data);
-            closeModal('modal-servant'); e.target.reset(); logAction('Servidor', 'Criado');
-        });
-
-        document.getElementById('form-process').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const fd = new FormData(e.target);
-            const data = Object.fromEntries(fd);
-            const pRef = await addDoc(collection(db, "processes"), { ...data, createdAt: serverTimestamp() });
-            const types = { qty_oficio: 'Ofício', qty_oficio_circular: 'Ofício Circular', qty_email: 'E-mail', qty_traslado: 'Traslado', qty_diligencia: 'Diligência', qty_comunicacao: 'Comunicação' };
-            for (let k in types) {
-                for (let i = 0; i < parseInt(data[k] || 0); i++) {
-                    await addDoc(collection(db, "actions"), { processId: pRef.id, servantId: data.servantId, type: types[k], date: data.deadline, status: 'Pendente' });
-                }
+                const rows = data.map(s => [s.name, s.processesReceived, s.totalActions, s.oficio, s.circular, s.email, s.traslado, s.diligencia, s.comunicacao]);
+                doc.autoTable({
+                    startY: 35,
+                    head: [['Servidor', 'Proc. Rec.', 'Total Ações', 'Ofíc.', 'Circ.', 'Email', 'Tras.', 'Dil.', 'Comun.']],
+                    body: rows,
+                    theme: 'grid',
+                    headStyles: { fillColor: [79, 70, 229] }
+                });
+                doc.save(`produtividade_${start}_${end}.pdf`);
+            } else {
+                const worksheet = XLSX.utils.json_to_sheet(data);
+                const workbook = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(workbook, worksheet, "Produtividade");
+                XLSX.writeFile(workbook, `produtividade_${start}_${end}.xlsx`);
             }
-            closeModal('modal-process'); e.target.reset(); logAction('Processo', 'Lançado');
-        });
-
-        document.getElementById('form-action').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const fd = new FormData(e.target);
-            await addDoc(collection(db, "actions"), { ...Object.fromEntries(fd), status: 'Concluído' });
-            closeModal('modal-action'); e.target.reset(); logAction('Ação', 'Registrada');
-        });
-
-        document.getElementById('form-deadline').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const fd = new FormData(e.target);
-            const data = Object.fromEntries(fd);
-            let d = new Date(data.dateDist + 'T00:00:00');
-            let count = 0;
-            while(count < data.daysLimit) { d.setDate(d.getDate()+1); if(d.getDay()!==0 && d.getDay()!==6) count++; }
-            await addDoc(collection(db, "deadlines"), { ...data, dueDate: d.toISOString().split('T')[0] });
-            closeModal('modal-deadline'); e.target.reset(); logAction('Prazo', 'Calculado');
-        });
-
-        document.getElementById('login-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const u = document.getElementById('username').value;
-            const p = document.getElementById('password').value;
-            const snap = await getDocs(query(collection(db, "users"), where("username", "==", u)));
-            if(!snap.empty) {
-                const user = snap.docs[0].data();
-                if(user.password === p) {
-                    currentUser = { id: snap.docs[0].id, ...user };
-                    document.getElementById('login-page').classList.add('hidden');
-                    document.getElementById('app-shell').classList.remove('hidden');
-                    document.getElementById('user-display-name').innerText = currentUser.name;
-                    document.getElementById('user-display-role').innerText = currentUser.role;
-                    showPage('dashboard'); logAction('Login', 'Sucesso');
-                } else alert('Senha incorreta');
-            } else alert('Usuário não existe');
-        });
+        }
 
         window.switchReportTab = function(tab) {
             document.querySelectorAll('.report-tab-content').forEach(c => c.classList.add('hidden'));
-            document.querySelectorAll('[id^="tab-"]').forEach(b => { b.classList.remove('bg-white', 'text-indigo-600', 'shadow-sm'); b.classList.add('text-slate-600'); });
+            document.querySelectorAll('[id^="tab-"]').forEach(b => {
+                b.classList.remove('bg-white', 'text-indigo-600', 'shadow-sm');
+                b.classList.add('text-slate-600', 'hover:bg-slate-100');
+            });
             document.getElementById(`report-tab-${tab}`).classList.remove('hidden');
             document.getElementById(`tab-${tab}`).classList.add('bg-white', 'text-indigo-600', 'shadow-sm');
+            document.getElementById(`tab-${tab}`).classList.remove('text-slate-600', 'hover:bg-slate-100');
+            if(tab === 'charts') renderReportChart();
         }
 
         window.updateAnalyticalReport = function() {
             const start = document.getElementById('report-start-date').value;
             const end = document.getElementById('report-end-date').value;
             const container = document.getElementById('daily-reports-container');
-            if(!start || !end) return;
-            container.innerHTML = '<div class="p-4 text-center text-slate-500">Gerando tabelas diárias...</div>';
-            
-            let curr = new Date(start + 'T00:00:00');
-            let stop = new Date(end + 'T00:00:00');
-            let html = '';
-            while(curr <= stop) {
-                const dStr = curr.toISOString().split('T')[0];
-                const dayActs = state.actions.filter(a => DateEngine.normalize(a.date) === dStr);
-                html += `<div class="bg-white p-6 rounded-2xl shadow-sm border mb-6"><h5 class="font-bold text-indigo-600 mb-4">${dStr}</h5><table class="w-full text-sm"><thead class="bg-slate-50"><tr><th class="p-2 text-left">Servidor</th><th class="p-2 text-center">Total</th></tr></thead><tbody>`;
+            if (!start || !end) return;
+
+            container.innerHTML = '';
+            let currentDate = new Date(start + 'T00:00:00');
+            const endDate = new Date(end + 'T00:00:00');
+
+            while (currentDate <= endDate) {
+                const dateStr = currentDate.toISOString().split('T')[0];
+                const dayActions = state.actions.filter(a => DateEngine.normalize(a.date) === dateStr);
+                
+                let grandTotal = 0, tOficio = 0, tCircular = 0, tEmail = 0, tTraslado = 0, tDiligencia = 0, tComun = 0;
+
+                let dayHtml = `
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                        <h5 class="text-lg font-bold text-emerald-600 mb-4 flex items-center gap-2">
+                            <i data-lucide="calendar" class="w-5 h-5"></i> Data: ${dateStr.split('-').reverse().join('/')}
+                        </h5>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-sm">
+                                <thead class="bg-emerald-100 text-emerald-800 uppercase text-xs">
+                                    <tr class="border-b border-emerald-200">
+                                        <th class="px-4 py-3 font-bold">Servidor</th>
+                                        <th class="px-4 py-3 font-bold text-center bg-emerald-200">TOTAL</th>
+                                        <th class="px-4 py-3 font-bold text-center">Ofícios</th>
+                                        <th class="px-4 py-3 font-bold text-center">Circulares</th>
+                                        <th class="px-4 py-3 font-bold text-center">E-mails</th>
+                                        <th class="px-4 py-3 font-bold text-center">Traslados</th>
+                                        <th class="px-4 py-3 font-bold text-center">Diligências</th>
+                                        <th class="px-4 py-3 font-bold text-center">Comun.</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100">
+                `;
+
                 state.servants.forEach(s => {
-                    const sA = dayActs.filter(a => a.servantId == s.id);
-                    html += `<tr class="border-b"><td class="p-2">${s.name}</td><td class="p-2 text-center font-bold">${sA.length}</td></tr>`;
+                    const sActions = dayActions.filter(a => a.servantId == s.id);
+                    const cOficio = sActions.filter(a => a.type === 'Ofício').length;
+                    const cCircular = sActions.filter(a => a.type === 'Ofício Circular').length;
+                    const cEmail = sActions.filter(a => a.type === 'E-mail').length;
+                    const cTraslado = sActions.filter(a => a.type === 'Traslado').length;
+                    const cDiligencia = sActions.filter(a => a.type === 'Diligência').length;
+                    const cComun = sActions.filter(a => a.type === 'Comunicação').length;
+                    
+                    const rowTotal = sActions.length;
+                    grandTotal += rowTotal;
+                    tOficio += cOficio; tCircular += cCircular; tEmail += cEmail;
+                    tTraslado += cTraslado; tDiligencia += cDiligencia; tComun += cComun;
+
+                    dayHtml += `
+                        <tr class="hover:bg-emerald-50/50 transition-colors">
+                            <td class="px-4 py-2 font-medium text-slate-700">${s.name}</td>
+                            <td class="px-4 py-2 text-center font-bold text-emerald-700 bg-emerald-50/50">${rowTotal}</td>
+                            <td class="px-4 py-2 text-center">${cOficio}</td>
+                            <td class="px-4 py-2 text-center">${cCircular}</td>
+                            <td class="px-4 py-2 text-center">${cEmail}</td>
+                            <td class="px-4 py-2 text-center">${cTraslado}</td>
+                            <td class="px-4 py-2 text-center">${cDiligencia}</td>
+                            <td class="px-4 py-2 text-center">${cComun}</td>
+                        </tr>
+                    `;
                 });
-                html += `</tbody></table></div>`;
-                curr.setDate(curr.getDate()+1);
-            }
-            container.innerHTML = html;
-        }
 
-        window.exportData = function(type) {
-            const start = document.getElementById('report-start-date').value;
-            const end = document.getElementById('report-end-date').value;
-            if(!start || !end) return alert('Selecione as datas');
-            
-            const data = state.servants.map(s => {
-                const acts = state.actions.filter(a => a.servantId == s.id && DateEngine.normalize(a.date) >= start && DateEngine.normalize(a.date) <= end);
-                return { Nome: s.name, Total: acts.length };
-            });
+                dayHtml += `
+                    <tr class="bg-emerald-200 font-bold text-emerald-900">
+                        <td class="px-4 py-3">TOTAL GERAL</td>
+                        <td class="px-4 py-3 text-center bg-emerald-300">${grandTotal}</td>
+                        <td class="px-4 py-3 text-center">${tOficio}</td>
+                        <td class="px-4 py-3 text-center">${tCircular}</td>
+                        <td class="px-4 py-3 text-center">${tEmail}</td>
+                        <td class="px-4 py-3 text-center">${tTraslado}</td>
+                        <td class="px-4 py-3 text-center">${tDiligencia}</td>
+                        <td class="px-4 py-3 text-center">${tComun}</td>
+                    </tr>
+                `;
 
-            if(type === 'pdf') {
-                const { jsPDF } = window.jspdf; const doc = new jsPDF();
-                doc.text('Relatório de Produtividade', 14, 20);
-                doc.autoTable({ startY: 30, head: [['Servidor', 'Total']], body: data.map(d => [d.Nome, d.Total]) });
-                doc.save('relatorio.pdf');
-            } else {
-                const ws = XLSX.utils.json_to_sheet(data);
-                const wb = XLSX.utils.book_new();
-                XLSX.utils.book_append_sheet(wb, ws, "Produtividade");
-                XLSX.writeFile(wb, "relatorio.xlsx");
+                dayHtml += `</tbody></table></div></div>`;
+                container.innerHTML += dayHtml;
+                currentDate.setDate(currentDate.getDate() + 1);
             }
+            lucide.createIcons();
         }
 
         window.renderReportChart = function() {
             const ctx = document.getElementById('chart-report-servants').getContext('2d');
-            if(window.myRC) window.myRC.destroy();
-            window.myRC = new Chart(ctx, {
+            if (window.myReportChart) {
+                window.myReportChart.destroy();
+            }
+
+            const start = document.getElementById('report-start-date').value;
+            const end = document.getElementById('report-end-date').value;
+            if (!start || !end) return;
+
+            const filteredActions = state.actions.filter(a => DateEngine.normalize(a.date) >= start && DateEngine.normalize(a.date) <= end);
+            const actionTypes = ['Ofício', 'Ofício Circular', 'E-mail', 'Traslado', 'Diligência', 'Comunicação'];
+            const colors = ['#4f46e5', '#10b981', '#f59e0b', '#ec4899', '#8b5cf6', '#64748b'];
+            const dataCounts = actionTypes.map(type => filteredActions.filter(a => a.type === type).length);
+
+            window.myReportChart = new Chart(ctx, {
                 type: 'doughnut',
-                data: { labels: ['Ofício', 'Email', 'Traslado', 'Outros'], datasets: [{ data: [10, 20, 15, 5], backgroundColor: ['#4f46e5', '#10b981', '#f59e0b', '#ef4444'] }] },
-                options: { responsive: true, maintainAspectRatio: false }
+                data: {
+                    labels: actionTypes,
+                    datasets: [{
+                        data: dataCounts,
+                        backgroundColor: colors,
+                        borderWidth: 2,
+                        borderColor: '#fff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'right' } }
+                }
             });
         }
+
+        document.getElementById('form-user').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const user = Object.fromEntries(formData);
+            await addDoc(collection(db, "users"), user);
+            closeModal('modal-user');
+            e.target.reset();
+            logAction('Usuário Criado', `Novo usuário cadastrado: ${user.username}`);
+        });
+
+        document.getElementById('form-servant').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const servantObj = Object.fromEntries(formData);
+            servantObj.status = 'Ativo';
+            await addDoc(collection(db, "servants"), servantObj);
+            closeModal('modal-servant');
+            e.target.reset();
+            logAction('Servidor Criado', `Novo servidor cadastrado: ${servantObj.name}`);
+        });
+
+        document.getElementById('form-process').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const proc = Object.fromEntries(formData);
+            proc.createdAt = serverTimestamp();
+            const procRef = await addDoc(collection(db, "processes"), proc);
+            const actionTypes = {
+                qty_oficio: 'Ofício',
+                qty_oficio_circular: 'Ofício Circular',
+                qty_email: 'E-mail',
+                qty_traslado: 'Traslado',
+                qty_diligencia: 'Diligência',
+                qty_comunicacao: 'Comunicação'
+            };
+            for (let key in actionTypes) {
+                const qty = parseInt(proc[key] || 0);
+                for (let i = 0; i < qty; i++) {
+                    await addDoc(collection(db, "actions"), {
+                        processId: procRef.id,
+                        servantId: proc.servantId,
+                        type: actionTypes[key],
+                        date: proc.deadline,
+                        status: 'Pendente',
+                        obs: 'Planejado via Cadastro de Processo'
+                    });
+                }
+            }
+            closeModal('modal-process');
+            e.target.reset();
+            logAction('Processo Criado', `Processo ${proc.number} criado com planejamento de ações`);
+        });
+
+        document.getElementById('form-action').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const action = Object.fromEntries(formData);
+            action.status = 'Concluído';
+            await addDoc(collection(db, "actions"), action);
+            closeModal('modal-action');
+            e.target.reset();
+            logAction('Ação Registrada', `Ação ${action.type} lançada para o processo ${action.processId}`);
+        });
+
+        // --- Lógica de Controle de Prazos ---
+        function calculateBusinessDays(startDateStr, days) {
+            let date = new Date(startDateStr + 'T00:00:00');
+            let count = 0;
+            while (count < days) {
+                date.setDate(date.getDate() + 1);
+                if (date.getDay() !== 0 && date.getDay() !== 6) {
+                    count++;
+                }
+            }
+            return date.toISOString().split('T')[0];
+        }
+
+        function getDeadlineColor(dueDateStr) {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const due = new Date(dueDateStr + 'T00:00:00');
+            const diffTime = due - today;
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            if (diffDays <= 2) return 'bg-red-100 text-red-700 font-bold'; 
+            if (diffDays <= 5) return 'bg-orange-100 text-orange-700 font-bold';
+            return 'bg-yellow-100 text-yellow-700'; 
+        }
+
+        window.renderDeadlines = function() {
+            const body = document.getElementById('deadlines-body');
+            if(!body) return;
+            body.innerHTML = state.deadlines.map(d => {
+                const colorClass = getDeadlineColor(d.dueDate);
+                return `
+                    <tr class="hover:bg-slate-50 transition-colors">
+                        <td class="px-6 py-4">${d.dateDist.split('-').reverse().join('/')}</td>
+                        <td class="px-6 py-4">${d.distributor}</td>
+                        <td class="px-6 py-4 font-medium">${d.processNumber}</td>
+                        <td class="px-6 py-4">${d.destinationUnit}</td>
+                        <td class="px-6 py-4 text-center">${d.daysLimit}</td>
+                        <td class="px-6 py-4 text-center">
+                            <span class="px-3 py-1 rounded-full text-xs ${colorClass}">
+                                ${d.dueDate.split('-').reverse().join('/')}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 text-center">
+                            ${checkPermission('delete') ? `<button onclick="deleteItem('deadlines', '${d.id}')" class="text-rose-500 hover:text-rose-700 p-2"><i data-lucide="trash-2" class="w-4 h-4"></i></button>` : '---'}
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+            lucide.createIcons();
+        }
+
+        document.getElementById('form-deadline').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData);
+            const calculatedDate = calculateBusinessDays(data.dateDist, parseInt(data.daysLimit));
+            const deadlineObj = {
+                dateDist: data.dateDist,
+                distributor: data.distributor,
+                processNumber: data.processNumber,
+                destinationUnit: data.destinationUnit,
+                daysLimit: data.daysLimit,
+                dueDate: calculatedDate
+            };
+            await addDoc(collection(db, "deadlines"), deadlineObj);
+            closeModal('modal-deadline');
+            e.target.reset();
+            logAction('Prazo Cadastrado', `Processo ${data.processNumber} com vencimento em ${calculatedDate}`);
+        });
+
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const userInp = document.getElementById('username').value;
+            const passInp = document.getElementById('password').value;
+            const btn = document.getElementById('btn-login');
+            btn.innerText = "Autenticando...";
+            btn.disabled = true;
+            const q = query(collection(db, "users"), where("username", "==", userInp));
+            const querySnapshot = await getDocs(q);
+            if (!querySnapshot.empty) {
+                const userDoc = querySnapshot.docs[0].data();
+                if (userDoc.password === passInp) {
+                    currentUser = { id: querySnapshot.docs[0].id, ...userDoc };
+                    document.getElementById('login-page').classList.add('hidden');
+                    document.getElementById('app-shell').classList.remove('hidden');
+                    document.getElementById('user-display-name').innerText = currentUser.name;
+                    document.getElementById('user-display-role').innerText = currentUser.role;
+                    await logAction('Login', 'Usuário entrou no sistema');
+                    showPage('dashboard');
+                } else { alert("Senha incorreta!"); }
+            } else { alert("Usuário não encontrado!"); }
+            btn.innerText = "Entrar no Sistema";
+            btn.disabled = false;
+        });
 
         setupRealtimeListeners();
         lucide.createIcons();
     </script>
 </body>
 </html>
+
