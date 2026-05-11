@@ -216,7 +216,17 @@
                     </div>
                     <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
                         <table id="processes-table" class="w-full text-left">
-                            <thead class="bg-slate-50 text-slate-500 text-xs uppercase"><tr><th class="px-6 py-4">Nº Processo</th><th class="px-6 py-4">Tipo</th><th class="px-6 py-4">Servidor</th><th class="px-6 py-4">Data</th><th class="px-6 py-4">Status</th><th class="px-6 py-4 text-center">Ações</th></tr></thead>
+                            <thead class="bg-slate-50 text-slate-500 text-xs uppercase">
+                                <tr>
+                                    <th class="px-6 py-4">Nº Processo</th>
+                                    <th class="px-6 py-4">Tipo</th>
+                                    <th class="px-6 py-4">Servidor</th>
+                                    <th class="px-6 py-4">Data</th>
+                                    <th class="px-6 py-4">Hora Cadastro</th>
+                                    <th class="px-6 py-4">Status</th>
+                                    <th class="px-6 py-4 text-center">Ações</th>
+                                </tr>
+                            </thead>
                             <tbody id="processes-body" class="divide-y divide-slate-100"></tbody>
                         </table>
                     </div>
@@ -611,9 +621,31 @@
         function renderProcesses() {
             const body = document.getElementById('processes-body');
             if(!body) return;
-            body.innerHTML = state.processes.map(p => {
+
+            // ORDENAÇÃO CRESCENTE por horário de cadastro
+            const sortedProcesses = [...state.processes].sort((a, b) => {
+                const timeA = a.createdAt ? a.createdAt.seconds : 0;
+                const timeB = b.createdAt ? b.createdAt.seconds : 0;
+                return timeA - timeB;
+            });
+
+            body.innerHTML = sortedProcesses.map(p => {
                 const servant = state.servants.find(s => s.id == p.servantId);
-                return `<tr class="hover:bg-slate-50 transition-colors"><td class="px-6 py-4 font-bold text-indigo-600">${p.number}</td><td class="px-6 py-4">${p.type}</td><td class="px-6 py-4">${servant ? servant.name : 'N/A'}</td><td class="px-6 py-4 text-slate-500">${p.deadline}</td><td class="px-6 py-4"><span class="badge badge-success">Concluído</span></td><td class="px-6 py-4 text-center">${checkPermission('delete') ? `<button onclick="deleteItem('processes', '${p.id}')" class="text-rose-500 hover:text-rose-700 p-2"><i data-lucide="trash-2" class="w-4 h-4"></i></button>` : '---'}</td></tr>`;
+                
+                // Formatação da hora de cadastro
+                const registrationTime = p.createdAt 
+                    ? new Date(p.createdAt.seconds * 1000).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) 
+                    : '---';
+
+                return `<tr class="hover:bg-slate-50 transition-colors">
+                    <td class="px-6 py-4 font-bold text-indigo-600">${p.number}</td>
+                    <td class="px-6 py-4">${p.type}</td>
+                    <td class="px-6 py-4">${servant ? servant.name : 'N/A'}</td>
+                    <td class="px-6 py-4 text-slate-500">${p.deadline}</td>
+                    <td class="px-6 py-4 text-slate-500">${registrationTime}</td>
+                    <td class="px-6 py-4"><span class="badge badge-success">Concluído</span></td>
+                    <td class="px-6 py-4 text-center">${checkPermission('delete') ? `<button onclick="deleteItem('processes', '${p.id}')" class="text-rose-500 hover:text-rose-700 p-2"><i data-lucide="trash-2" class="w-4 h-4"></i></button>` : '---'}</td>
+                </tr>`;
             }).join('');
             lucide.createIcons();
         }
@@ -906,8 +938,6 @@
 
         window.renderReportChart = function() {
             const ctx = document.getElementById('chart-report-servants').getContext('2d');
-            
-            // CORREÇÃO: Agora a variável coincide com a verificação
             if (window.myReportChart) {
                 window.myReportChart.destroy();
             }
@@ -921,7 +951,6 @@
             const colors = ['#4f46e5', '#10b981', '#f59e0b', '#ec4899', '#8b5cf6', '#64748b'];
             const dataCounts = actionTypes.map(type => filteredActions.filter(a => a.type === type).length);
 
-            // CORREÇÃO: Alterado de windowPReportChart para window.myReportChart
             window.myReportChart = new Chart(ctx, {
                 type: 'doughnut',
                 data: {
@@ -966,6 +995,10 @@
             e.preventDefault();
             const formData = new FormData(e.target);
             const proc = Object.fromEntries(formData);
+            
+            // ADICIONADO: Timestamp de cadastro para ordenação
+            proc.createdAt = serverTimestamp();
+            
             const procRef = await addDoc(collection(db, "processes"), proc);
             const actionTypes = {
                 qty_oficio: 'Ofício',
