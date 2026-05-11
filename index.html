@@ -472,7 +472,7 @@
             apiKey: 'AIzaSyBgaBMX2aHtiab1_7l64tSCSBQTn7e1Eak',
             authDomain: 'orquestrador-secexecpres.firebaseapp.com',
             projectId: 'orquestrador-secexecpres',
-            storageBucket own: 'orquestrador-secexecpres.firebasestorage.app',
+            storageBucket: 'orquestrador-secexecpres.firebasestorage.app',
             messagingSenderId: '297721044357',
             appId: '1:297721044357:web:3c4bece1e257667abbb8ec',
             measurementId: 'G-W9QV684 la-SCSBQTn7e1Eak'
@@ -624,11 +624,9 @@
 
             // ORDENAÇÃO DECRESCENTE: 1º Data, 2º Hora Cadastro
             const sortedProcesses = [...state.processes].sort((a, b) => {
-                // 1. Comparação de Data (Decrescente)
                 if (a.deadline < b.deadline) return 1;
                 if (a.deadline > b.deadline) return -1;
 
-                // 2. Comparação de Horário (Decrescente)
                 const timeA = a.createdAt ? a.createdAt.seconds : 0;
                 const timeB = b.createdAt ? b.createdAt.seconds : 0;
                 return timeB - timeA;
@@ -636,8 +634,6 @@
 
             body.innerHTML = sortedProcesses.map(p => {
                 const servant = state.servants.find(s => s.id == p.servantId);
-                
-                // Formatação segura da hora de cadastro
                 const registrationTime = (p.createdAt && p.createdAt.seconds) 
                     ? new Date(p.createdAt.seconds * 1000).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) 
                     : '---';
@@ -1001,7 +997,6 @@
             const formData = new FormData(e.target);
             const proc = Object.fromEntries(formData);
             
-            // Adicionado Timestamp para ordenação
             proc.createdAt = serverTimestamp();
             
             const procRef = await addDoc(collection(db, "processes"), proc);
