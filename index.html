@@ -224,7 +224,7 @@
                                     <th class="px-6 py-4">Servidor</th>
                                     <th class="px-6 py-4">Data</th>
                                     <th class="px-6 py-4">Hora Cadastro</th>
-                                    <th class="px-6 py-4">Prioridade</th>
+                                    <th class="px-6 py-4">Status</th>
                                     <th class="px-6 py-4 text-center">Ações</th>
                                 </tr>
                             </thead>
@@ -750,29 +750,18 @@
                 const timeB = b.createdAt ? b.createdAt.seconds : 0;
                 return timeB - timeA;
             });
-
             body.innerHTML = sortedProcesses.map(p => {
                 const servant = state.servants.find(s => s.id == p.servantId);
                 const registrationTime = (p.createdAt && p.createdAt.seconds) 
                     ? new Date(p.createdAt.seconds * 1000).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) 
                     : '---';
-                
-                // Lógica de cores para Prioridades
-                const priorityColors = {
-                    'Urgente': 'bg-red-100 text-red-700',
-                    'Alta': 'bg-orange-100 text-orange-700',
-                    'Média': 'bg-blue-100 text-blue-700',
-                    'Baixa': 'bg-slate-100 text-slate-700'
-                };
-                const colorClass = priorityColors[p.priority] || 'bg-slate-100 text-slate-700';
-
                 return `<tr class="hover:bg-slate-50 transition-colors">
                     <td class="px-6 py-4 font-bold text-indigo-600">${p.number}</td>
                     <td class="px-6 py-4">${p.type}</td>
                     <td class="px-6 py-4">${servant ? servant.name : 'N/A'}</td>
                     <td class="px-6 py-4 text-slate-500">${p.deadline}</td>
                     <td class="px-6 py-4 text-slate-500">${registrationTime}</td>
-                    <td class="px-6 py-4"><span class="badge ${colorClass}">${p.priority || 'N/A'}</span></td>
+                    <td class="px-6 py-4"><span class="badge badge-success">Concluído</span></td>
                     <td class="px-6 py-4 text-center">${checkPermission('delete') ? `<button onclick="deleteItem('processes', '${p.id}')" class="text-rose-500 hover:text-rose-700 p-2"><i data-lucide="trash-2" class="w-4 h-4"></i></button>` : '---'}</td>
                 </tr>`;
             }).join('');
@@ -785,7 +774,8 @@
             body.innerHTML = state.actions.map(a => {
                 const proc = state.processes.find(p => p.id == a.processId);
                 const servant = state.servants.find(s => s.id == a.servantId);
-                return `<tr class="hover:bg-slate-50 transition-colors"><td class="px-6 py-4 font-medium">${proc ? proc.number : 'N/A'}</td><td class="px-6 py-4">${a.type}</td><td class="px-6 py-4">${servant ? servant.name : 'N/A'}</td><td class="px-6 py-4 text-slate-500">${a.date}</td><td class="px-6 py-4"><span class="badge badge-success">Concluído</span></td><td class="px-6 py-4 text-center">${checkPermission('delete') ? `<button onclick="deleteItem('actions', '${a.id}')" class="text-rose-500 hover:text-rose-700 p-2"><i data-lucide="trash-2" class="w-4 h-4"></i></button>` : '---'}</td></tr>`).join('');
+                return `<tr class="hover:bg-slate-50 transition-colors"><td class="px-6 py-4 font-medium">${proc ? proc.number : 'N/A'}</td><td class="px-6 py-4">${a.type}</td><td class="px-6 py-4">${servant ? servant.name : 'N/A'}</td><td class="px-6 py-4 text-slate-500">${a.date}</td><td class="px-6 py-4"><span class="badge badge-success">Concluído</span></td><td class="px-6 py-4 text-center">${checkPermission('delete') ? `<button onclick="deleteItem('actions', '${a.id}')" class="text-rose-500 hover:text-rose-700 p-2"><i data-lucide="trash-2" class="w-4 h-4"></i></button>` : '---'}</td></tr>`;
+            }).join('');
             lucide.createIcons();
         }
 
@@ -1259,5 +1249,6 @@
         setupRealtimeListeners();
         lucide.createIcons();
     </script>
-</body
+</body>
 </html>
+
