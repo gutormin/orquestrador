@@ -82,10 +82,8 @@
         /* Linhas coloridas dos turnos no dark mode (mais sutis) */
         html.dark tr.row-matutino { background-color: rgba(245, 158, 11, 0.08) !important; }
         html.dark tr.row-vespertino { background-color: rgba(139, 92, 246, 0.08) !important; }
-        html.dark tr.row-integral { background-color: rgba(16, 185, 129, 0.08) !important; }
         html.dark tr.row-matutino:hover { background-color: rgba(245, 158, 11, 0.18) !important; }
         html.dark tr.row-vespertino:hover { background-color: rgba(139, 92, 246, 0.18) !important; }
-        html.dark tr.row-integral:hover { background-color: rgba(16, 185, 129, 0.18) !important; }
 
         /* Botões de aba inativos */
         html.dark .shift-tab:not(.active) { background: #1e293b !important; color: #cbd5e1 !important; border-color: #334155 !important; }
@@ -111,21 +109,110 @@
         .shift-badge { display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.25rem 0.625rem; border-radius: 9999px; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.02em; }
         .shift-matutino { background: linear-gradient(135deg, #fef3c7, #fde68a); color: #92400e; border: 1px solid #fcd34d; }
         .shift-vespertino { background: linear-gradient(135deg, #ddd6fe, #c4b5fd); color: #5b21b6; border: 1px solid #a78bfa; }
-        .shift-integral { background: linear-gradient(135deg, #d1fae5, #a7f3d0); color: #065f46; border: 1px solid #6ee7b7; }
         .shift-undefined { background: #f1f5f9; color: #64748b; border: 1px solid #cbd5e1; }
 
         .shift-dot { width: 0.5rem; height: 0.5rem; border-radius: 9999px; display: inline-block; }
         .shift-dot.matutino { background: #f59e0b; box-shadow: 0 0 0 2px #fef3c7; }
         .shift-dot.vespertino { background: #8b5cf6; box-shadow: 0 0 0 2px #ddd6fe; }
-        .shift-dot.integral { background: #10b981; box-shadow: 0 0 0 2px #d1fae5; }
+
+        /* === PAINEL INFORMATIVO DE TURNO (modal de processo) === */
+        .shift-panel {
+            display: flex; align-items: center; gap: 0.875rem;
+            padding: 0.875rem 1rem;
+            border-radius: 0.875rem;
+            border: 2px solid transparent;
+            transition: all 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+            transform: translateY(0);
+        }
+        .shift-panel-icon-wrap {
+            width: 2.75rem; height: 2.75rem;
+            border-radius: 0.75rem;
+            display: flex; align-items: center; justify-content: center;
+            background: rgba(255,255,255,0.6);
+            flex-shrink: 0;
+            transition: all 0.35s;
+        }
+        .shift-panel-content { flex: 1; min-width: 0; }
+        .shift-panel-label {
+            font-size: 0.65rem; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 0.05em;
+            opacity: 0.7; margin-bottom: 0.15rem;
+        }
+        .shift-panel-value {
+            font-size: 0.95rem; font-weight: 700;
+            line-height: 1.2;
+        }
+
+        /* Estado vazio (sem servidor selecionado) */
+        .shift-panel.shift-panel-empty {
+            background: #f8fafc;
+            border-color: #e2e8f0;
+            color: #94a3b8;
+        }
+        .shift-panel.shift-panel-empty .shift-panel-icon-wrap {
+            background: #f1f5f9;
+            color: #cbd5e1;
+        }
+
+        /* Matutino */
+        .shift-panel.shift-panel-matutino {
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            border-color: #f59e0b;
+            color: #92400e;
+            animation: shiftPanelPop 0.4s ease-out;
+        }
+        .shift-panel.shift-panel-matutino .shift-panel-icon-wrap {
+            background: rgba(255,255,255,0.7);
+            color: #d97706;
+        }
+
+        /* Vespertino */
+        .shift-panel.shift-panel-vespertino {
+            background: linear-gradient(135deg, #ddd6fe, #c4b5fd);
+            border-color: #8b5cf6;
+            color: #5b21b6;
+            animation: shiftPanelPop 0.4s ease-out;
+        }
+        .shift-panel.shift-panel-vespertino .shift-panel-icon-wrap {
+            background: rgba(255,255,255,0.7);
+            color: #7c3aed;
+        }
+
+        @keyframes shiftPanelPop {
+            0% { transform: scale(0.96); opacity: 0.6; }
+            60% { transform: scale(1.02); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        /* Dark mode ajustes do painel */
+        html.dark .shift-panel.shift-panel-empty {
+            background: #1e293b !important;
+            border-color: #334155 !important;
+            color: #64748b !important;
+        }
+        html.dark .shift-panel.shift-panel-empty .shift-panel-icon-wrap {
+            background: #0f172a !important;
+            color: #475569 !important;
+        }
+        html.dark .shift-panel.shift-panel-matutino {
+            background: linear-gradient(135deg, rgba(245,158,11,0.18), rgba(245,158,11,0.10)) !important;
+            border-color: rgba(245,158,11,0.6) !important;
+            color: #fbbf24 !important;
+        }
+        html.dark .shift-panel.shift-panel-vespertino {
+            background: linear-gradient(135deg, rgba(139,92,246,0.18), rgba(139,92,246,0.10)) !important;
+            border-color: rgba(139,92,246,0.6) !important;
+            color: #c4b5fd !important;
+        }
+        html.dark .shift-panel-icon-wrap {
+            background: rgba(255,255,255,0.08) !important;
+        }
 
         /* Linhas da tabela coloridas levemente pelo turno */
         tr.row-matutino { background-color: rgba(254, 243, 199, 0.25); }
         tr.row-matutino:hover { background-color: rgba(254, 243, 199, 0.55) !important; }
         tr.row-vespertino { background-color: rgba(221, 214, 254, 0.25); }
         tr.row-vespertino:hover { background-color: rgba(221, 214, 254, 0.55) !important; }
-        tr.row-integral { background-color: rgba(209, 250, 229, 0.2); }
-        tr.row-integral:hover { background-color: rgba(209, 250, 229, 0.5) !important; }
 
         /* Abas de turno */
         .shift-tab { padding: 0.625rem 1.25rem; border-radius: 0.75rem; font-weight: 700; font-size: 0.875rem; transition: all 0.25s; display: inline-flex; align-items: center; gap: 0.5rem; cursor: pointer; border: 2px solid transparent; }
@@ -536,7 +623,7 @@
                         </div>
                         <div class="flex items-center gap-2">
                             <button id="btn-delete-all-processes" onclick="deleteAll('processes')" class="bg-rose-600 hover:bg-rose-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-all shadow-md"><i data-lucide="trash-2" class="w-4 h-4"></i> Excluir Todos</button>
-                            <button id="btn-new-process" onclick="openModal('modal-process')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-all shadow-md"><i data-lucide="plus" class="w-4 h-4"></i> Novo Processo</button>
+                            <button id="btn-new-process" onclick="openModal('modal-process'); resetProcessModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-all shadow-md"><i data-lucide="plus" class="w-4 h-4"></i> Novo Processo</button>
                         </div>
                     </div>
                     <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
@@ -680,13 +767,6 @@
                                     <h3 class="kpi-shift-value text-violet-900" id="kpi-shift-vesp">0</h3>
                                 </div>
                             </div>
-                            <div class="kpi-shift geral" style="background: linear-gradient(135deg, #d1fae5, #a7f3d0); border-color: #6ee7b7;">
-                                <div class="kpi-shift-icon"><i data-lucide="sun" class="w-5 h-5 text-emerald-700"></i></div>
-                                <div>
-                                    <p class="kpi-shift-label text-emerald-900">Integral</p>
-                                    <h3 class="kpi-shift-value text-emerald-900" id="kpi-shift-int">0</h3>
-                                </div>
-                            </div>
                             <div class="kpi-shift geral">
                                 <div class="kpi-shift-icon"><i data-lucide="trophy" class="w-5 h-5 text-indigo-700"></i></div>
                                 <div>
@@ -741,7 +821,6 @@
                                             <th class="px-6 py-4 font-semibold">Data</th>
                                             <th class="px-6 py-4 font-semibold text-center">Matutino</th>
                                             <th class="px-6 py-4 font-semibold text-center">Vespertino</th>
-                                            <th class="px-6 py-4 font-semibold text-center">Integral</th>
                                             <th class="px-6 py-4 font-semibold text-center bg-indigo-50 text-indigo-700">Total</th>
                                         </tr>
                                     </thead>
@@ -831,7 +910,7 @@
                 </div>
                 <div class="col-span-2">
                     <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Turno de Trabalho</label>
-                    <div class="grid grid-cols-3 gap-2" id="shift-selector">
+                    <div class="grid grid-cols-2 gap-2" id="shift-selector">
                         <label class="cursor-pointer">
                             <input type="radio" name="shift" value="Matutino" class="peer sr-only" required>
                             <div class="px-3 py-3 rounded-lg border-2 border-slate-200 text-center font-semibold text-sm transition-all peer-checked:border-amber-500 peer-checked:bg-amber-50 peer-checked:text-amber-700 hover:border-amber-300">
@@ -844,13 +923,6 @@
                             <div class="px-3 py-3 rounded-lg border-2 border-slate-200 text-center font-semibold text-sm transition-all peer-checked:border-violet-500 peer-checked:bg-violet-50 peer-checked:text-violet-700 hover:border-violet-300">
                                 <i data-lucide="sunset" class="w-5 h-5 mx-auto mb-1"></i>
                                 Vespertino
-                            </div>
-                        </label>
-                        <label class="cursor-pointer">
-                            <input type="radio" name="shift" value="Integral" class="peer sr-only">
-                            <div class="px-3 py-3 rounded-lg border-2 border-slate-200 text-center font-semibold text-sm transition-all peer-checked:border-emerald-500 peer-checked:bg-emerald-50 peer-checked:text-emerald-700 hover:border-emerald-300">
-                                <i data-lucide="sun" class="w-5 h-5 mx-auto mb-1"></i>
-                                Integral
                             </div>
                         </label>
                     </div>
@@ -878,7 +950,7 @@
 
                 <div>
                     <label class="block text-xs font-bold uppercase text-slate-500 mb-2">Turno de Trabalho</label>
-                    <div class="grid grid-cols-3 gap-2">
+                    <div class="grid grid-cols-2 gap-2">
                         <label class="cursor-pointer">
                             <input type="radio" name="shift" value="Matutino" class="peer sr-only" required>
                             <div class="px-3 py-3 rounded-lg border-2 border-slate-200 text-center font-semibold text-sm transition-all peer-checked:border-amber-500 peer-checked:bg-amber-50 peer-checked:text-amber-700 hover:border-amber-300">
@@ -891,13 +963,6 @@
                             <div class="px-3 py-3 rounded-lg border-2 border-slate-200 text-center font-semibold text-sm transition-all peer-checked:border-violet-500 peer-checked:bg-violet-50 peer-checked:text-violet-700 hover:border-violet-300">
                                 <i data-lucide="sunset" class="w-5 h-5 mx-auto mb-1"></i>
                                 Vespertino
-                            </div>
-                        </label>
-                        <label class="cursor-pointer">
-                            <input type="radio" name="shift" value="Integral" class="peer sr-only">
-                            <div class="px-3 py-3 rounded-lg border-2 border-slate-200 text-center font-semibold text-sm transition-all peer-checked:border-emerald-500 peer-checked:bg-emerald-50 peer-checked:text-emerald-700 hover:border-emerald-300">
-                                <i data-lucide="sun" class="w-5 h-5 mx-auto mb-1"></i>
-                                Integral
                             </div>
                         </label>
                     </div>
@@ -932,8 +997,8 @@
     <div id="modal-process" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
         <div class="bg-white w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden">
             <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50">
-                <h3 class="text-xl font-bold text-slate-800">Novo Processo & Planejamento</h3>
-                <button onclick="closeModal('modal-process')" class="text-slate-400 hover:text-rose-500"><i data-lucide="x" class="w-6 h-6"></i></button>
+                <h3 id="modal-process-title" class="text-xl font-bold text-slate-800">Novo Processo & Planejamento</h3>
+                <button onclick="closeModal('modal-process'); resetProcessModal()" class="text-slate-400 hover:text-rose-500"><i data-lucide="x" class="w-6 h-6"></i></button>
             </div>
             <form id="form-process" class="p-6 overflow-y-auto max-h-[85vh]">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
@@ -964,7 +1029,18 @@
                         <h4 class="font-bold text-indigo-600 flex items-center gap-2 mb-2"><i data-lucide="user" class="w-4 h-4"></i> Responsável</h4>
                         <div >
                             <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Servidor Designado</label>
-                            <select id="select-servant-process" name="servantId" required class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500"></select>
+                            <select id="select-servant-process" name="servantId" required onchange="updateShiftPanel(this.value)" class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500"></select>
+                        </div>
+
+                        <!-- PAINEL VISUAL DE TURNO -->
+                        <div id="shift-info-panel" class="shift-panel shift-panel-empty">
+                            <div class="shift-panel-icon-wrap">
+                                <i data-lucide="user-circle" class="w-6 h-6"></i>
+                            </div>
+                            <div class="shift-panel-content">
+                                <p class="shift-panel-label">Turno do Servidor</p>
+                                <p class="shift-panel-value">Selecione um servidor</p>
+                            </div>
                         </div>
                         <div >
                             <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Observações Gerais</label>
@@ -984,8 +1060,8 @@
                     </div>
                 </div>
                 <div class="flex justify-end gap-3 mt-8">
-                    <button type="button" onclick="closeModal('modal-process')" class="px-4 py-2 text-slate-500 font-medium hover:text-slate-700">Cancelar</button>
-                    <button type="submit" class="px-6 py-2 bg-indigo-600 text-white rounded-lg font-bold shadow-lg hover:bg-indigo-700 transition-all">Cadastrar Processo e Ações</button>
+                    <button type="button" onclick="closeModal('modal-process'); resetProcessModal()" class="px-4 py-2 text-slate-500 font-medium hover:text-slate-700">Cancelar</button>
+                    <button type="submit" id="btn-submit-process" class="px-6 py-2 bg-indigo-600 text-white rounded-lg font-bold shadow-lg hover:bg-indigo-700 transition-all">Cadastrar Processo e Ações</button>
                 </div>
             </form>
         </div>
@@ -1279,8 +1355,7 @@
             function getShiftBadge(shift) {
                 const map = {
                     'Matutino': { cls: 'shift-matutino', icon: 'sunrise', label: 'Matutino' },
-                    'Vespertino': { cls: 'shift-vespertino', icon: 'sunset', label: 'Vespertino' },
-                    'Integral': { cls: 'shift-integral', icon: 'sun', label: 'Integral' }
+                    'Vespertino': { cls: 'shift-vespertino', icon: 'sunset', label: 'Vespertino' }
                 };
                 const cfg = map[shift] || { cls: 'shift-undefined', icon: 'help-circle', label: 'Não definido' };
                 return `<span class="shift-badge ${cfg.cls}"><i data-lucide="${cfg.icon}" class="w-3 h-3"></i>${cfg.label}</span>`;
@@ -1289,7 +1364,6 @@
             function getShiftRowClass(shift) {
                 if (shift === 'Matutino') return 'row-matutino';
                 if (shift === 'Vespertino') return 'row-vespertino';
-                if (shift === 'Integral') return 'row-integral';
                 return '';
             }
 
@@ -1331,9 +1405,97 @@
                     if(p.qty_diligencia > 0) planned.push(`Dil: ${p.qty_diligencia}`);
                     if(p.qty_comunicacao > 0) planned.push(`Com: ${p.qty_comunicacao}`);
                     const plannedText = planned.length > 0 ? planned.join(' | ') : '<span class="text-slate-300">Nenhuma</span>';
-                    return `<tr class="hover:bg-slate-50 transition-colors"><td class="px-6 py-4 font-bold text-indigo-600">${p.number}</td><td class="px-6 py-4">${getPriorityBadge(p.priority)}</td><td class="px-6 py-4">${servant ? servant.name : 'N/A'}</td><td class="px-6 py-4 text-slate-500">${p.deadline}</td><td class="px-6 py-4 text-slate-500">${registrationTime}</td><td class="px-6 py-4 text-xs font-medium text-slate-600">${plannedText}</td><td class="px-6 py-4 text-center">${checkPermission('delete') ? `<button onclick="deleteItem('processes', '${p.id}')" class="text-rose-500 hover:text-rose-700 p-2"><i data-lucide="trash-2" class="w-4 h-4"></i></button>` : '---'}</td></tr>`;
+                    return `<tr class="hover:bg-slate-50 transition-colors"><td class="px-6 py-4 font-bold text-indigo-600">${p.number}</td><td class="px-6 py-4">${getPriorityBadge(p.priority)}</td><td class="px-6 py-4">${servant ? servant.name : 'N/A'}</td><td class="px-6 py-4 text-slate-500">${p.deadline}</td><td class="px-6 py-4 text-slate-500">${registrationTime}</td><td class="px-6 py-4 text-xs font-medium text-slate-600">${plannedText}</td><td class="px-6 py-4 text-center"><div class="flex items-center justify-center gap-1"><button onclick="editProcess('${p.id}')" class="text-indigo-500 hover:text-indigo-700 p-2" title="Editar"><i data-lucide="pencil" class="w-4 h-4"></i></button>${checkPermission('delete') ? `<button onclick="deleteItem('processes', '${p.id}')" class="text-rose-500 hover:text-rose-700 p-2" title="Excluir"><i data-lucide="trash-2" class="w-4 h-4"></i></button>` : ''}</div></td></tr>`;
                 }).join('');
                 lucide.createIcons();
+            }
+
+            // Estado: id do processo em edição (null = modo "novo")
+            window.editingProcessId = null;
+
+            function resetProcessModal() {
+                window.editingProcessId = null;
+                const titleEl = document.getElementById('modal-process-title');
+                const btnEl = document.getElementById('btn-submit-process');
+                if (titleEl) titleEl.innerText = 'Novo Processo & Planejamento';
+                if (btnEl) btnEl.innerText = 'Cadastrar Processo e Ações';
+                const form = document.getElementById('form-process');
+                if (form) form.reset();
+                // Reflete o servidor que o browser deixou selecionado como default
+                if (typeof updateShiftPanel === 'function') {
+                    const sel = document.getElementById('select-servant-process');
+                    updateShiftPanel(sel ? sel.value : null);
+                }
+            }
+
+            // Atualiza o painel visual de turno conforme o servidor escolhido
+            window.updateShiftPanel = function(servantId) {
+                const panel = document.getElementById('shift-info-panel');
+                if (!panel) return;
+                const iconWrap = panel.querySelector('.shift-panel-icon-wrap');
+                const labelEl = panel.querySelector('.shift-panel-label');
+                const valueEl = panel.querySelector('.shift-panel-value');
+
+                // Remove todos os modificadores
+                panel.classList.remove('shift-panel-empty', 'shift-panel-matutino', 'shift-panel-vespertino');
+
+                const servant = state.servants.find(s => s.id == servantId);
+
+                if (!servant || !servant.shift) {
+                    panel.classList.add('shift-panel-empty');
+                    iconWrap.innerHTML = '<i data-lucide="user-circle" class="w-6 h-6"></i>';
+                    labelEl.innerText = 'Turno do Servidor';
+                    valueEl.innerText = servant ? 'Turno não definido' : 'Selecione um servidor';
+                } else {
+                    const map = {
+                        'Matutino': { cls: 'shift-panel-matutino', icon: 'sunrise', text: 'Matutino' },
+                        'Vespertino': { cls: 'shift-panel-vespertino', icon: 'sunset', text: 'Vespertino' }
+                    };
+                    const cfg = map[servant.shift];
+                    if (!cfg) {
+                        // Turno em valor inesperado → trata como vazio
+                        panel.classList.add('shift-panel-empty');
+                        iconWrap.innerHTML = '<i data-lucide="help-circle" class="w-6 h-6"></i>';
+                        labelEl.innerText = `${servant.name} — Turno`;
+                        valueEl.innerText = 'Turno não definido';
+                    } else {
+                        panel.classList.add(cfg.cls);
+                        iconWrap.innerHTML = `<i data-lucide="${cfg.icon}" class="w-6 h-6"></i>`;
+                        labelEl.innerText = `${servant.name} — Turno`;
+                        valueEl.innerText = cfg.text;
+                    }
+                }
+                if (window.lucide && lucide.createIcons) lucide.createIcons();
+            }
+
+            window.editProcess = function(id) {
+                const p = state.processes.find(x => x.id === id);
+                if (!p) { alert('Processo não encontrado.'); return; }
+                window.editingProcessId = id;
+
+                // Abre o modal primeiro (openModal chama populateSelects internamente)
+                openModal('modal-process');
+
+                // Agora sim preenche o formulário com os dados do processo
+                const form = document.getElementById('form-process');
+                form.querySelector('[name="number"]').value = p.number || '';
+                form.querySelector('[name="type"]').value = p.type || 'Administrativo';
+                form.querySelector('[name="deadline"]').value = p.deadline || '';
+                form.querySelector('[name="priority"]').value = p.priority || 'Média';
+                form.querySelector('[name="servantId"]').value = p.servantId || '';
+                form.querySelector('[name="obs"]').value = p.obs || '';
+                form.querySelector('[name="qty_oficio"]').value = p.qty_oficio || 0;
+                form.querySelector('[name="qty_oficio_circular"]').value = p.qty_oficio_circular || 0;
+                form.querySelector('[name="qty_email"]').value = p.qty_email || 0;
+                form.querySelector('[name="qty_traslado"]').value = p.qty_traslado || 0;
+                form.querySelector('[name="qty_diligencia"]').value = p.qty_diligencia || 0;
+                form.querySelector('[name="qty_comunicacao"]').value = p.qty_comunicacao || 0;
+
+                document.getElementById('modal-process-title').innerText = `Editar Processo ${p.number}`;
+                document.getElementById('btn-submit-process').innerText = 'Salvar Alterações';
+
+                // Atualiza painel de turno com o servidor já selecionado
+                updateShiftPanel(p.servantId);
             }
 
             function renderActions() {
@@ -1504,8 +1666,8 @@
                 if (info) {
                     const labels = {
                         'Geral': '<span class="font-bold text-indigo-700">todos os servidores</span>',
-                        'Matutino': '<span class="font-bold text-amber-700">turno matutino</span> (inclui Integral)',
-                        'Vespertino': '<span class="font-bold text-violet-700">turno vespertino</span> (inclui Integral)'
+                        'Matutino': '<span class="font-bold text-amber-700">turno matutino</span>',
+                        'Vespertino': '<span class="font-bold text-violet-700">turno vespertino</span>'
                     };
                     info.innerHTML = 'Exibindo: ' + labels[shift];
                 }
@@ -1516,8 +1678,7 @@
             function getFilteredServants() {
                 const shift = window.currentShiftFilter || 'Geral';
                 if (shift === 'Geral') return state.servants;
-                // Integral aparece em ambos os turnos (matutino e vespertino)
-                return state.servants.filter(s => s.shift === shift || s.shift === 'Integral');
+                return state.servants.filter(s => s.shift === shift);
             }
 
             function renderDashboard() {
@@ -1541,8 +1702,8 @@
                 document.getElementById('kpi-active-servants').innerText = activeServants;
 
                 // KPIs por turno (sempre exibem o total do turno respectivo, independente do filtro)
-                const matServantIds = state.servants.filter(s => s.shift === 'Matutino' || s.shift === 'Integral').map(s => s.id);
-                const vespServantIds = state.servants.filter(s => s.shift === 'Vespertino' || s.shift === 'Integral').map(s => s.id);
+                const matServantIds = state.servants.filter(s => s.shift === 'Matutino').map(s => s.id);
+                const vespServantIds = state.servants.filter(s => s.shift === 'Vespertino').map(s => s.id);
                 const matMonthActions = state.actions.filter(a => matServantIds.includes(a.servantId) && DateEngine.normalize(a.date).startsWith(monthStr)).length;
                 const vespMonthActions = state.actions.filter(a => vespServantIds.includes(a.servantId) && DateEngine.normalize(a.date).startsWith(monthStr)).length;
                 document.getElementById('kpi-mat-total').innerText = matMonthActions;
@@ -1636,7 +1797,7 @@
                 state.servants.forEach(s => { servantShift[s.id] = s.shift || 'Não definido'; });
 
                 // Conta processos do mês por turno (a partir do servidor responsável)
-                const counts = { 'Matutino': 0, 'Vespertino': 0, 'Integral': 0, 'Não definido': 0 };
+                const counts = { 'Matutino': 0, 'Vespertino': 0, 'Não definido': 0 };
                 state.processes.forEach(p => {
                     const created = DateEngine.normalize(p.createdAt);
                     if (!created.startsWith(monthStr)) return;
@@ -1644,9 +1805,9 @@
                     counts[shift] = (counts[shift] || 0) + 1;
                 });
 
-                const labels = ['Matutino', 'Vespertino', 'Integral', 'Não definido'];
+                const labels = ['Matutino', 'Vespertino', 'Não definido'];
                 const values = labels.map(l => counts[l] || 0);
-                const colors = ['#f59e0b', '#8b5cf6', '#10b981', '#94a3b8'];
+                const colors = ['#f59e0b', '#8b5cf6', '#94a3b8'];
                 const total = values.reduce((a, b) => a + b, 0);
 
                 // Renderiza/atualiza chart
@@ -1701,28 +1862,22 @@
                 const marker = document.getElementById('thermometer-marker');
                 const status = document.getElementById('thermometer-status');
 
-                // Cálculo corrigido: Integral conta meio-meio para Matutino e Vespertino
+                // Cálculo direto: só Matutino e Vespertino
                 const mat = counts['Matutino'] || 0;
                 const vesp = counts['Vespertino'] || 0;
-                const integral = counts['Integral'] || 0;
-                const matEquivalente = mat + (integral / 2);
-                const vespEquivalente = vesp + (integral / 2);
-                const tot2 = matEquivalente + vespEquivalente;
+                const tot2 = mat + vesp;
 
                 // Posição do termômetro: 0% = topo (todo Matutino), 100% = base (todo Vespertino), 50% = equilíbrio
-                // Posição vertical do marcador (em %, de 0 a 100, sendo 0 = topo)
-                let markerPos = 50; // padrão: centro
+                let markerPos = 50;
                 let matPct = 50;
                 if (tot2 > 0) {
-                    matPct = (matEquivalente / tot2) * 100;
-                    // Se Matutino domina (matPct alto), marcador vai para o topo (top% baixo)
-                    // matPct=100 → top=0%, matPct=50 → top=50%, matPct=0 → top=100%
+                    matPct = (mat / tot2) * 100;
                     markerPos = 100 - matPct;
                 }
 
                 // Amostra mínima de 5 processos para considerar a análise confiável
                 const MIN_SAMPLE = 5;
-                const totalReal = mat + vesp + integral;
+                const totalReal = mat + vesp;
 
                 if (badge && marker && status) {
                     if (total === 0) {
@@ -1799,7 +1954,7 @@
 
                 // Agrega processos por data e por turno (usa createdAt)
                 const byDate = {};
-                dates.forEach(d => { byDate[d] = { 'Matutino': 0, 'Vespertino': 0, 'Integral': 0, 'Não definido': 0 }; });
+                dates.forEach(d => { byDate[d] = { 'Matutino': 0, 'Vespertino': 0, 'Não definido': 0 }; });
 
                 state.processes.forEach(p => {
                     const created = DateEngine.normalize(p.createdAt);
@@ -1814,28 +1969,26 @@
             window.renderShiftReport = function() {
                 const data = getShiftAnalysisData();
                 if (!data) {
-                    document.getElementById('shift-table-body').innerHTML = '<tr><td colspan="5" class="text-center py-10 text-slate-400">Selecione o período acima para gerar a análise.</td></tr>';
+                    document.getElementById('shift-table-body').innerHTML = '<tr><td colspan="4" class="text-center py-10 text-slate-400">Selecione o período acima para gerar a análise.</td></tr>';
                     return;
                 }
                 const { dates, byDate } = data;
 
                 // KPIs totais
-                let totMat = 0, totVesp = 0, totInt = 0, totND = 0;
+                let totMat = 0, totVesp = 0, totND = 0;
                 let peakDay = null, peakValue = 0, peakShift = null;
                 dates.forEach(d => {
                     const row = byDate[d];
                     totMat += row['Matutino'];
                     totVesp += row['Vespertino'];
-                    totInt += row['Integral'];
                     totND += row['Não definido'];
-                    ['Matutino', 'Vespertino', 'Integral'].forEach(shift => {
+                    ['Matutino', 'Vespertino'].forEach(shift => {
                         if (row[shift] > peakValue) { peakValue = row[shift]; peakDay = d; peakShift = shift; }
                     });
                 });
 
                 document.getElementById('kpi-shift-mat').textContent = totMat;
                 document.getElementById('kpi-shift-vesp').textContent = totVesp;
-                document.getElementById('kpi-shift-int').textContent = totInt;
                 document.getElementById('kpi-shift-peak').textContent = peakDay
                     ? `${peakValue} (${peakShift})\n${peakDay.split('-').reverse().join('/')}`
                     : '—';
@@ -1844,20 +1997,18 @@
                 const tbody = document.getElementById('shift-table-body');
                 tbody.innerHTML = dates.map(d => {
                     const r = byDate[d];
-                    const tot = r['Matutino'] + r['Vespertino'] + r['Integral'] + r['Não definido'];
+                    const tot = r['Matutino'] + r['Vespertino'] + r['Não definido'];
                     return `<tr class="hover:bg-slate-50 transition-colors">
                         <td class="px-6 py-3 font-medium">${d.split('-').reverse().join('/')}</td>
                         <td class="px-6 py-3 text-center"><span class="font-semibold text-amber-700">${r['Matutino']}</span></td>
                         <td class="px-6 py-3 text-center"><span class="font-semibold text-violet-700">${r['Vespertino']}</span></td>
-                        <td class="px-6 py-3 text-center"><span class="font-semibold text-emerald-700">${r['Integral']}</span></td>
                         <td class="px-6 py-3 text-center font-bold text-indigo-700 bg-indigo-50">${tot}</td>
                     </tr>`;
                 }).join('') + `<tr class="bg-slate-100 font-bold border-t-2 border-slate-300">
                         <td class="px-6 py-3">TOTAL</td>
                         <td class="px-6 py-3 text-center text-amber-700">${totMat}</td>
                         <td class="px-6 py-3 text-center text-violet-700">${totVesp}</td>
-                        <td class="px-6 py-3 text-center text-emerald-700">${totInt}</td>
-                        <td class="px-6 py-3 text-center text-indigo-700 bg-indigo-100">${totMat + totVesp + totInt + totND}</td>
+                        <td class="px-6 py-3 text-center text-indigo-700 bg-indigo-100">${totMat + totVesp + totND}</td>
                     </tr>`;
 
                 // Gráfico de barras agrupadas (diário)
@@ -1870,8 +2021,7 @@
                         labels,
                         datasets: [
                             { label: 'Matutino', data: dates.map(d => byDate[d]['Matutino']), backgroundColor: '#f59e0b' },
-                            { label: 'Vespertino', data: dates.map(d => byDate[d]['Vespertino']), backgroundColor: '#8b5cf6' },
-                            { label: 'Integral', data: dates.map(d => byDate[d]['Integral']), backgroundColor: '#10b981' }
+                            { label: 'Vespertino', data: dates.map(d => byDate[d]['Vespertino']), backgroundColor: '#8b5cf6' }
                         ]
                     },
                     options: {
@@ -1882,10 +2032,9 @@
                 });
 
                 // Gráfico de linha acumulada
-                let accMat = 0, accVesp = 0, accInt = 0;
+                let accMat = 0, accVesp = 0;
                 const accMatArr = dates.map(d => { accMat += byDate[d]['Matutino']; return accMat; });
                 const accVespArr = dates.map(d => { accVesp += byDate[d]['Vespertino']; return accVesp; });
-                const accIntArr = dates.map(d => { accInt += byDate[d]['Integral']; return accInt; });
 
                 const ctxCum = document.getElementById('chart-shift-cumulative').getContext('2d');
                 if (window.myChartShiftCum) window.myChartShiftCum.destroy();
@@ -1895,8 +2044,7 @@
                         labels,
                         datasets: [
                             { label: 'Matutino (acum.)', data: accMatArr, borderColor: '#f59e0b', backgroundColor: 'rgba(245,158,11,0.1)', fill: true, tension: 0.3 },
-                            { label: 'Vespertino (acum.)', data: accVespArr, borderColor: '#8b5cf6', backgroundColor: 'rgba(139,92,246,0.1)', fill: true, tension: 0.3 },
-                            { label: 'Integral (acum.)', data: accIntArr, borderColor: '#10b981', backgroundColor: 'rgba(16,185,129,0.1)', fill: true, tension: 0.3 }
+                            { label: 'Vespertino (acum.)', data: accVespArr, borderColor: '#8b5cf6', backgroundColor: 'rgba(139,92,246,0.1)', fill: true, tension: 0.3 }
                         ]
                     },
                     options: {
@@ -1912,14 +2060,14 @@
                 if (!data) { alert('Selecione o período para gerar o relatório.'); return; }
                 const { dates, byDate, start, end } = data;
 
-                let totMat = 0, totVesp = 0, totInt = 0, totND = 0;
+                let totMat = 0, totVesp = 0, totND = 0;
                 const rows = dates.map(d => {
                     const r = byDate[d];
-                    totMat += r['Matutino']; totVesp += r['Vespertino']; totInt += r['Integral']; totND += r['Não definido'];
+                    totMat += r['Matutino']; totVesp += r['Vespertino']; totND += r['Não definido'];
                     return [
                         d.split('-').reverse().join('/'),
-                        r['Matutino'], r['Vespertino'], r['Integral'], r['Não definido'],
-                        r['Matutino'] + r['Vespertino'] + r['Integral'] + r['Não definido']
+                        r['Matutino'], r['Vespertino'], r['Não definido'],
+                        r['Matutino'] + r['Vespertino'] + r['Não definido']
                     ];
                 });
 
@@ -1930,17 +2078,17 @@
                     doc.setFontSize(11); doc.text(`Período: ${start.split('-').reverse().join('/')} a ${end.split('-').reverse().join('/')}`, 14, 26);
                     doc.autoTable({
                         startY: 32,
-                        head: [['Data', 'Matutino', 'Vespertino', 'Integral', 'Não def.', 'Total']],
+                        head: [['Data', 'Matutino', 'Vespertino', 'Não def.', 'Total']],
                         body: rows,
-                        foot: [['TOTAL', totMat, totVesp, totInt, totND, totMat + totVesp + totInt + totND]],
+                        foot: [['TOTAL', totMat, totVesp, totND, totMat + totVesp + totND]],
                         theme: 'grid',
                         headStyles: { fillColor: [79, 70, 229] },
                         footStyles: { fillColor: [226, 232, 240], textColor: [30, 41, 59], fontStyle: 'bold' }
                     });
                     doc.save(`distribuicao_turnos_${start}_${end}.pdf`);
                 } else {
-                    const dataJson = rows.map(r => ({ Data: r[0], Matutino: r[1], Vespertino: r[2], Integral: r[3], 'Não definido': r[4], Total: r[5] }));
-                    dataJson.push({ Data: 'TOTAL', Matutino: totMat, Vespertino: totVesp, Integral: totInt, 'Não definido': totND, Total: totMat + totVesp + totInt + totND });
+                    const dataJson = rows.map(r => ({ Data: r[0], Matutino: r[1], Vespertino: r[2], 'Não definido': r[3], Total: r[4] }));
+                    dataJson.push({ Data: 'TOTAL', Matutino: totMat, Vespertino: totVesp, 'Não definido': totND, Total: totMat + totVesp + totND });
                     const ws = XLSX.utils.json_to_sheet(dataJson);
                     const wb = XLSX.utils.book_new();
                     XLSX.utils.book_append_sheet(wb, ws, 'Distribuição Turnos');
@@ -2189,18 +2337,79 @@
                 e.preventDefault();
                 const formData = new FormData(e.target);
                 const proc = Object.fromEntries(formData);
-                proc.createdAt = firebase.firestore.FieldValue.serverTimestamp();
-                const procRef = await db.collection("processes").add(proc);
                 const actionTypes = { qty_oficio: 'Ofício', qty_oficio_circular: 'Ofício Circular', qty_email: 'E-mail', qty_traslado: 'Traslado', qty_diligencia: 'Diligência', qty_comunicacao: 'Comunicação' };
-                for (let key in actionTypes) {
-                    const qty = parseInt(proc[key] || 0);
-                    for (let i = 0; i < qty; i++) {
-                        await db.collection("actions").add({ processId: procRef.id, servantId: proc.servantId, type: actionTypes[key], date: proc.deadline, status: 'Pendente', obs: 'Planejado via Cadastro de Processo' });
+
+                const editingId = window.editingProcessId;
+
+                try {
+                    if (editingId) {
+                        // ===== MODO EDIÇÃO =====
+                        // 1) Recupera o processo original (precisamos do createdAt para preservar a data histórica)
+                        const original = state.processes.find(x => x.id === editingId);
+                        if (!original) { alert('Processo original não encontrado.'); return; }
+
+                        // 2) Atualiza os dados do processo (mantém createdAt intacto)
+                        await db.collection('processes').doc(editingId).update({
+                            number: proc.number,
+                            type: proc.type,
+                            deadline: proc.deadline,
+                            priority: proc.priority,
+                            servantId: proc.servantId,
+                            obs: proc.obs || '',
+                            qty_oficio: proc.qty_oficio,
+                            qty_oficio_circular: proc.qty_oficio_circular,
+                            qty_email: proc.qty_email,
+                            qty_traslado: proc.qty_traslado,
+                            qty_diligencia: proc.qty_diligencia,
+                            qty_comunicacao: proc.qty_comunicacao
+                        });
+
+                        // 3) Apaga TODAS as ações vinculadas a este processo (em batch)
+                        const oldActionsSnap = await db.collection('actions').where('processId', '==', editingId).get();
+                        if (!oldActionsSnap.empty) {
+                            const batch = db.batch();
+                            oldActionsSnap.forEach(doc => batch.delete(doc.ref));
+                            await batch.commit();
+                        }
+
+                        // 4) Recria as ações usando a data ORIGINAL do processo (preserva ranking histórico)
+                        const originalDateStr = DateEngine.normalize(original.createdAt) || DateEngine.getToday();
+                        for (let key in actionTypes) {
+                            const qty = parseInt(proc[key] || 0);
+                            for (let i = 0; i < qty; i++) {
+                                await db.collection("actions").add({
+                                    processId: editingId,
+                                    servantId: proc.servantId,
+                                    type: actionTypes[key],
+                                    date: originalDateStr,
+                                    status: 'Concluído',
+                                    obs: 'Recriada via Edição de Processo'
+                                });
+                            }
+                        }
+
+                        logAction('Processo Editado', `Processo ${proc.number} atualizado (ações recriadas com data original ${originalDateStr.split('-').reverse().join('/')})`);
+                    } else {
+                        // ===== MODO CRIAÇÃO =====
+                        proc.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+                        const procRef = await db.collection("processes").add(proc);
+                        const todayStr = DateEngine.getToday();
+                        for (let key in actionTypes) {
+                            const qty = parseInt(proc[key] || 0);
+                            for (let i = 0; i < qty; i++) {
+                                await db.collection("actions").add({ processId: procRef.id, servantId: proc.servantId, type: actionTypes[key], date: todayStr, status: 'Concluído', obs: 'Registrada via Cadastro de Processo' });
+                            }
+                        }
+                        logAction('Processo Criado', `Processo ${proc.number} criado com ações registradas`);
                     }
+
+                    closeModal('modal-process');
+                    e.target.reset();
+                    resetProcessModal();
+                } catch (err) {
+                    console.error('Erro ao salvar processo:', err);
+                    alert('Erro ao salvar o processo. Veja o console para detalhes.');
                 }
-                closeModal('modal-process');
-                e.target.reset();
-                logAction('Processo Criado', `Processo ${proc.number} criado com planejamento de ações`);
             });
 
             document.getElementById('form-action').addEventListener('submit', async (e) => {
