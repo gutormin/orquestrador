@@ -28,18 +28,17 @@
         .badge-danger { background: #fee2e2; color: #991b1b; }
         .dark body { background-color: #0f172a; color: #f1f5f9; }
 
-        /* CAIXA DE DIAGNÓSTICO - Para sabermos o erro exato */
         #debug-console { 
             position: fixed; bottom: 10px; right: 10px; width: 300px; 
             height: 150px; background: rgba(255,255,255,0.9); border: 2px solid red; 
             z-index: 10000; overflow-y: auto; font-family: monospace; 
-            font-size: 10px; padding: 5px; color: black; pointer-events: none;
+            font-size: 10px; padding: 5px; color: black;
         }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-900 font-sans transition-colors duration-300">
 
-    <!-- LOG DE ERROS (SÓ PARA ESTE TESTE) -->
+    <!-- LOG DE ERROS (Aparece apenas na tela de login) -->
     <div id="debug-console">
         <strong class="text-red-600">LOG DO SISTEMA:</strong><br>
         <div id="log-content"></div>
@@ -302,8 +301,8 @@
                     <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 mb-8">
                         <h4 class="text-lg font-bold mb-4 flex items-center gap-2"><i data-lucide="calendar-days" class="w-5 h-5 text-indigo-600"></i> Filtrar Período do Relatório</h4>
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-end">
-                            <div><label class="block text-xs font-bold uppercase text-slate-500 mb-1">Data Início</label><input type="date" id="report-start-date" onchange="updateAnalyticalReport()" class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500"></div>
-                            <div><label class="block text-xs font-bold uppercase text-slate-500 mb-1">Data Fim</label><input type="date" id="report-end-date" onchange="updateAnalyticalReport()" class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500"></div>
+                            <div ><label class="block text-xs font-bold uppercase text-slate-500 mb-1">Data Início</label><input type="date" id="report-start-date" onchange="updateAnalyticalReport()" class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500"></div>
+                            <div ><label class="block text-xs font-bold uppercase text-slate-500 mb-1">Data Fim</label><input type="date" id="report-end-date" onchange="updateAnalyticalReport()" class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500"></div>
                             <div class="text-slate-400 text-sm italic pb-2"> * Defina o período para atualizar as tabelas.</div>
                         </div>
                     </div>
@@ -439,21 +438,21 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                     <div class="space-y-4">
                         <h4 class="font-bold text-indigo-600 flex items-center gap-2 mb-2"><i data-lucide="file-text" class="w-4 h-4"></i> Dados do Processo</h4>
-                        <div>
+                        <div >
                             <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Nº Processo</label>
                             <input type="text" name="number" required class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500">
                         </div>
-                        <div>
+                        <div >
                             <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Tipo</label>
                             <select name="type" class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500">
                                 <option>Administrativo</option><option>Judicial</option><option>Disciplinar</option><option>Outros</option>
                             </select>
                         </div>
-                        <div>
+                        <div >
                             <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Data (Prazo)</label>
                             <input type="date" name="deadline" required class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500">
                         </div>
-                        <div>
+                        <div >
                             <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Prioridade</label>
                             <select name="priority" class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500">
                                 <option value="Baixa">Baixa</option><option value="Média" selected>Média</option><option value="Alta">Alta</option><option value="Urgente">Urgente</option>
@@ -462,11 +461,11 @@
                     </div>
                     <div class="space-y-4">
                         <h4 class="font-bold text-indigo-600 flex items-center gap-2 mb-2"><i data-lucide="user" class="w-4 h-4"></i> Responsável</h4>
-                        <div>
+                        <div >
                             <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Servidor Designado</label>
                             <select id="select-servant-process" name="servantId" required class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500"></select>
                         </div>
-                        <div>
+                        <div >
                             <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Observações Gerais</label>
                             <textarea name="obs" class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500" rows="4"></textarea>
                         </div>
@@ -475,12 +474,12 @@
                 <div class="border-t border-slate-200 pt-6">
                     <h4 class="font-bold text-indigo-600 flex items-center gap-2 mb-4"><i data-lucide="list-checks" class="w-4 h-4"></i> Planejamento de Ações (Quantidade)</h4>
                     <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
-                        <div><label class="block text-xs font-medium text-slate-600 mb-1">Ofícios</label><input type="number" name="qty_oficio" min="0" value="0" class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500"></div>
-                        <div><label class="block text-xs font-medium text-slate-600 mb-1">Ofício Circular</label><input type="number" name="qty_oficio_circular" min="0" value="0" class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500"></div>
-                        <div><label class="block text-xs font-medium text-slate-600 mb-1">E-mails</label><input type="number" name="qty_email" min="0" value="0" class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500"></div>
-                        <div><label class="block text-xs font-medium text-slate-600 mb-1">Traslados</label><input type="number" name="qty_traslado" min="0" value="0" class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500"></div>
-                        <div><label class="block text-xs font-medium text-slate-600 mb-1">Diligências</label><input type="number" name="qty_diligencia" min="0" value="0" class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500"></div>
-                        <div><label class="block text-xs font-medium text-slate-600 mb-1">Comunicações</label><input type="number" name="qty_comunicacao" min="0" value="0" class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500"></div>
+                        <div ><label class="block text-xs font-medium text-slate-600 mb-1">Ofícios</label><input type="number" name="qty_oficio" min="0" value="0" class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500"></div>
+                        <div ><label class="block text-xs font-medium text-slate-600 mb-1">Ofício Circular</label><input type="number" name="qty_oficio_circular" min="0" value="0" class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500"></div>
+                        <div ><label class="block text-xs font-medium text-slate-600 mb-1">E-mails</label><input type="number" name="qty_email" min="0" value="0" class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500"></div>
+                        <div ><label class="block text-xs font-medium text-slate-600 mb-1">Traslados</label><input type="number" name="qty_traslado" min="0" value="0" class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500"></div>
+                        <div ><label class="block text-xs font-medium text-slate-600 mb-1">Diligências</label><input type="number" name="qty_diligencia" min="0" value="0" class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500"></div>
+                        <div ><label class="block text-xs font-medium text-slate-600 mb-1">Comunicações</label><input type="number" name="qty_comunicacao" min="0" value="0" class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500"></div>
                     </div>
                 </div>
                 <div class="flex justify-end gap-3 mt-8">
@@ -564,7 +563,6 @@
     </div>
 
     <script>
-        // FUNÇÃO DE LOG DE ERROS (Para diagnóstico)
         const logDiv = document.getElementById('log-content');
         function addLog(msg, isError = false) {
             const span = document.createElement('div');
@@ -574,7 +572,6 @@
             logDiv.scrollTop = logDiv.scrollHeight;
         }
 
-        // CONFIGURAÇÃO FIREBASE
         const firebaseConfig = {
             apiKey: 'AIzaSyBgaBMX2aHtiab1_7l64tSCSBQTn7e1Eak',
             authDomain: 'orquestrador-secexecpres.firebaseapp.com',
@@ -605,8 +602,17 @@
                 },
                 normalize: (dateInput) => {
                     if (!dateInput) return "";
+                    // Se já for string YYYY-MM-DD
                     if (typeof dateInput === 'string' && dateInput.length === 10) return dateInput;
-                    const d = new Date(dateInput);
+                    
+                    let d;
+                    // TRATAMENTO PARA TIMESTAMP DO FIREBASE (A CORREÇÃO ESTÁ AQUI)
+                    if (dateInput && typeof dateInput === 'object' && dateInput.seconds) {
+                        d = new Date(dateInput.seconds * 1000);
+                    } else {
+                        d = new Date(dateInput);
+                    }
+
                     if (isNaN(d.getTime())) return "";
                     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
                 },
@@ -628,9 +634,7 @@
                         statusEl.innerText = "Conectado ao Servidor";
                         statusEl.className = "mt-4 text-xs font-medium px-3 py-1 rounded-full bg-emerald-100 text-emerald-600 inline-block";
                         renderUsers();
-                    }, (err) => {
-                        addLog("Erro em 'users': " + err.message, true);
-                    });
+                    }, (err) => addLog("Erro em 'users': " + err.message, true));
 
                     db.collection("servants").onSnapshot((snapshot) => {
                         state.servants = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -724,6 +728,7 @@
                 currentUser = null;
                 document.getElementById('app-shell').classList.add('hidden');
                 document.getElementById('login-page').classList.remove('hidden');
+                document.getElementById('debug-console').classList.remove('hidden');
             }
 
             async function logAction(action, details) {
@@ -799,7 +804,7 @@
                 if(!checkPermission('delete')) { alert("Sem permissão."); return; }
                 if(confirm('Excluir registro?')) {
                     await db.collection(collectionName).doc(id).delete();
-                    logAction('Exclusão', `Item removido da coleção ${collectionName} ID: ${id}`);
+                    logAction('Exclusão', `Item removido da coleção ${collectionName} IDS: ${id}`);
                 }
             }
 
@@ -822,7 +827,12 @@
             function renderDashboard() {
                 const todayStr = DateEngine.getToday();
                 const monthStr = DateEngine.getMonth();
-                const procsToday = state.processes.filter(p => DateEngine.normalize(p.createdAt || p.deadline) === todayStr).length;
+                
+                // CORREÇÃO NO KPI: Agora usa a função normalize que trata Timestamps
+                const procsToday = state.processes.filter(p => {
+                    const dateOfCreation = DateEngine.normalize(p.createdAt);
+                    return dateOfCreation === todayStr;
+                }).length;
                 document.getElementById('kpi-total-proc').innerText = procsToday;
 
                 const rankingBody = document.getElementById('ranking-body');
@@ -1060,6 +1070,7 @@
                         const userDoc = querySnapshot.docs[0].data();
                         if (userDoc.password === passInp) {
                             addLog("Login com SUCESSO!");
+                            document.getElementById('debug-console').classList.add('hidden');
                             currentUser = { id: querySnapshot.docs[0].id, ...userDoc };
                             document.getElementById('login-page').classList.add('hidden');
                             document.getElementById('app-shell').classList.remove('hidden');
@@ -1085,4 +1096,4 @@
         }
     </script>
 </body
-</html>
+</html
