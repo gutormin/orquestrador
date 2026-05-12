@@ -34,11 +34,20 @@
             z-index: 10000; overflow-y: auto; font-family: monospace; 
             font-size: 10px; padding: 5px; color: black;
         }
+
+        @keyframes pulse-red {
+            0% { background-color: #fee2e2; }
+            50% { background-color: #ef4444; color: white; }
+            100% { background-color: #fee2e2; }
+        }
+        .animate-pulse-red {
+            animation: pulse-red 1.5s infinite ease-in-out;
+        }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-900 font-sans transition-colors duration-300">
 
-    <!-- LOG DE ERROS (Aparece apenas na tela de login) -->
+    <!-- LOG DE ERROS -->
     <div id="debug-console">
         <strong class="text-red-600">LOG DO SISTEMA:</strong><br>
         <div id="log-content"></div>
@@ -326,6 +335,14 @@
                         </div>
                     </div>
                     <div id="report-tab-daily" class="report-tab-content hidden">
+                        <div id="daily-export-controls" class="hidden flex justify-end gap-3 mb-6">
+                            <button onclick="exportDailyData('pdf')" class="px-4 py-2 bg-rose-600 text-white rounded-lg text-sm font-bold hover:bg-rose-700 transition-all flex items-center gap-2 shadow-sm">
+                                <i data-lucide="file-text" class="w-4 h-4"></i> PDF Análise Diária
+                            </button>
+                            <button onclick="exportDailyData('excel')" class="px-4 py-2 bg-emerald-600 text-white rounded-lg text-sm font-bold hover:bg-emerald-700 transition-all flex items-center gap-2 shadow-sm">
+                                <i data-lucide="table" class="w-4 h-4"></i> Excel Análise Diária
+                            </button>
+                        </div>
                         <div id="daily-reports-container" class="space-y-12">
                             <div class="text-center py-10 text-slate-400">Selecione o período acima para gerar as tabelas diárias.</div>
                         </div>
@@ -602,17 +619,13 @@
                 },
                 normalize: (dateInput) => {
                     if (!dateInput) return "";
-                    // Se já for string YYYY-MM-DD
                     if (typeof dateInput === 'string' && dateInput.length === 10) return dateInput;
-                    
                     let d;
-                    // TRATAMENTO PARA TIMESTAMP DO FIREBASE (A CORREÇÃO ESTÁ AQUI)
                     if (dateInput && typeof dateInput === 'object' && dateInput.seconds) {
                         d = new Date(dateInput.seconds * 1000);
                     } else {
                         d = new Date(dateInput);
                     }
-
                     if (isNaN(d.getTime())) return "";
                     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
                 },
@@ -766,7 +779,12 @@
             function renderProcesses() {
                 const body = document.getElementById('processes-body');
                 if(!body) return;
-                const sortedProcesses = [...state.processes].sort((a, b) => (a.deadline < b.deadline ? 1 : -1));
+                const sortedProcesses = [...state.processes].sort((a, b) => {
+                    const timeA = (a.createdAt && a.createdAt.seconds) ? a.createdAt.seconds : 0;
+                    const timeB = (b.createdAt && b.createdAt.seconds) ? b.createdAt.seconds : 0;
+                    return timeB - timeA;
+                });
+
                 body.innerHTML = sortedProcesses.map(p => {
                     const servant = state.servants.find(s => s.id == p.servantId);
                     const registrationTime = (p.createdAt && p.createdAt.seconds) ? new Date(p.createdAt.seconds * 1000).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : '---';
@@ -828,7 +846,6 @@
                 const todayStr = DateEngine.getToday();
                 const monthStr = DateEngine.getMonth();
                 
-                // CORREÇÃO NO KPI: Agora usa a função normalize que trata Timestamps
                 const procsToday = state.processes.filter(p => {
                     const dateOfCreation = DateEngine.normalize(p.createdAt);
                     return dateOfCreation === todayStr;
@@ -864,13 +881,17 @@
                         const dateToCompare = DateEngine.getDateOfMonth(day);
                         return state.processes.filter(p => DateEngine.normalize(p.deadline) === dateToCompare).length;
                     });
+                    
+                    // CORRIGIDO: windowPmyChartProd -> window.myChartProd
                     window.myChartProd = new Chart(ctxProd, { type: 'line', data: { labels: labelsDays, datasets: [{ label: 'Processos', data: dataDays, borderColor: '#4f46e5', backgroundColor: 'rgba(79, 70, 229, 0.1)', fill: true, tension: 0.4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } } });
+                    
                     const monthStr = DateEngine.getMonth();
                     const actionTypes = ['Ofício', 'Ofício Circular', 'E-mail', 'Traslado', 'Diligência', 'Comunicação'];
-                    const colors = ['#4f46e5', '#10b981', '#f59e0b', '#ec4899', '#8b5cf6', '#64748b'];
+                    const colors = ['#4f46e5', '#10b981', '#f59e0b', '#ec4899', '#8b5cf6', '#64748 la-600']; // Correção de cor
+                    const colorsFixed = ['#4f46e5', '#10b981', '#f59e0b', '#ec4899', '#8b5cf6', '#64748b'];
                     const servantLabels = state.servants.map(s => s.name);
                     const datasets = actionTypes.map((type, idx) => {
-                        return { label: type, data: state.servants.map(s => state.actions.filter(a => a.servantId == s.id && a.type === type && DateEngine.normalize(a.date).startsWith(monthStr)).length), backgroundColor: colors[idx] };
+                        return { label: type, data: state.servants.map(s => state.actions.filter(a => a.servantId == s.id && a.type === type && DateEngine.normalize(a.date).startsWith(monthStr)).length), backgroundColor: colorsFixed[idx] };
                     });
                     window.myChartDist = new Chart(ctxDist, { type: 'bar', data: { labels: servantLabels, datasets: datasets }, options: { responsive: true, maintainAspectRatio: false, scales: { x: { stacked: false }, y: { stacked: false, beginAtZero: true, ticks: { stepSize: 1 } } }, plugins: { legend: { position: 'bottom' } } } });
                 } catch (e) { addLog("Erro nos gráficos: " + e.message, true); }
@@ -923,7 +944,10 @@
                 const start = document.getElementById('report-start-date').value;
                 const end = document.getElementById('report-end-date').value;
                 const container = document.getElementById('daily-reports-container');
+                const controls = document.getElementById('daily-export-controls');
                 if (!start || !end) return;
+                
+                controls.classList.remove('hidden');
                 container.innerHTML = '';
                 let currentDate = new Date(start + 'T00:00:00');
                 const endDate = new Date(end + 'T00:00:00');
@@ -949,6 +973,87 @@
                     currentDate.setDate(currentDate.getDate() + 1);
                 }
                 lucide.createIcons();
+            }
+
+            window.exportDailyData = function(format) {
+                const start = document.getElementById('report-start-date').value;
+                const end = document.getElementById('report-end-date').value;
+                if (!start || !end) { alert("Selecione as datas primeiro."); return; }
+
+                let currentDate = new Date(start + 'T00:00:00');
+                const endDate = new Date(end + 'T00:00:00');
+                
+                if (format === 'pdf') {
+                    const { jsPDF } = window.jspdf;
+                    const doc = new jsPDF();
+                    doc.setFontSize(16);
+                    doc.text('Análise Diária de Produtividade - SecExecPres', 14, 15);
+                    doc.setFontSize(10);
+                    doc.text(`Período: ${start} até ${end}`, 14, 22);
+
+                    let startY = 30;
+                    while (currentDate <= endDate) {
+                        const dateStr = currentDate.toISOString().split('T')[0];
+                        const dayActions = state.actions.filter(a => DateEngine.normalize(a.date) === dateStr);
+                        
+                        const rows = state.servants.map(s => {
+                            const sActions = dayActions.filter(a => a.servantId == s.id);
+                            return [
+                                s.name,
+                                sActions.length,
+                                sActions.filter(a => a.type === 'Ofício').length,
+                                sActions.filter(a => a.type === 'Ofício Circular').length,
+                                sActions.filter(a => a.type === 'E-mail').length,
+                                sActions.filter(a => a.type === 'Traslado').length,
+                                sActions.filter(a => a.type === 'Diligência').length,
+                                sActions.filter(a => a.type === 'Comunicação').length
+                            ];
+                        });
+
+                        doc.setFontSize(12);
+                        doc.text(`Data: ${dateStr.split('-').reverse().join('/')}`, 14, startY);
+                        
+                        doc.autoTable({
+                            startY: startY + 5,
+                            head: [['Servidor', 'Total', 'Ofíc.', 'Circ.', 'Email', 'Tras.', 'Dil.', 'Comun.']],
+                            body: rows,
+                            theme: 'grid',
+                            headStyles: { fillColor: [16, 185, 129] },
+                            margin: { top: 20 }
+                        });
+
+                        startY = doc.lastAutoTable.finalY + 15;
+                        if (startY > 270) { doc.addPage(); startY = 20; }
+                        currentDate.setDate(currentDate.getDate() + 1);
+                    }
+                    doc.save(`analise_diaria_${start}_${end}.pdf`);
+                } else {
+                    const excelData = [];
+                    while (currentDate <= endDate) {
+                        const dateStr = currentDate.toISOString().split('T')[0];
+                        const dayActions = state.actions.filter(a => DateEngine.normalize(a.date) === dateStr);
+                        
+                        state.servants.forEach(s => {
+                            const sActions = dayActions.filter(a => a.servantId == s.id);
+                            excelData.push({
+                                'Data': dateStr.split('-').reverse().join('/'),
+                                'Servidor': s.name,
+                                'Total': sActions.length,
+                                'Ofícios': sActions.filter(a => a.type === 'Ofício').length,
+                                'Circulares': sActions.filter(a => a.type === 'Ofício Circular').length,
+                                'E-mails': sActions.filter(a => a.type === 'E-mail').length,
+                                'Traslados': sActions.filter(a => a.type === 'Traslado').length,
+                                'Diligências': sActions.filter(a => a.type === 'Diligência').length,
+                                'Comunicações': sActions.filter(a => a.type === 'Comunicação').length
+                            });
+                        });
+                        currentDate.setDate(currentDate.getDate() + 1);
+                    }
+                    const worksheet = XLSX.utils.json_to_sheet(excelData);
+                    const workbook = XLSX.utils.book_new();
+                    XLSX.utils.book_append_sheet(workbook, worksheet, "Análise Diária");
+                    XLSX.writeFile(workbook, `analise_diaria_${start}_${end}.xlsx`);
+                }
             }
 
             window.renderReportChart = function() {
@@ -1029,7 +1134,8 @@
                 today.setHours(0, 0, 0, 0);
                 const due = new Date(dueDateStr + 'T00:00:00');
                 const diffDays = Math.ceil((due - today) / (1000 * 60 * 60 * 24));
-                if (diffDays <= 2) return 'bg-red-100 text-red-700 font-bold'; 
+                if (diffDays <= 0) return 'bg-red-100 text-red-700 font-bold animate-pulse-red'; 
+                if (diffDays === 1) return 'bg-red-600 text-white font-bold'; 
                 if (diffDays <= 5) return 'bg-orange-100 text-orange-700 font-bold';
                 return 'bg-yellow-100 text-yellow-700'; 
             }
@@ -1096,4 +1202,4 @@
         }
     </script>
 </body
-</html
+</html>
