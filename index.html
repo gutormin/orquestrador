@@ -104,18 +104,18 @@
                                 </div>
                                 <div class="p-3 bg-blue-100 text-blue-600 rounded-lg"><i data-lucide="folder" class="w-6 h-6"></i></div>
                             </div>
-                        </div>
-                    </div>
+                        </div
+                    </div
 
                     <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 mb-8">
                         <h4 class="text-lg font-bold mb-6 flex items-center gap-2"><i data-lucide="bar-chart" class="w-5 h-5 text-indigo-600"></i> Produtividade Individual (Mês Atual)</h4>
                         <div class="relative h-[400px]"><canvas id="chart-distribution"></canvas></div>
-                    </div>
+                    </div
 
                     <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 mb-8">
                         <h4 class="text-lg font-bold mb-6 flex items-center gap-2"><i data-lucide="line-chart" class="w-5 h-5 text-indigo-600"></i> Processos por Prazo (Mês)</h4>
                         <div class="relative h-[200px]"><canvas id="chart-productivity"></canvas></div>
-                    </div>
+                    </div
 
                     <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden mb-8">
                         <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
@@ -215,17 +215,17 @@
                         </div>
                         <button id="btn-new-process" onclick="openModal('modal-process')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-all shadow-md"><i data-lucide="plus" class="w-4 h-4"></i> Novo Processo</button>
                     </div>
-                                        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
                         <table id="processes-table" class="w-full text-left">
                             <thead class="bg-slate-50 text-slate-500 text-xs uppercase">
                                 <tr>
                                     <th class="px-6 py-4">Nº Processo</th>
-                                    <th class="px-6 py-4">Tipo</th>
+                                    <th class="px-6 py-4">Prioridade</th>
                                     <th class="px-6 py-4">Servidor</th>
                                     <th class="px-6 py-4">Data</th>
                                     <th class="px-6 py-4">Hora Cadastro</th>
-                                    <th class="px-6 py-4">Status</th>
-                                    <th class="px-6 py-4 text-center">Ações</th>
+                                    <th class="px-6 py-4">Ações Planejadas</th>
+                                    <th class="px-6 py-4 text-center">Excluir</th>
                                 </tr>
                             </thead>
                             <tbody id="processes-body" class="divide-y divide-slate-100"></tbody>
@@ -740,6 +740,17 @@
             lucide.createIcons();
         }
 
+        function getPriorityBadge(priority) {
+            const map = {
+                'Urgente': 'bg-red-100 text-red-700 border border-red-200',
+                'Alta': 'bg-orange-100 text-orange-700 border border-orange-200',
+                'Média': 'bg-yellow-100 text-yellow-700 border border-yellow-200',
+                'Baixa': 'bg-slate-100 text-slate-600 border border-slate-200'
+            };
+            const color = map[priority] || map['Média'];
+            return `<span class="badge ${color}">${priority}</span>`;
+        }
+
         function renderProcesses() {
             const body = document.getElementById('processes-body');
             if(!body) return;
@@ -750,18 +761,30 @@
                 const timeB = b.createdAt ? b.createdAt.seconds : 0;
                 return timeB - timeA;
             });
+
             body.innerHTML = sortedProcesses.map(p => {
                 const servant = state.servants.find(s => s.id == p.servantId);
                 const registrationTime = (p.createdAt && p.createdAt.seconds) 
                     ? new Date(p.createdAt.seconds * 1000).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) 
                     : '---';
+                
+                // Montagem da string de ações planejadas
+                const planned = [];
+                if(p.qty_oficio > 0) planned.push(`Of: ${p.qty_oficio}`);
+                if(p.qty_oficio_circular > 0) planned.push(`Cir: ${p.qty_oficio_circular}`);
+                if(p.qty_email > 0) planned.push(`Email: ${p.qty_email}`);
+                if(p.qty_traslado > 0) planned.push(`Tras: ${p.qty_traslado}`);
+                if(p.qty_diligencia > 0) planned.push(`Dil: ${p.qty_diligencia}`);
+                if(p.qty_comunicacao > 0) planned.push(`Com: ${p.qty_comunicacao}`);
+                const plannedText = planned.length > 0 ? planned.join(' | ') : '<span class="text-slate-300">Nenhuma</span>';
+
                 return `<tr class="hover:bg-slate-50 transition-colors">
                     <td class="px-6 py-4 font-bold text-indigo-600">${p.number}</td>
-                    <td class="px-6 py-4">${p.type}</td>
+                    <td class="px-6 py-4">${getPriorityBadge(p.priority)}</td>
                     <td class="px-6 py-4">${servant ? servant.name : 'N/A'}</td>
                     <td class="px-6 py-4 text-slate-500">${p.deadline}</td>
                     <td class="px-6 py-4 text-slate-500">${registrationTime}</td>
-                    <td class="px-6 py-4"><span class="badge badge-success">Concluído</span></td>
+                    <td class="px-6 py-4 text-xs font-medium text-slate-600">${plannedText}</td>
                     <td class="px-6 py-4 text-center">${checkPermission('delete') ? `<button onclick="deleteItem('processes', '${p.id}')" class="text-rose-500 hover:text-rose-700 p-2"><i data-lucide="trash-2" class="w-4 h-4"></i></button>` : '---'}</td>
                 </tr>`;
             }).join('');
@@ -774,8 +797,7 @@
             body.innerHTML = state.actions.map(a => {
                 const proc = state.processes.find(p => p.id == a.processId);
                 const servant = state.servants.find(s => s.id == a.servantId);
-                return `<tr class="hover:bg-slate-50 transition-colors"><td class="px-6 py-4 font-medium">${proc ? proc.number : 'N/A'}</td><td class="px-6 py-4">${a.type}</td><td class="px-6 py-4">${servant ? servant.name : 'N/A'}</td><td class="px-6 py-4 text-slate-500">${a.date}</td><td class="px-6 py-4"><span class="badge badge-success">Concluído</span></td><td class="px-6 py-4 text-center">${checkPermission('delete') ? `<button onclick="deleteItem('actions', '${a.id}')" class="text-rose-500 hover:text-rose-700 p-2"><i data-lucide="trash-2" class="w-4 h-4"></i></button>` : '---'}</td></tr>`;
-            }).join('');
+                return `<tr class="hover:bg-slate-50 transition-colors"><td class="px-6 py-4 font-medium">${proc ? proc.number : 'N/A'}</td><td class="px-6 py-4">${a.type}</td><td class="px-6 py-4">${servant ? servant.name : 'N/A'}</td><td class="px-6 py-4 text-slate-500">${a.date}</td><td class="px-6 py-4"><span class="badge badge-success">Concluído</span></td><td class="px-6 py-4 text-center">${checkPermission('delete') ? `<button onclick="deleteItem('actions', '${a.id}')" class="text-rose-500 hover:text-rose-700 p-2"><i data-lucide="trash-2" class="w-4 h-4"></i></button>` : '---'}</td></tr>`).join('');
             lucide.createIcons();
         }
 
@@ -1152,7 +1174,6 @@
             logAction('Ação Registrada', `Ação ${action.type} lançada para o processo ${action.processId}`);
         });
 
-        // --- Lógica de Controle de Prazos ---
         function calculateBusinessDays(startDateStr, days) {
             let date = new Date(startDateStr + 'T00:00:00');
             let count = 0;
@@ -1191,7 +1212,7 @@
                         <td class="px-6 py-4 text-center">
                             <span class="px-3 py-1 rounded-full text-xs ${colorClass}">
                                 ${d.dueDate.split('-').reverse().join('/')}
-                            </span>
+                            </span
                         </td>
                         <td class="px-6 py-4 text-center">
                             ${checkPermission('delete') ? `<button onclick="deleteItem('deadlines', '${d.id}')" class="text-rose-500 hover:text-rose-700 p-2"><i data-lucide="trash-2" class="w-4 h-4"></i></button>` : '---'}
@@ -1251,4 +1272,3 @@
     </script>
 </body>
 </html>
-
