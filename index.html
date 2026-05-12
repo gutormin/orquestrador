@@ -104,18 +104,18 @@
                                 </div>
                                 <div class="p-3 bg-blue-100 text-blue-600 rounded-lg"><i data-lucide="folder" class="w-6 h-6"></i></div>
                             </div>
-                        </div
-                    </div
+                        </div>
+                    </div>
 
                     <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 mb-8">
                         <h4 class="text-lg font-bold mb-6 flex items-center gap-2"><i data-lucide="bar-chart" class="w-5 h-5 text-indigo-600"></i> Produtividade Individual (Mês Atual)</h4>
                         <div class="relative h-[400px]"><canvas id="chart-distribution"></canvas></div>
-                    </div
+                    </div>
 
                     <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 mb-8">
                         <h4 class="text-lg font-bold mb-6 flex items-center gap-2"><i data-lucide="line-chart" class="w-5 h-5 text-indigo-600"></i> Processos por Prazo (Mês)</h4>
                         <div class="relative h-[200px]"><canvas id="chart-productivity"></canvas></div>
-                    </div
+                    </div>
 
                     <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden mb-8">
                         <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
@@ -200,7 +200,7 @@
                     </div>
                     <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
                         <table id="servants-table" class="w-full text-left">
-                            <thead class="bg-slate-50 text-slate-500 text-xs uppercase"><tr><th class="px-6 py-4">Nome</th><th class="px-6 py-4">Matrícula</th><th class="px-6 py-4">Setor</th><th class="px-6 py-4">Status</th><th class="px-6 py-4 text-center">Ações</th></tr></thead>
+                            <thead class="bg-slate-50 text-slate-500 text-xs uppercase"><tr ><th class="px-6 py-4">Nome</th><th class="px-6 py-4">Matrícula</th><th class="px-6 py-4">Setor</th><th class="px-6 py-4">Status</th><th class="px-6 py-4 text-center">Ações</th></tr></thead>
                             <tbody id="servants-body" class="divide-y divide-slate-100"></tbody>
                         </table>
                     </div>
@@ -267,7 +267,7 @@
                     </div>
                     <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
                         <table id="actions-table" class="w-full text-left">
-                            <thead class="bg-slate-50 text-slate-500 text-xs uppercase"><tr><th class="px-6 py-4">Processo</th><th class="px-6 py-4">Ação</th><th class="px-6 py-4">Responsável</th><th class="px-6 py-4">Data</th><th class="px-6 py-4">Status</th><th class="px-6 py-4 text-center">Ações</th></tr></thead>
+                            <thead class="bg-slate-50 text-slate-500 text-xs uppercase"><tr ><th class="px-6 py-4">Processo</th><th class="px-6 py-4">Ação</th><th class="px-6 py-4">Responsável</th><th class="px-6 py-4">Data</th><th class="px-6 py-4">Status</th><th class="px-6 py-4 text-center">Ações</th></tr></thead>
                             <tbody id="actions-body" class="divide-y divide-slate-100"></tbody>
                         </table>
                     </div>
@@ -330,7 +330,7 @@
                     <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
                         <div class="p-6 border-b border-slate-100"><h4 class="text-lg font-bold">Log de Atividades do Sistema</h4></div>
                         <table class="w-full text-left">
-                            <thead class="bg-slate-50 text-slate-500 text-xs uppercase"><tr><th class="px-6 py-4">Data/Hora</th><th class="px-6 py-4">Usuário</th><th class="px-6 py-4">Ação</th><th class="px-6 py-4">Detalhes</th></tr></thead>
+                            <thead class="bg-slate-50 text-slate-500 text-xs uppercase"><tr ><th class="px-6 py-4">Data/Hora</th><th class="px-6 py-4">Usuário</th><th class="px-6 py-4">Ação</th><th class="px-6 py-4">Detalhes</th></tr></thead>
                             <tbody id="audit-body" class="divide-y divide-slate-100 text-sm"></tbody>
                         </table>
                     </div>
@@ -583,7 +583,7 @@
             storageBucket: 'orquestrador-secexecpres.firebasestorage.app',
             messagingSenderId: '297721044357',
             appId: '1:297721044357:web:3c4bece1e257667abbb8ec',
-            measurementId: 'G-W9QV684 la-SCSBQTn7e1Eak'
+            measurementId: 'G-W9QV684la-SCSBQTn7e1Eak' // CORRIGIDO: Removido espaço vazio
         };
 
         const app = initializeApp(firebaseConfig);
@@ -617,12 +617,19 @@
 
         function setupRealtimeListeners() {
             const statusEl = document.getElementById('db-status');
+            
+            // Tenta conectar aos usuários para validar a conexão
             onSnapshot(collection(db, "users"), (snapshot) => {
                 state.users = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 statusEl.innerText = "Conectado ao Servidor";
                 statusEl.className = "mt-4 text-xs font-medium px-3 py-1 rounded-full bg-emerald-100 text-emerald-600 inline-block";
                 renderUsers();
+            }, (error) => {
+                console.error("Erro Firestore:", error);
+                statusEl.innerText = "Erro de Permissão no BD";
+                statusEl.className = "mt-4 text-xs font-medium px-3 py-1 rounded-full bg-rose-100 text-rose-600 inline-block";
             });
+
             onSnapshot(collection(db, "servants"), (snapshot) => {
                 state.servants = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 renderServants();
@@ -768,7 +775,6 @@
                     ? new Date(p.createdAt.seconds * 1000).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) 
                     : '---';
                 
-                // Montagem da string de ações planejadas
                 const planned = [];
                 if(p.qty_oficio > 0) planned.push(`Of: ${p.qty_oficio}`);
                 if(p.qty_oficio_circular > 0) planned.push(`Cir: ${p.qty_oficio_circular}`);
@@ -1212,7 +1218,7 @@
                         <td class="px-6 py-4 text-center">
                             <span class="px-3 py-1 rounded-full text-xs ${colorClass}">
                                 ${d.dueDate.split('-').reverse().join('/')}
-                            </span
+                            </span>
                         </td>
                         <td class="px-6 py-4 text-center">
                             ${checkPermission('delete') ? `<button onclick="deleteItem('deadlines', '${d.id}')" class="text-rose-500 hover:text-rose-700 p-2"><i data-lucide="trash-2" class="w-4 h-4"></i></button>` : '---'}
@@ -1249,20 +1255,25 @@
             const btn = document.getElementById('btn-login');
             btn.innerText = "Autenticando...";
             btn.disabled = true;
-            const q = query(collection(db, "users"), where("username", "==", userInp));
-            const querySnapshot = await getDocs(q);
-            if (!querySnapshot.empty) {
-                const userDoc = querySnapshot.docs[0].data();
-                if (userDoc.password === passInp) {
-                    currentUser = { id: querySnapshot.docs[0].id, ...userDoc };
-                    document.getElementById('login-page').classList.add('hidden');
-                    document.getElementById('app-shell').classList.remove('hidden');
-                    document.getElementById('user-display-name').innerText = currentUser.name;
-                    document.getElementById('user-display-role').innerText = currentUser.role;
-                    await logAction('Login', 'Usuário entrou no sistema');
-                    showPage('dashboard');
-                } else { alert("Senha incorreta!"); }
-            } else { alert("Usuário não encontrado!"); }
+            try {
+                const q = query(collection(db, "users"), where("username", "==", userInp));
+                const querySnapshot = await getDocs(q);
+                if (!querySnapshot.empty) {
+                    const userDoc = querySnapshot.docs[0].data();
+                    if (userDoc.password === passInp) {
+                        currentUser = { id: querySnapshot.docs[0].id, ...userDoc };
+                        document.getElementById('login-page').classList.add('hidden');
+                        document.getElementById('app-shell').classList.remove('hidden');
+                        document.getElementById('user-display-name').innerText = currentUser.name;
+                        document.getElementById('user-display-role').innerText = currentUser.role;
+                        await logAction('Login', 'Usuário entrou no sistema');
+                        showPage('dashboard');
+                    } else { alert("Senha incorreta!"); }
+                } else { alert("Usuário não encontrado!"); }
+            } catch (err) {
+                alert("Erro ao conectar ao servidor. Verifique suas regras do Firebase.");
+                console.error(err);
+            }
             btn.innerText = "Entrar no Sistema";
             btn.disabled = false;
         });
