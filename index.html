@@ -616,44 +616,46 @@
         };
 
         function setupRealtimeListeners() {
-            const statusEl = document.getElementById('db-status');
-            
-            // Tenta conectar aos usuários para validar a conexão
-            onSnapshot(collection(db, "users"), (snapshot) => {
-                state.users = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                statusEl.innerText = "Conectado ao Servidor";
-                statusEl.className = "mt-4 text-xs font-medium px-3 py-1 rounded-full bg-emerald-100 text-emerald-600 inline-block";
-                renderUsers();
-            }, (error) => {
-                console.error("Erro Firestore:", error);
-                statusEl.innerText = "Erro de Permissão no BD";
-                statusEl.className = "mt-4 text-xs font-medium px-3 py-1 rounded-full bg-rose-100 text-rose-600 inline-block";
-            });
+    const statusEl = document.getElementById('db-status');
+    
+    // Tenta ler a coleção de usuários para validar a conexão
+    onSnapshot(collection(db, "users"), (snapshot) => {
+        state.users = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        statusEl.innerText = "Conectado ao Servidor";
+        statusEl.className = "mt-4 text-xs font-medium px-3 py-1 rounded-full bg-emerald-100 text-emerald-600 inline-block";
+        renderUsers();
+    }, (error) => {
+        console.error("Erro Firestore:", error);
+        // Se cair aqui, é certeza que as Regras do Firestore (Passo 1) não foram aplicadas
+        statusEl.innerText = "Erro: Verifique as Regras do Firebase";
+        statusEl.className = "mt-4 text-xs font-medium px-3 py-1 rounded-full bg-rose-100 text-rose-600 inline-block";
+    });
 
-            onSnapshot(collection(db, "servants"), (snapshot) => {
-                state.servants = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                renderServants();
-                populateSelects();
-            });
-            onSnapshot(collection(db, "processes"), (snapshot) => {
-                state.processes = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                renderProcesses();
-                renderDashboard();
-            });
-            onSnapshot(collection(db, "actions"), (snapshot) => {
-                state.actions = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                renderActions();
-                renderDashboard();
-            });
-            onSnapshot(collection(db, "deadlines"), (snapshot) => {
-                state.deadlines = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                renderDeadlines();
-            });
-            onSnapshot(query(collection(db, "audit"), orderBy("timestamp", "desc")), (snapshot) => {
-                state.audit = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                renderAudit();
-            });
-        }
+    // ... (restante dos onSnapshots permanecem iguais)
+    onSnapshot(collection(db, "servants"), (snapshot) => {
+        state.servants = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        renderServants();
+        populateSelects();
+    });
+    onSnapshot(collection(db, "processes"), (snapshot) => {
+        state.processes = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        renderProcesses();
+        renderDashboard();
+    });
+    onSnapshot(collection(db, "actions"), (snapshot) => {
+        state.actions = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        renderActions();
+        renderDashboard();
+    });
+    onSnapshot(collection(db, "deadlines"), (snapshot) => {
+        state.deadlines = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        renderDeadlines();
+    });
+    onSnapshot(query(collection(db, "audit"), orderBy("timestamp", "desc")), (snapshot) => {
+        state.audit = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        renderAudit();
+    });
+}
 
         function checkPermission(action) {
             if (!currentUser) return false;
