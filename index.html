@@ -1472,6 +1472,8 @@
                 const p = state.processes.find(x => x.id === id);
                 if (!p) { alert('Processo não encontrado.'); return; }
                 window.editingProcessId = id;
+                // Guarda os dados originais no dataset do form para acesso garantido no submit
+                window.editingProcessData = { ...p };
 
                 // Abre o modal primeiro (openModal chama populateSelects internamente)
                 openModal('modal-process');
@@ -2344,60 +2346,60 @@
                 try {
                     if (editingId) {
                         // ===== MODO EDIÇÃO =====
-                        // 1) Recupera o processo original (precisamos do createdAt para preservar a data histórica)
                         const original = state.processes.find(x => x.id === editingId);
+                        const savedData = window.editingProcessData || original || {};
                         if (!original) { alert('Processo original não encontrado.'); return; }
 
-                        // 2) Atualiza os dados do processo (mantém createdAt intacto)
+                        const form = document.getElementById('form-process');
+                        const getVal = name => form.querySelector(`[name="${name}"]`)?.value || savedData[name] || '';
+                        const deadlineVal = getVal('deadline') || savedData.deadline || '';
+                        const servantIdVal = getVal('servantId') || savedData.servantId || '';
+                        const actionDateStr = deadlineVal || DateEngine.getToday();
+
+                        // 2) Busca as ações existentes ANTES de apagar (para saber quais e quantas recriar)
+                        const oldActionsSnap = await db.collection('actions').where('processId', '==', editingId).get();
+                        const oldActions = oldActionsSnap.docs.map(doc => doc.data());
+                        console.log('[EDIÇÃO v3] deadline:', actionDateStr, '| ações no banco:', oldActions.length, oldActions.map(a => a.type));
+
+                        // 3) Atualiza os dados do processo
                         await db.collection('processes').doc(editingId).update({
-                            number: proc.number,
-                            type: proc.type,
-                            deadline: proc.deadline,
-                            priority: proc.priority,
-                            servantId: proc.servantId,
-                            obs: proc.obs || '',
-                            qty_oficio: proc.qty_oficio,
-                            qty_oficio_circular: proc.qty_oficio_circular,
-                            qty_email: proc.qty_email,
-                            qty_traslado: proc.qty_traslado,
-                            qty_diligencia: proc.qty_diligencia,
-                            qty_comunicacao: proc.qty_comunicacao
+                            number: getVal('number'),
+                            type: getVal('type'),
+                            deadline: deadlineVal,
+                            priority: getVal('priority'),
+                            servantId: servantIdVal,
+                            obs: getVal('obs')
                         });
 
-                        // 3) Apaga TODAS as ações vinculadas a este processo (em batch)
-                        const oldActionsSnap = await db.collection('actions').where('processId', '==', editingId).get();
+                        // 4) Apaga as ações antigas em batch
                         if (!oldActionsSnap.empty) {
                             const batch = db.batch();
                             oldActionsSnap.forEach(doc => batch.delete(doc.ref));
                             await batch.commit();
                         }
 
-                        // 4) Recria as ações usando a data ORIGINAL do processo (preserva ranking histórico)
-                        const originalDateStr = DateEngine.normalize(original.createdAt) || DateEngine.getToday();
-                        for (let key in actionTypes) {
-                            const qty = parseInt(proc[key] || 0);
-                            for (let i = 0; i < qty; i++) {
-                                await db.collection("actions").add({
-                                    processId: editingId,
-                                    servantId: proc.servantId,
-                                    type: actionTypes[key],
-                                    date: originalDateStr,
-                                    status: 'Concluído',
-                                    obs: 'Recriada via Edição de Processo'
-                                });
-                            }
+                        // 5) Recria cada ação com a data correta (baseado no que existia no banco)
+                        for (const oldAction of oldActions) {
+                            await db.collection("actions").add({
+                                processId: editingId,
+                                servantId: servantIdVal,
+                                type: oldAction.type,
+                                date: actionDateStr,
+                                status: 'Concluído',
+                                obs: 'Recriada via Edição de Processo'
+                            });
                         }
 
-                        logAction('Processo Editado', `Processo ${proc.number} atualizado (ações recriadas com data original ${originalDateStr.split('-').reverse().join('/')})`);
+                        logAction('Processo Editado', `Processo ${getVal('number')} atualizado (${oldActions.length} ações na data ${actionDateStr.split('-').reverse().join('/')})`);
                     } else {
                         // ===== MODO CRIAÇÃO =====
                         proc.createdAt = firebase.firestore.FieldValue.serverTimestamp();
                         const procRef = await db.collection("processes").add(proc);
-                        const todayStr = DateEngine.getToday();
+                        const actionDateStr = proc.deadline || DateEngine.getToday();
                         for (let key in actionTypes) {
                             const qty = parseInt(proc[key] || 0);
                             for (let i = 0; i < qty; i++) {
-                                await db.collection("actions").add({ processId: procRef.id, servantId: proc.servantId, type: actionTypes[key], date: todayStr, status: 'Concluído', obs: 'Registrada via Cadastro de Processo' });
+                                await db.collection("actions").add({ processId: procRef.id, servantId: proc.servantId, type: actionTypes[key], date: actionDateStr, status: 'Concluído', obs: 'Registrada via Cadastro de Processo' });
                             }
                         }
                         logAction('Processo Criado', `Processo ${proc.number} criado com ações registradas`);
