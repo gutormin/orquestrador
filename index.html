@@ -9,7 +9,7 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
     
     <!-- FIREBASE COMPAT -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
@@ -328,6 +328,160 @@
         .thermometer-marker.critical { animation: marker-pulse 1.2s infinite ease-in-out; }
         .thermometer-marker.critical .marker-arrow { border-right-color: #dc2626; }
         .thermometer-marker.critical .marker-arrow::after { background: #dc2626; }
+
+        /* ════════════════════════════════════════
+           RESPONSIVIDADE MOBILE
+        ════════════════════════════════════════ */
+
+        /* Overlay do drawer */
+        #sidebar-overlay {
+            display: none;
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.55);
+            z-index: 40;
+            backdrop-filter: blur(2px);
+        }
+        #sidebar-overlay.active { display: block; }
+
+        /* Botão hambúrguer */
+        #btn-hamburger {
+            display: none;
+            background: none; border: none;
+            padding: 0.5rem; cursor: pointer;
+            color: #475569;
+        }
+
+        @media (max-width: 767px) {
+            /* ── Layout principal ── */
+            #btn-hamburger { display: flex; align-items: center; justify-content: center; }
+
+            /* Sidebar vira drawer lateral */
+            #app-shell > aside {
+                position: fixed;
+                top: 0; left: 0;
+                height: 100dvh;
+                width: 280px;
+                z-index: 50;
+                transform: translateX(-100%);
+                transition: transform 0.28s cubic-bezier(0.22,1,0.36,1);
+                overflow-y: auto;
+            }
+            #app-shell > aside.open { transform: translateX(0); }
+
+            /* Header mobile */
+            header { padding-left: 1rem !important; padding-right: 1rem !important; }
+            #page-title { font-size: 0.95rem !important; }
+            header .flex.items-center.gap-3.pl-4 { display: none; } /* oculta info usuário */
+
+            /* Content area */
+            #content-area { padding: 1rem !important; }
+
+            /* KPIs em 2 colunas */
+            .grid.grid-cols-1.md\\:grid-cols-4 { grid-template-columns: repeat(2, 1fr) !important; gap: 0.75rem !important; }
+            .grid.grid-cols-1.md\\:grid-cols-2 { grid-template-columns: 1fr !important; }
+            .grid.grid-cols-2 { grid-template-columns: 1fr !important; }
+
+            /* Abas de turno */
+            #page-dashboard .flex.flex-wrap { gap: 0.5rem !important; }
+
+            /* ── Tabelas → Cards ── */
+            .mobile-card-table thead { display: none; }
+            .mobile-card-table tbody tr {
+                display: block;
+                background: white;
+                border-radius: 0.875rem;
+                margin-bottom: 0.75rem;
+                padding: 0.875rem 1rem;
+                box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+                border: 1px solid #e2e8f0;
+            }
+            .mobile-card-table tbody td {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 0.3rem 0 !important;
+                border: none !important;
+                font-size: 0.85rem;
+            }
+            .mobile-card-table tbody td::before {
+                content: attr(data-label);
+                font-weight: 600;
+                font-size: 0.75rem;
+                color: #64748b;
+                text-transform: uppercase;
+                letter-spacing: 0.04em;
+                flex-shrink: 0;
+                margin-right: 0.5rem;
+            }
+            .mobile-card-table tbody td:first-child {
+                font-size: 1rem;
+                font-weight: 700;
+                color: #1e293b;
+                border-bottom: 1px solid #f1f5f9 !important;
+                padding-bottom: 0.5rem !important;
+                margin-bottom: 0.25rem;
+            }
+            .mobile-card-table tbody td:first-child::before { display: none; }
+
+            /* Overflow-x nas tabelas que não são card (relatórios) */
+            .overflow-x-auto { -webkit-overflow-scrolling: touch; }
+
+            /* ── Modais fullscreen ── */
+            .modal-box {
+                width: 100% !important;
+                max-width: 100% !important;
+                max-height: 100dvh !important;
+                height: 100dvh !important;
+                border-radius: 0 !important;
+                margin: 0 !important;
+                display: flex;
+                flex-direction: column;
+            }
+            .modal-box form,
+            .modal-box > div:last-child {
+                flex: 1;
+                overflow-y: auto;
+            }
+            /* Centra o modal no mobile */
+            [id^="modal-"] > div:first-child {
+                align-items: flex-start !important;
+                padding: 0 !important;
+            }
+
+            /* ── Botões de ação em tabela ── */
+            .mobile-card-table tbody td .flex { justify-content: flex-end; }
+
+            /* ── Formulários ── */
+            .grid.grid-cols-2.gap-4 { grid-template-columns: 1fr !important; }
+            .col-span-2 { grid-column: span 1 !important; }
+
+            /* ── Painel de turno ── */
+            #shift-info-panel { margin-top: 0.5rem; }
+
+            /* ── Ranking: esconder colunas menos importantes ── */
+            .ranking-col-hide { display: none !important; }
+
+            /* ── Cabeçalho de página com botão "Novo" ── */
+            .page-header-row {
+                flex-direction: column !important;
+                align-items: flex-start !important;
+                gap: 0.75rem !important;
+            }
+            .page-header-row > div { width: 100%; }
+            .page-header-row button { width: 100%; justify-content: center; }
+
+            /* ── Gráficos ── */
+            canvas { max-height: 220px !important; }
+
+            /* ── Termômetro ── */
+            .thermometer-container { flex-direction: column !important; align-items: center !important; }
+        }
+
+        @media (min-width: 768px) {
+            #sidebar-overlay { display: none !important; }
+            #btn-hamburger { display: none !important; }
+            #app-shell > aside { position: relative !important; transform: none !important; }
+        }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-900 font-sans transition-colors duration-300">
@@ -369,7 +523,11 @@
 
     <!-- APP SHELL -->
     <div id="app-shell" class="hidden flex min-h-screen overflow-hidden">
-        <aside class="w-64 bg-slate-900 text-slate-300 flex flex-col transition-all duration-300">
+
+        <!-- Overlay mobile -->
+        <div id="sidebar-overlay" onclick="closeSidebar()"></div>
+
+        <aside id="main-sidebar" class="w-64 bg-slate-900 text-slate-300 flex flex-col transition-all duration-300">
             <div class="p-6 flex items-center gap-3 text-white">
                 <div class="bg-indigo-500 p-2 rounded-lg"><i data-lucide="trending-up" class="w-5 h-5"></i></div>
                 <span class="text-lg font-bold tracking-tight">Orquestrador SecExecPres</span>
@@ -392,7 +550,12 @@
 
         <main class="flex-1 flex flex-col overflow-hidden">
             <header class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-8 shadow-sm">
-                <h2 id="page-title" class="text-lg font-semibold text-slate-700">Dashboard Gerencial</h2>
+                <div class="flex items-center gap-3">
+                    <button id="btn-hamburger" onclick="openSidebar()" aria-label="Menu">
+                        <i data-lucide="menu" class="w-6 h-6"></i>
+                    </button>
+                    <h2 id="page-title" class="text-lg font-semibold text-slate-700">Dashboard Gerencial</h2>
+                </div>
                 <div class="flex items-center gap-4">
                     <div class="flex items-center gap-3 pl-4 border-l border-slate-200">
                         <div class="text-right">
@@ -460,7 +623,7 @@
                             <span class="px-3 py-1 bg-indigo-100 text-indigo-600 text-xs font-bold rounded-full">Tempo Real</span>
                         </div>
                         <div class="overflow-x-auto">
-                            <table class="w-full text-left">
+                            <table class="w-full text-left mobile-card-table">
                                 <thead class="bg-slate-50 text-slate-500 text-xs uppercase">
                                     <tr>
                                         <th class="px-6 py-4 font-semibold">Servidor</th>
@@ -486,7 +649,7 @@
                             <button onclick="showPage('servants')" class="text-indigo-600 text-sm font-medium hover:underline">Ver todos</button>
                         </div>
                         <div class="overflow-x-auto">
-                            <table class="w-full text-left">
+                            <table class="w-full text-left mobile-card-table">
                                 <thead class="bg-slate-50 text-slate-500 text-xs uppercase">
                                     <tr>
                                         <th class="px-6 py-4 font-semibold">Servidor</th>
@@ -583,7 +746,7 @@
                         </button>
                     </div>
                     <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-                        <table class="w-full text-left">
+                        <table class="w-full text-left mobile-card-table">
                             <thead class="bg-slate-50 text-slate-500 text-xs uppercase">
                                 <tr>
                                     <th class="px-6 py-4">Nome</th>
@@ -607,7 +770,7 @@
                         <button id="btn-new-servant" onclick="openModal('modal-servant')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-all shadow-md"><i data-lucide="plus" class="w-4 h-4"></i> Novo Servidor</button>
                     </div>
                     <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-                        <table id="servants-table" class="w-full text-left">
+                        <table id="servants-table" class="w-full text-left mobile-card-table">
                             <thead class="bg-slate-50 text-slate-500 text-xs uppercase"><tr><th class="px-6 py-4">Nome</th><th class="px-6 py-4">Matrícula</th><th class="px-6 py-4">Setor</th><th class="px-6 py-4 text-center">Turno</th><th class="px-6 py-4">Status</th><th class="px-6 py-4 text-center">Ações</th></tr></thead>
                             <tbody id="servants-body" class="divide-y divide-slate-100"></tbody>
                         </table>
@@ -627,7 +790,7 @@
                         </div>
                     </div>
                     <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-                        <table id="processes-table" class="w-full text-left">
+                        <table id="processes-table" class="w-full text-left mobile-card-table">
                             <thead class="bg-slate-50 text-slate-500 text-xs uppercase">
                                 <tr>
                                     <th class="px-6 py-4">Nº Processo</th>
@@ -653,7 +816,7 @@
                         </button>
                     </div>
                     <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-                        <table class="w-full text-left">
+                        <table class="w-full text-left mobile-card-table">
                             <thead class="bg-slate-50 text-slate-500 text-xs uppercase">
                                 <tr>
                                     <th class="px-6 py-4">Data Distribuição</th>
@@ -680,7 +843,7 @@
                         </div>
                     </div>
                     <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-                        <table id="actions-table" class="w-full text-left">
+                        <table id="actions-table" class="w-full text-left mobile-card-table">
                             <thead class="bg-slate-50 text-slate-500 text-xs uppercase"><tr><th class="px-6 py-4">Processo</th><th class="px-6 py-4">Ação</th><th class="px-6 py-4">Responsável</th><th class="px-6 py-4">Data</th><th class="px-6 py-4">Status</th><th class="px-6 py-4 text-center">Ações</th></tr></thead>
                             <tbody id="actions-body" class="divide-y divide-slate-100"></tbody>
                         </table>
@@ -815,7 +978,7 @@
                                 </h4>
                             </div>
                             <div class="overflow-x-auto">
-                                <table class="w-full text-left">
+                                <table class="w-full text-left mobile-card-table">
                                     <thead class="bg-slate-50 text-slate-500 text-xs uppercase">
                                         <tr>
                                             <th class="px-6 py-4 font-semibold">Data</th>
@@ -835,7 +998,7 @@
                 <section id="page-audit" class="page-content hidden">
                     <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
                         <div class="p-6 border-b border-slate-100"><h4 class="text-lg font-bold">Log de Atividades do Sistema</h4></div>
-                        <table class="w-full text-left">
+                        <table class="w-full text-left mobile-card-table">
                             <thead class="bg-slate-50 text-slate-500 text-xs uppercase"><tr><th class="px-6 py-4">Data/Hora</th><th class="px-6 py-4">Usuário</th><th class="px-6 py-4">Ação</th><th class="px-6 py-4">Detalhes</th></tr></thead>
                             <tbody id="audit-body" class="divide-y divide-slate-100 text-sm"></tbody>
                         </table>
@@ -1259,12 +1422,26 @@
                 return false;
             }
 
+            // ── DRAWER MOBILE ──────────────────────────────────────────
+            window.openSidebar = function() {
+                document.getElementById('main-sidebar').classList.add('open');
+                document.getElementById('sidebar-overlay').classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+            window.closeSidebar = function() {
+                document.getElementById('main-sidebar').classList.remove('open');
+                document.getElementById('sidebar-overlay').classList.remove('active');
+                document.body.style.overflow = '';
+            }
+
             window.showPage = function(pageId) {
                 if (!currentUser) { alert("Sessão expirada."); logout(); return; }
                 if (!checkPermission(pageId)) {
                     alert("Você não possui permissão para acessar esta área.");
                     return;
                 }
+                // Fecha o drawer no mobile ao navegar
+                closeSidebar();
                 document.querySelectorAll('.nav-link').forEach(link => {
                     link.classList.remove('active');
                     if(link.dataset.page === pageId) link.classList.add('active');
@@ -1374,7 +1551,7 @@
                     const rowCls = getShiftRowClass(s.shift);
                     const editBtn = `<button onclick="openEditServant('${s.id}')" class="text-indigo-500 hover:text-indigo-700 p-2" title="Editar"><i data-lucide="pencil" class="w-4 h-4"></i></button>`;
                     const delBtn = checkPermission('delete') ? `<button onclick="deleteItem('servants', '${s.id}')" class="text-rose-500 hover:text-rose-700 p-2" title="Excluir"><i data-lucide="trash-2" class="w-4 h-4"></i></button>` : '';
-                    return `<tr class="${rowCls} hover:bg-slate-50 transition-colors"><td class="px-6 py-4 font-medium">${s.name}</td><td class="px-6 py-4 text-slate-500">${s.registration}</td><td class="px-6 py-4 text-slate-500">${s.sector}</td><td class="px-6 py-4 text-center">${getShiftBadge(s.shift)}</td><td class="px-6 py-4"><span class="badge ${s.status === 'Ativo' ? 'badge-success' : 'badge-danger'}">${s.status}</span></td><td class="px-6 py-4 text-center"><div class="flex justify-center gap-1">${editBtn}${delBtn}</div></td></tr>`;
+                    return `<tr class="${rowCls} hover:bg-slate-50 transition-colors"><td class="px-6 py-4 font-medium">${s.name}</td><td data-label="Matrícula" class="px-6 py-4 text-slate-500">${s.registration}</td><td data-label="Setor" class="px-6 py-4 text-slate-500">${s.sector}</td><td data-label="Turno" class="px-6 py-4 text-center">${getShiftBadge(s.shift)}</td><td data-label="Status" class="px-6 py-4"><span class="badge ${s.status === 'Ativo' ? 'badge-success' : 'badge-danger'}">${s.status}</span></td><td data-label="Ações" class="px-6 py-4 text-center"><div class="flex justify-center gap-1">${editBtn}${delBtn}</div></td></tr>`;
                 }).join('');
                 lucide.createIcons();
             }
@@ -1405,7 +1582,7 @@
                     if(p.qty_diligencia > 0) planned.push(`Dil: ${p.qty_diligencia}`);
                     if(p.qty_comunicacao > 0) planned.push(`Com: ${p.qty_comunicacao}`);
                     const plannedText = planned.length > 0 ? planned.join(' | ') : '<span class="text-slate-300">Nenhuma</span>';
-                    return `<tr class="hover:bg-slate-50 transition-colors"><td class="px-6 py-4 font-bold text-indigo-600">${p.number}</td><td class="px-6 py-4">${getPriorityBadge(p.priority)}</td><td class="px-6 py-4">${servant ? servant.name : 'N/A'}</td><td class="px-6 py-4 text-slate-500">${p.deadline}</td><td class="px-6 py-4 text-slate-500">${registrationTime}</td><td class="px-6 py-4 text-xs font-medium text-slate-600">${plannedText}</td><td class="px-6 py-4 text-center"><div class="flex items-center justify-center gap-1"><button onclick="editProcess('${p.id}')" class="text-indigo-500 hover:text-indigo-700 p-2" title="Editar"><i data-lucide="pencil" class="w-4 h-4"></i></button>${checkPermission('delete') ? `<button onclick="deleteItem('processes', '${p.id}')" class="text-rose-500 hover:text-rose-700 p-2" title="Excluir"><i data-lucide="trash-2" class="w-4 h-4"></i></button>` : ''}</div></td></tr>`;
+                    return `<tr class="hover:bg-slate-50 transition-colors"><td class="px-6 py-4 font-bold text-indigo-600">${p.number}</td><td data-label="Prioridade" class="px-6 py-4">${getPriorityBadge(p.priority)}</td><td data-label="Servidor" class="px-6 py-4">${servant ? servant.name : 'N/A'}</td><td data-label="Data" class="px-6 py-4 text-slate-500">${p.deadline}</td><td data-label="Cadastro" class="px-6 py-4 text-slate-500">${registrationTime}</td><td data-label="Ações" class="px-6 py-4 text-xs font-medium text-slate-600">${plannedText}</td><td data-label="Opções" class="px-6 py-4 text-center"><div class="flex items-center justify-center gap-1"><button onclick="editProcess('${p.id}')" class="text-indigo-500 hover:text-indigo-700 p-2" title="Editar"><i data-lucide="pencil" class="w-4 h-4"></i></button>${checkPermission('delete') ? `<button onclick="deleteItem('processes', '${p.id}')" class="text-rose-500 hover:text-rose-700 p-2" title="Excluir"><i data-lucide="trash-2" class="w-4 h-4"></i></button>` : ''}</div></td></tr>`;
                 }).join('');
                 lucide.createIcons();
             }
@@ -1720,7 +1897,7 @@
                 }).sort((a, b) => b.total - a.total);
                 rankingBody.innerHTML = servantMonthlyStats.map(s => {
                     const rowCls = getShiftRowClass(s.shift);
-                    return `<tr class="${rowCls} hover:bg-slate-50 transition-colors"><td class="px-6 py-4 font-medium">${s.name}</td><td class="px-4 py-4 text-center">${getShiftBadge(s.shift)}</td><td class="px-4 py-4 text-center font-bold text-blue-700 bg-blue-50">${s.processosDistribuidos}</td><td class="px-6 py-4 text-center font-bold text-indigo-700 bg-indigo-50">${s.total}</td><td class="px-6 py-4 text-center">${s.oficio}</td><td class="px-6 py-4 text-center">${s.circular}</td><td class="px-6 py-4 text-center">${s.email}</td><td class="px-6 py-4 text-center">${s.traslado}</td><td class="px-6 py-4 text-center">${s.diligencia}</td><td class="px-6 py-4 text-center">${s.comunicacao}</td></tr>`;
+                    return `<tr class="${rowCls} hover:bg-slate-50 transition-colors"><td class="px-6 py-4 font-medium">${s.name}</td><td data-label="Turno" class="px-4 py-4 text-center">${getShiftBadge(s.shift)}</td><td data-label="Proc." class="px-4 py-4 text-center font-bold text-blue-700 bg-blue-50">${s.processosDistribuidos}</td><td data-label="Total" class="px-6 py-4 text-center font-bold text-indigo-700 bg-indigo-50">${s.total}</td><td data-label="Ofícios" class="px-6 py-4 text-center">${s.oficio}</td><td data-label="Circ." class="px-6 py-4 text-center">${s.circular}</td><td data-label="E-mails" class="px-6 py-4 text-center">${s.email}</td><td data-label="Trasl." class="px-6 py-4 text-center">${s.traslado}</td><td data-label="Dilig." class="px-6 py-4 text-center">${s.diligencia}</td><td data-label="Comun." class="px-6 py-4 text-center">${s.comunicacao}</td></tr>`;
                 }).join('');
 
                 // RANKING DIÁRIO
@@ -1732,7 +1909,7 @@
                 }).sort((a, b) => b.total - a.total);
                 rankingTodayBody.innerHTML = servantTodayStats.map(s => {
                     const rowCls = getShiftRowClass(s.shift);
-                    return `<tr class="${rowCls} hover:bg-slate-50 transition-colors"><td class="px-6 py-4 font-medium">${s.name}</td><td class="px-4 py-4 text-center">${getShiftBadge(s.shift)}</td><td class="px-4 py-4 text-center font-bold text-blue-700 bg-blue-50">${s.processosDistribuidos}</td><td class="px-6 py-4 text-center font-bold text-indigo-700 bg-indigo-100">${s.total}</td><td class="px-6 py-4 text-center">${s.oficio}</td><td class="px-6 py-4 text-center">${s.circular}</td><td class="px-6 py-4 text-center">${s.email}</td><td class="px-6 py-4 text-center">${s.traslado}</td><td class="px-6 py-4 text-center">${s.diligencia}</td><td class="px-6 py-4 text-center">${s.comunicacao}</td></tr>`;
+                    return `<tr class="${rowCls} hover:bg-slate-50 transition-colors"><td class="px-6 py-4 font-medium">${s.name}</td><td data-label="Turno" class="px-4 py-4 text-center">${getShiftBadge(s.shift)}</td><td data-label="Proc." class="px-4 py-4 text-center font-bold text-blue-700 bg-blue-50">${s.processosDistribuidos}</td><td data-label="Total" class="px-6 py-4 text-center font-bold text-indigo-700 bg-indigo-100">${s.total}</td><td data-label="Ofícios" class="px-6 py-4 text-center">${s.oficio}</td><td data-label="Circ." class="px-6 py-4 text-center">${s.circular}</td><td data-label="E-mails" class="px-6 py-4 text-center">${s.email}</td><td data-label="Trasl." class="px-6 py-4 text-center">${s.traslado}</td><td data-label="Dilig." class="px-6 py-4 text-center">${s.diligencia}</td><td data-label="Comun." class="px-6 py-4 text-center">${s.comunicacao}</td></tr>`;
                 }).join('');
 
                 lucide.createIcons();
@@ -2116,19 +2293,521 @@
                 if (!data) return;
                 const start = document.getElementById('report-start-date').value;
                 const end = document.getElementById('report-end-date').value;
+                const fmtDate = d => d.split('-').reverse().join('/');
+                const startFmt = fmtDate(start);
+                const endFmt = fmtDate(end);
+
+                // Filtra só servidores com algum dado
+                const activeData = data.filter(s => s.processesReceived > 0 || s.totalActions > 0);
+                const allData = data; // mantém todos para o Excel
+
+                // Totalizadores
+                const totals = allData.reduce((acc, s) => {
+                    acc.processesReceived += s.processesReceived;
+                    acc.totalActions += s.totalActions;
+                    acc.oficio += s.oficio;
+                    acc.circular += s.circular;
+                    acc.email += s.email;
+                    acc.traslado += s.traslado;
+                    acc.diligencia += s.diligencia;
+                    acc.comunicacao += s.comunicacao;
+                    return acc;
+                }, { processesReceived: 0, totalActions: 0, oficio: 0, circular: 0, email: 0, traslado: 0, diligencia: 0, comunicacao: 0 });
+
                 if (type === 'pdf') {
                     const { jsPDF } = window.jspdf;
-                    const doc = new jsPDF('l'); // landscape para caber a coluna extra
-                    doc.setFontSize(18); doc.text('Relatório de Produtividade - SecExecPres', 14, 20);
-                    doc.setFontSize(11); doc.text(`Período: ${start} até ${end}`, 14, 30);
-                    const rows = data.map(s => [s.name, s.shift, s.processesReceived, s.totalActions, s.oficio, s.circular, s.email, s.traslado, s.diligencia, s.comunicacao]);
-                    doc.autoTable({ startY: 35, head: [['Servidor', 'Turno', 'Proc. Rec.', 'Total Ações', 'Ofíc.', 'Circ.', 'Email', 'Tras.', 'Dil.', 'Comun.']], body: rows, theme: 'grid', headStyles: { fillColor: [79, 70, 229] } });
-                    doc.save(`produtividade_${start}_${end}.pdf`);
+                    const doc = new jsPDF('l', 'mm', 'a4'); // landscape A4
+                    const W = doc.internal.pageSize.getWidth();
+                    const H = doc.internal.pageSize.getHeight();
+
+                    // ── CABEÇALHO ──────────────────────────────────────────
+                    doc.setFillColor(49, 46, 129); // indigo-900
+                    doc.rect(0, 0, W, 38, 'F');
+
+                    doc.setTextColor(255, 255, 255);
+                    doc.setFontSize(20);
+                    doc.setFont('helvetica', 'bold');
+                    doc.text('RELATÓRIO DE PRODUTIVIDADE', 14, 16);
+
+                    doc.setFontSize(11);
+                    doc.setFont('helvetica', 'normal');
+                    doc.text('SecExecPres — Secretaria de Execuções da Presidência', 14, 24);
+                    doc.text(`Período: ${startFmt} a ${endFmt}`, 14, 31);
+
+                    // Data de emissão (canto direito)
+                    const now = new Date();
+                    const emissao = `Emitido em: ${now.toLocaleDateString('pt-BR')} às ${now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`;
+                    doc.setFontSize(9);
+                    doc.text(emissao, W - 14, 31, { align: 'right' });
+
+                    // ── CARDS DE RESUMO ────────────────────────────────────
+                    let y = 46;
+                    const cardW = (W - 28 - 10) / 3;
+                    const cards = [
+                        { label: 'Total de Servidores', value: allData.length, color: [79, 70, 229] },
+                        { label: 'Processos Distribuídos', value: totals.processesReceived, color: [16, 185, 129] },
+                        { label: 'Total de Ações no Período', value: totals.totalActions, color: [245, 158, 11] }
+                    ];
+                    cards.forEach((c, i) => {
+                        const cx = 14 + i * (cardW + 5);
+                        doc.setFillColor(...c.color);
+                        doc.roundedRect(cx, y, cardW, 22, 3, 3, 'F');
+                        doc.setTextColor(255, 255, 255);
+                        doc.setFontSize(9);
+                        doc.setFont('helvetica', 'normal');
+                        doc.text(c.label, cx + 5, y + 8);
+                        doc.setFontSize(20);
+                        doc.setFont('helvetica', 'bold');
+                        doc.text(String(c.value), cx + 5, y + 18);
+                    });
+
+                    // ── RESUMO POR TURNO ───────────────────────────────────
+                    y += 28;
+
+                    // Calcula totais por turno
+                    const byShift = {};
+                    allData.forEach(s => {
+                        const sh = s.shift || 'Não definido';
+                        if (!byShift[sh]) byShift[sh] = { servidores: 0, processesReceived: 0, totalActions: 0, oficio: 0, circular: 0, email: 0, traslado: 0, diligencia: 0, comunicacao: 0 };
+                        byShift[sh].servidores++;
+                        byShift[sh].processesReceived += s.processesReceived;
+                        byShift[sh].totalActions += s.totalActions;
+                        byShift[sh].oficio += s.oficio;
+                        byShift[sh].circular += s.circular;
+                        byShift[sh].email += s.email;
+                        byShift[sh].traslado += s.traslado;
+                        byShift[sh].diligencia += s.diligencia;
+                        byShift[sh].comunicacao += s.comunicacao;
+                    });
+
+                    const shiftOrder = ['Matutino', 'Vespertino', 'Não definido'].filter(sh => byShift[sh]);
+                    const shiftColors  = { 'Matutino': [245, 158, 11], 'Vespertino': [139, 92, 246], 'Não definido': [148, 163, 184] };
+                    const shiftBg      = { 'Matutino': [255, 251, 235], 'Vespertino': [245, 243, 255], 'Não definido': [248, 250, 252] };
+                    const shiftTrack   = { 'Matutino': [254, 243, 199], 'Vespertino': [237, 233, 254], 'Não definido': [241, 245, 249] };
+
+                    // ── Título da seção ────────────────────────────────────
+                    doc.setFillColor(49, 46, 129);
+                    doc.rect(14, y, W - 28, 7, 'F');
+                    doc.setTextColor(255, 255, 255);
+                    doc.setFontSize(9);
+                    doc.setFont('helvetica', 'bold');
+                    doc.text('DASHBOARD POR TURNO', 18, y + 5);
+                    y += 10;
+
+                    // Helpers de desenho
+                    const deg2rad = d => (d * Math.PI) / 180;
+
+                    // Velocímetro semicircular
+                    function drawGauge(cx, cy, r, pct, color, trackColor) {
+                        const startA = 180, endA = 0;
+                        // Trilha (fundo cinza)
+                        doc.setDrawColor(...trackColor);
+                        doc.setLineWidth(3.5);
+                        for (let a = startA; a >= endA; a -= 2) {
+                            const x1 = cx + r * Math.cos(deg2rad(a));
+                            const y1 = cy - r * Math.sin(deg2rad(a));
+                            const x2 = cx + r * Math.cos(deg2rad(a - 2));
+                            const y2 = cy - r * Math.sin(deg2rad(a - 2));
+                            doc.line(x1, y1, x2, y2);
+                        }
+                        // Arco preenchido
+                        const fillEnd = startA - pct * 180;
+                        doc.setDrawColor(...color);
+                        doc.setLineWidth(3.5);
+                        for (let a = startA; a >= fillEnd; a -= 2) {
+                            const x1 = cx + r * Math.cos(deg2rad(a));
+                            const y1 = cy - r * Math.sin(deg2rad(a));
+                            const x2 = cx + r * Math.cos(deg2rad(a - 2));
+                            const y2 = cy - r * Math.sin(deg2rad(a - 2));
+                            doc.line(x1, y1, x2, y2);
+                        }
+                        // Ponteiro
+                        const needleA = startA - pct * 180;
+                        const nx = cx + (r - 2) * Math.cos(deg2rad(needleA));
+                        const ny = cy - (r - 2) * Math.sin(deg2rad(needleA));
+                        doc.setDrawColor(...color);
+                        doc.setLineWidth(1.2);
+                        doc.line(cx, cy, nx, ny);
+                        // Centro
+                        doc.setFillColor(...color);
+                        doc.circle(cx, cy, 1.5, 'F');
+                    }
+
+                    // Barra de progresso horizontal
+                    function drawBar(x, y2, w, h, pct, color, trackColor) {
+                        doc.setFillColor(...trackColor);
+                        doc.roundedRect(x, y2, w, h, h / 2, h / 2, 'F');
+                        if (pct > 0) {
+                            doc.setFillColor(...color);
+                            doc.roundedRect(x, y2, Math.max(w * pct, h), h, h / 2, h / 2, 'F');
+                        }
+                    }
+
+                    const panelH = 68;
+                    const panelW = (W - 28 - (shiftOrder.length - 1) * 5) / shiftOrder.length;
+
+                    shiftOrder.forEach((sh, i) => {
+                        const d = byShift[sh];
+                        const px = 14 + i * (panelW + 5);
+                        const [cr, cg, cb] = shiftColors[sh];
+                        const [br2, bg3, bb2] = shiftBg[sh];
+                        const [tr, tg, tb] = shiftTrack[sh];
+
+                        // Painel de fundo
+                        doc.setFillColor(br2, bg3, bb2);
+                        doc.roundedRect(px, y, panelW, panelH, 3, 3, 'F');
+                        // Faixa superior colorida
+                        doc.setFillColor(cr, cg, cb);
+                        doc.roundedRect(px, y, panelW, 9, 3, 3, 'F');
+                        doc.rect(px, y + 4, panelW, 5, 'F'); // quadrar cantos inferiores
+
+                        // Nome do turno
+                        doc.setTextColor(255, 255, 255);
+                        doc.setFontSize(8.5);
+                        doc.setFont('helvetica', 'bold');
+                        doc.text(sh.toUpperCase(), px + panelW / 2, y + 6.5, { align: 'center' });
+
+                        // ── Velocímetro (coluna esquerda) ──────────────────
+                        const gaugePct = totals.totalActions > 0 ? d.totalActions / totals.totalActions : 0;
+                        const gaugeCx = px + 22;
+                        const gaugeCy = y + 28;
+                        drawGauge(gaugeCx, gaugeCy, 13, gaugePct, [cr, cg, cb], [tr, tg, tb]);
+
+                        // % e label abaixo do velocímetro
+                        doc.setTextColor(cr, cg, cb);
+                        doc.setFontSize(10);
+                        doc.setFont('helvetica', 'bold');
+                        doc.text(`${Math.round(gaugePct * 100)}%`, gaugeCx, gaugeCy + 3, { align: 'center' });
+                        doc.setTextColor(100, 116, 139);
+                        doc.setFontSize(6.5);
+                        doc.setFont('helvetica', 'normal');
+                        doc.text('do total de ações', gaugeCx, gaugeCy + 8, { align: 'center' });
+
+                        // KPIs numéricos abaixo do velocímetro
+                        doc.setTextColor(50, 50, 50);
+                        doc.setFontSize(7);
+                        doc.setFont('helvetica', 'bold');
+                        doc.text(`${d.servidores} servidores`, gaugeCx, gaugeCy + 14, { align: 'center' });
+                        doc.setFont('helvetica', 'normal');
+                        doc.text(`${d.processesReceived} proc.  •  ${d.totalActions} ações`, gaugeCx, gaugeCy + 19, { align: 'center' });
+
+                        // ── Barras de ações (coluna direita) ───────────────
+                        const barX = px + 48;
+                        const barW = panelW - 52;
+                        const actionMax = Math.max(d.oficio, d.circular, d.email, d.traslado, d.diligencia, d.comunicacao, 1);
+                        const barItems = [
+                            { label: 'Ofícios',      val: d.oficio },
+                            { label: 'Circulares',   val: d.circular },
+                            { label: 'E-mails',      val: d.email },
+                            { label: 'Traslados',    val: d.traslado },
+                            { label: 'Diligências',  val: d.diligencia },
+                            { label: 'Comunicações', val: d.comunicacao }
+                        ];
+                        let by = y + 14;
+                        barItems.forEach(item => {
+                            doc.setTextColor(80, 80, 80);
+                            doc.setFontSize(6.5);
+                            doc.setFont('helvetica', 'normal');
+                            doc.text(item.label, barX, by + 2.5);
+                            drawBar(barX + 22, by, barW - 24, 3, item.val / actionMax, [cr, cg, cb], [tr, tg, tb]);
+                            doc.setTextColor(cr, cg, cb);
+                            doc.setFont('helvetica', 'bold');
+                            doc.text(String(item.val), barX + barW - 1, by + 2.5, { align: 'right' });
+                            by += 8.5;
+                        });
+                    });
+
+                    y += panelH + 8;
+                    doc.setTextColor(49, 46, 129);
+                    doc.setFontSize(12);
+                    doc.setFont('helvetica', 'bold');
+                    doc.text('PRODUTIVIDADE POR SERVIDOR', 14, y);
+                    y += 4;
+
+                    const headers = [['Servidor', 'Turno', 'Proc.\nDistrib.', 'Total\nAções', 'Ofícios', 'Circulares', 'E-mails', 'Traslados', 'Diligências', 'Comun.']];
+                    const rows = allData.map(s => [
+                        s.name, s.shift,
+                        s.processesReceived, s.totalActions,
+                        s.oficio, s.circular, s.email,
+                        s.traslado, s.diligencia, s.comunicacao
+                    ]);
+
+                    // Linha de totais
+                    rows.push([
+                        'TOTAL GERAL', '—',
+                        totals.processesReceived, totals.totalActions,
+                        totals.oficio, totals.circular, totals.email,
+                        totals.traslado, totals.diligencia, totals.comunicacao
+                    ]);
+
+                    doc.autoTable({
+                        startY: y,
+                        head: headers,
+                        body: rows,
+                        theme: 'grid',
+                        styles: {
+                            fontSize: 9,
+                            cellPadding: 3,
+                            valign: 'middle',
+                            halign: 'center'
+                        },
+                        headStyles: {
+                            fillColor: [49, 46, 129],
+                            textColor: [255, 255, 255],
+                            fontStyle: 'bold',
+                            halign: 'center',
+                            fontSize: 9
+                        },
+                        columnStyles: {
+                            0: { halign: 'left', cellWidth: 40, fontStyle: 'bold' },
+                            1: { cellWidth: 24 }
+                        },
+                        // Cor por turno nas linhas
+                        didParseCell: function(data) {
+                            if (data.section === 'body') {
+                                const isTotal = data.row.index === rows.length - 1;
+                                if (isTotal) {
+                                    data.cell.styles.fillColor = [49, 46, 129];
+                                    data.cell.styles.textColor = [255, 255, 255];
+                                    data.cell.styles.fontStyle = 'bold';
+                                } else {
+                                    const shift = allData[data.row.index]?.shift;
+                                    if (shift === 'Matutino') data.cell.styles.fillColor = [255, 251, 235];
+                                    else if (shift === 'Vespertino') data.cell.styles.fillColor = [245, 243, 255];
+                                }
+                            }
+                        },
+                        // Destaca colunas Proc. Distrib. e Total Ações
+                        willDrawCell: function(data) {
+                            if (data.section === 'body' && (data.column.index === 2 || data.column.index === 3)) {
+                                const isTotal = data.row.index === rows.length - 1;
+                                if (!isTotal) {
+                                    const shift = allData[data.row.index]?.shift;
+                                    if (shift === 'Matutino') data.cell.styles.textColor = [180, 83, 9];
+                                    else if (shift === 'Vespertino') data.cell.styles.textColor = [109, 40, 217];
+                                    data.cell.styles.fontStyle = 'bold';
+                                }
+                            }
+                        }
+                    });
+
+                    // ── RODAPÉ ─────────────────────────────────────────────
+                    const pageCount = doc.internal.getNumberOfPages();
+                    for (let i = 1; i <= pageCount; i++) {
+                        doc.setPage(i);
+                        doc.setFillColor(241, 245, 249);
+                        doc.rect(0, H - 10, W, 10, 'F');
+                        doc.setTextColor(100, 116, 139);
+                        doc.setFontSize(8);
+                        doc.setFont('helvetica', 'normal');
+                        doc.text('SecExecPres — Relatório gerado automaticamente pelo sistema de gestão', 14, H - 3);
+                        doc.text(`Página ${i} de ${pageCount}`, W - 14, H - 3, { align: 'right' });
+                    }
+
+                    doc.save(`Produtividade_${start}_${end}.pdf`);
+
                 } else {
-                    const worksheet = XLSX.utils.json_to_sheet(data);
-                    const workbook = XLSX.utils.book_new();
-                    XLSX.utils.book_append_sheet(workbook, worksheet, "Produtividade");
-                    XLSX.writeFile(workbook, `produtividade_${start}_${end}.xlsx`);
+                    // ── EXCEL PROFISSIONAL ─────────────────────────────────
+                    const wb = XLSX.utils.book_new();
+                    const ws_data = [];
+
+                    // Título
+                    ws_data.push(['RELATÓRIO DE PRODUTIVIDADE — SecExecPres']);
+                    ws_data.push([`Período: ${startFmt} a ${endFmt}`]);
+                    ws_data.push([`Emitido em: ${new Date().toLocaleDateString('pt-BR')}`]);
+                    ws_data.push([]); // linha em branco
+
+                    // Cards de resumo geral
+                    ws_data.push(['Servidores', 'Proc. Distribuídos', 'Total de Ações']);
+                    ws_data.push([allData.length, totals.processesReceived, totals.totalActions]);
+                    ws_data.push([]); // linha em branco
+
+                    // ── DASHBOARD POR TURNO NO EXCEL ──────────────────────
+                    ws_data.push(['DASHBOARD POR TURNO']);
+
+                    // Calcula totais por turno
+                    const byShiftXls = {};
+                    allData.forEach(s => {
+                        const sh = s.shift || 'Não definido';
+                        if (!byShiftXls[sh]) byShiftXls[sh] = { servidores: 0, processesReceived: 0, totalActions: 0, oficio: 0, circular: 0, email: 0, traslado: 0, diligencia: 0, comunicacao: 0 };
+                        byShiftXls[sh].servidores++;
+                        byShiftXls[sh].processesReceived += s.processesReceived;
+                        byShiftXls[sh].totalActions += s.totalActions;
+                        byShiftXls[sh].oficio += s.oficio;
+                        byShiftXls[sh].circular += s.circular;
+                        byShiftXls[sh].email += s.email;
+                        byShiftXls[sh].traslado += s.traslado;
+                        byShiftXls[sh].diligencia += s.diligencia;
+                        byShiftXls[sh].comunicacao += s.comunicacao;
+                    });
+
+                    // Helper: gera barra unicode (█) proporcional ao valor
+                    const makeBar = (val, maxVal, width = 15) => {
+                        if (maxVal === 0) return '░'.repeat(width);
+                        const filled = Math.round((val / maxVal) * width);
+                        return '█'.repeat(filled) + '░'.repeat(width - filled);
+                    };
+
+                    // Para cada turno: bloco de 8 linhas com KPIs + barras
+                    ['Matutino', 'Vespertino', 'Não definido'].forEach(sh => {
+                        if (!byShiftXls[sh]) return;
+                        const d = byShiftXls[sh];
+                        const pctAcoes = totals.totalActions > 0 ? Math.round((d.totalActions / totals.totalActions) * 100) : 0;
+                        const maxAction = Math.max(d.oficio, d.circular, d.email, d.traslado, d.diligencia, d.comunicacao, 1);
+
+                        ws_data.push([]); // separador
+                        ws_data.push([`▌ ${sh.toUpperCase()}`, '', `${pctAcoes}% do total de ações`, '', `${d.servidores} servidores`, '', `${d.processesReceived} proc. distribuídos`, '', `${d.totalActions} ações totais`]);
+                        ws_data.push(['Ofícios',      makeBar(d.oficio,      maxAction), d.oficio,
+                                      'Circulares',   makeBar(d.circular,    maxAction), d.circular,
+                                      'E-mails',      makeBar(d.email,       maxAction), d.email]);
+                        ws_data.push(['Traslados',    makeBar(d.traslado,    maxAction), d.traslado,
+                                      'Diligências',  makeBar(d.diligencia,  maxAction), d.diligencia,
+                                      'Comunicações', makeBar(d.comunicacao, maxAction), d.comunicacao]);
+                    });
+                    ws_data.push([]); // linha em branco
+
+                    // ── TABELA POR SERVIDOR ────────────────────────────────
+                    // Cabeçalho da tabela
+                    ws_data.push(['Servidor', 'Turno', 'Proc. Distribuídos', 'Total Ações', 'Ofícios', 'Circulares', 'E-mails', 'Traslados', 'Diligências', 'Comunicações']);
+
+                    // Dados por servidor
+                    allData.forEach(s => {
+                        ws_data.push([s.name, s.shift, s.processesReceived, s.totalActions, s.oficio, s.circular, s.email, s.traslado, s.diligencia, s.comunicacao]);
+                    });
+
+                    // Linha de totais
+                    ws_data.push(['TOTAL GERAL', '—', totals.processesReceived, totals.totalActions, totals.oficio, totals.circular, totals.email, totals.traslado, totals.diligencia, totals.comunicacao]);
+
+                    const ws = XLSX.utils.aoa_to_sheet(ws_data);
+
+                    // Larguras das colunas
+                    ws['!cols'] = [
+                        { wch: 28 }, { wch: 18 }, { wch: 18 }, { wch: 14 },
+                        { wch: 14 }, { wch: 18 }, { wch: 12 }, { wch: 14 }, { wch: 14 }, { wch: 14 }
+                    ];
+
+                    // Mesclar células do título
+                    ws['!merges'] = [
+                        { s: { r: 0, c: 0 }, e: { r: 0, c: 9 } }, // título
+                        { s: { r: 1, c: 0 }, e: { r: 1, c: 9 } }, // período
+                        { s: { r: 2, c: 0 }, e: { r: 2, c: 9 } }, // emissão
+                        { s: { r: 7, c: 0 }, e: { r: 7, c: 9 } }, // label "RESUMO POR TURNO"
+                    ];
+
+                    // Calcula linha do cabeçalho da tabela dinamicamente:
+                    // 0: título, 1: período, 2: emissão, 3: branco,
+                    // 4: labels resumo geral, 5: valores resumo geral, 6: branco,
+                    // 7: label "RESUMO POR TURNO", 8: cabeçalho turno,
+                    // 9..9+N: linhas de turno (N = qtd turnos), depois branco, depois cabeçalho da tabela
+                    const numShifts = ['Matutino', 'Vespertino', 'Não definido'].filter(sh => byShiftXls[sh]).length;
+                    const headerRowIdx = 9 + numShifts + 1; // +1 linha branco depois turnos
+                    const totalRowIdx = headerRowIdx + allData.length + 1;
+
+                    // Estilo do título (linha 0)
+                    const titleCell = ws['A1'];
+                    if (titleCell) {
+                        titleCell.s = {
+                            font: { bold: true, sz: 16, color: { rgb: '312E81' } },
+                            alignment: { horizontal: 'center', vertical: 'center' },
+                            fill: { fgColor: { rgb: 'EEF2FF' } }
+                        };
+                    }
+
+                    // Estilo do cabeçalho (linha headerRowIdx)
+                    const headerCols = ['A','B','C','D','E','F','G','H','I','J'];
+                    headerCols.forEach(col => {
+                        const cell = ws[`${col}${headerRowIdx + 1}`];
+                        if (cell) {
+                            cell.s = {
+                                font: { bold: true, color: { rgb: 'FFFFFF' }, sz: 11 },
+                                fill: { fgColor: { rgb: '312E81' } },
+                                alignment: { horizontal: 'center', vertical: 'center', wrapText: true },
+                                border: {
+                                    top: { style: 'thin', color: { rgb: 'FFFFFF' } },
+                                    bottom: { style: 'thin', color: { rgb: 'FFFFFF' } },
+                                    left: { style: 'thin', color: { rgb: 'FFFFFF' } },
+                                    right: { style: 'thin', color: { rgb: 'FFFFFF' } }
+                                }
+                            };
+                        }
+                    });
+
+                    // Estilo das linhas de TURNO (cabeçalho turno = linha 8+1=9, dados turno = 10, 11...)
+                    const shiftFills = { 'Matutino': 'FEF3C7', 'Vespertino': 'EDE9FE', 'Não definido': 'F1F5F9' };
+                    const shiftFonts = { 'Matutino': 'B45309', 'Vespertino': '6D28D9', 'Não definido': '475569' };
+                    // Cabeçalho da seção de turno (linha 8, 0-based = linha 9 no Excel)
+                    headerCols.forEach(col => {
+                        const cell = ws[`${col}9`];
+                        if (cell) {
+                            cell.s = {
+                                font: { bold: true, sz: 10, color: { rgb: 'FFFFFF' } },
+                                fill: { fgColor: { rgb: '4C1D95' } },
+                                alignment: { horizontal: col === 'A' ? 'left' : 'center', vertical: 'center' },
+                                border: { top: { style: 'thin', color: { rgb: 'FFFFFF' } }, bottom: { style: 'thin', color: { rgb: 'FFFFFF' } }, left: { style: 'thin', color: { rgb: 'FFFFFF' } }, right: { style: 'thin', color: { rgb: 'FFFFFF' } } }
+                            };
+                        }
+                    });
+                    // Linhas de dados por turno
+                    let shiftRowXls = 10;
+                    ['Matutino', 'Vespertino', 'Não definido'].forEach(sh => {
+                        if (!byShiftXls[sh]) return;
+                        headerCols.forEach(col => {
+                            const cell = ws[`${col}${shiftRowXls}`];
+                            if (cell) {
+                                cell.s = {
+                                    font: { bold: col === 'A', sz: 10, color: { rgb: shiftFonts[sh] || '1E293B' } },
+                                    fill: { fgColor: { rgb: shiftFills[sh] || 'FFFFFF' } },
+                                    alignment: { horizontal: col === 'A' ? 'left' : 'center', vertical: 'center' },
+                                    border: { top: { style: 'thin', color: { rgb: 'E2E8F0' } }, bottom: { style: 'thin', color: { rgb: 'E2E8F0' } }, left: { style: 'thin', color: { rgb: 'E2E8F0' } }, right: { style: 'thin', color: { rgb: 'E2E8F0' } } }
+                                };
+                            }
+                        });
+                        shiftRowXls++;
+                    });
+
+                    // Estilo das linhas de dados de servidor (cor por turno)
+                    allData.forEach((s, i) => {
+                        const rowIdx = headerRowIdx + i + 2; // 1-based
+                        const fillColor = s.shift === 'Matutino' ? 'FFFBEB' : s.shift === 'Vespertino' ? 'F5F3FF' : 'FFFFFF';
+                        const boldCols = ['A', 'C', 'D'];
+                        headerCols.forEach(col => {
+                            const cell = ws[`${col}${rowIdx}`];
+                            if (cell) {
+                                cell.s = {
+                                    font: { bold: boldCols.includes(col), sz: 10 },
+                                    fill: { fgColor: { rgb: fillColor } },
+                                    alignment: { horizontal: col === 'A' ? 'left' : 'center', vertical: 'center' },
+                                    border: {
+                                        top: { style: 'thin', color: { rgb: 'E2E8F0' } },
+                                        bottom: { style: 'thin', color: { rgb: 'E2E8F0' } },
+                                        left: { style: 'thin', color: { rgb: 'E2E8F0' } },
+                                        right: { style: 'thin', color: { rgb: 'E2E8F0' } }
+                                    }
+                                };
+                            }
+                        });
+                    });
+
+                    // Estilo da linha TOTAL GERAL
+                    headerCols.forEach(col => {
+                        const cell = ws[`${col}${totalRowIdx + 1}`];
+                        if (cell) {
+                            cell.s = {
+                                font: { bold: true, sz: 11, color: { rgb: 'FFFFFF' } },
+                                fill: { fgColor: { rgb: '312E81' } },
+                                alignment: { horizontal: col === 'A' ? 'left' : 'center', vertical: 'center' },
+                                border: {
+                                    top: { style: 'medium', color: { rgb: 'FFFFFF' } },
+                                    bottom: { style: 'medium', color: { rgb: 'FFFFFF' } },
+                                    left: { style: 'thin', color: { rgb: 'FFFFFF' } },
+                                    right: { style: 'thin', color: { rgb: 'FFFFFF' } }
+                                }
+                            };
+                        }
+                    });
+
+                    XLSX.utils.book_append_sheet(wb, ws, 'Produtividade');
+                    XLSX.writeFile(wb, `Produtividade_${start}_${end}.xlsx`, { cellStyles: true });
                 }
             }
 
@@ -2507,6 +3186,17 @@
 
             setupRealtimeListeners();
             lucide.createIcons();
+
+            // ── SWIPE TO CLOSE / OPEN SIDEBAR (mobile) ────────────────
+            let _touchStartX = 0;
+            document.addEventListener('touchstart', e => { _touchStartX = e.touches[0].clientX; }, { passive: true });
+            document.addEventListener('touchend', e => {
+                const dx = e.changedTouches[0].clientX - _touchStartX;
+                const sidebar = document.getElementById('main-sidebar');
+                if (!sidebar) return;
+                if (dx < -50 && sidebar.classList.contains('open')) closeSidebar();
+                if (dx > 60 && _touchStartX < 30 && !sidebar.classList.contains('open')) openSidebar();
+            }, { passive: true });
 
         } catch (globalError) {
             addLog("ERRO CRÍTICO NO SISTEMA: " + globalError.message, true);
