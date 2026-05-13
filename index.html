@@ -94,7 +94,9 @@
             height: 150px; background: rgba(255,255,255,0.9); border: 2px solid red; 
             z-index: 10000; overflow-y: auto; font-family: monospace; 
             font-size: 10px; padding: 5px; color: black;
+            display: none; /* Só aparece quando há erros via JS */
         }
+        #debug-console.visible { display: block; }
 
         @keyframes pulse-red {
             0% { background-color: #fee2e2; }
@@ -340,6 +342,7 @@
             background: rgba(0,0,0,0.55);
             z-index: 40;
             backdrop-filter: blur(2px);
+            -webkit-tap-highlight-color: transparent;
         }
         #sidebar-overlay.active { display: block; }
 
@@ -355,18 +358,25 @@
             /* ── Layout principal ── */
             #btn-hamburger { display: flex; align-items: center; justify-content: center; }
 
-            /* Sidebar vira drawer lateral */
+            /* Sidebar vira drawer lateral — máx 80% da largura da tela */
             #app-shell > aside {
-                position: fixed;
+                position: fixed !important;
                 top: 0; left: 0;
                 height: 100dvh;
-                width: 280px;
+                width: min(280px, 80vw) !important;
                 z-index: 50;
                 transform: translateX(-100%);
                 transition: transform 0.28s cubic-bezier(0.22,1,0.36,1);
                 overflow-y: auto;
+                box-shadow: 4px 0 24px rgba(0,0,0,0.3);
             }
-            #app-shell > aside.open { transform: translateX(0); }
+            #app-shell > aside.open { transform: translateX(0) !important; }
+
+            /* Conteúdo principal NÃO se desloca — ocupa tela toda */
+            #app-shell > main {
+                width: 100% !important;
+                min-width: 0 !important;
+            }
 
             /* Header mobile */
             header { padding-left: 1rem !important; padding-right: 1rem !important; }
@@ -1305,11 +1315,15 @@
     <script>
         const logDiv = document.getElementById('log-content');
         function addLog(msg, isError = false) {
-            const span = document.createElement('div');
-            span.style.color = isError ? 'red' : 'green';
-            span.innerHTML = `[${new Date().toLocaleTimeString()}] ${msg}`;
-            logDiv.appendChild(span);
-            logDiv.scrollTop = logDiv.scrollHeight;
+            if (isError) {
+                // Só exibe o console de debug quando há erros reais
+                document.getElementById('debug-console').classList.add('visible');
+                const span = document.createElement('div');
+                span.style.color = 'red';
+                span.innerHTML = `[${new Date().toLocaleTimeString()}] ${msg}`;
+                logDiv.appendChild(span);
+                logDiv.scrollTop = logDiv.scrollHeight;
+            }
         }
 
         const firebaseConfig = {
