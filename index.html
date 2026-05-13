@@ -685,20 +685,47 @@
                     </div>
 
                     <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 mb-8">
-                        <h4 class="text-lg font-bold mb-6 flex items-center gap-2"><i data-lucide="line-chart" class="w-5 h-5 text-indigo-600"></i> Processos por Prazo (Mês)</h4>
+                        <div class="flex flex-wrap justify-between items-center mb-6 gap-3">
+                            <h4 class="text-lg font-bold flex items-center gap-2" id="productivity-chart-title">
+                                <i data-lucide="line-chart" class="w-5 h-5 text-indigo-600"></i>
+                                <span>Processos por Prazo (Mês)</span>
+                            </h4>
+                            <div class="flex gap-1 bg-slate-100 p-1 rounded-xl">
+                                <button onclick="switchProductivityChart('processos')" id="btn-prod-processos"
+                                    class="px-4 py-1.5 rounded-lg text-sm font-semibold transition-all bg-white text-indigo-700 shadow">
+                                    Processos
+                                </button>
+                                <button onclick="switchProductivityChart('acoes')" id="btn-prod-acoes"
+                                    class="px-4 py-1.5 rounded-lg text-sm font-semibold transition-all text-slate-500 hover:text-slate-700">
+                                    Ações
+                                </button>
+                            </div>
+                        </div>
                         <div class="relative h-[200px]"><canvas id="chart-productivity"></canvas></div>
                     </div>
 
-                    <!-- DONUT: Distribuição Total por Turno -->
+                    <!-- DONUT: Distribuição por Turno (Processos ou Ações) -->
                     <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
                         <div class="flex flex-wrap justify-between items-center mb-6 gap-3">
-                            <h4 class="text-lg font-bold flex items-center gap-2">
+                            <h4 class="text-lg font-bold flex items-center gap-2" id="donut-shift-title">
                                 <i data-lucide="pie-chart" class="w-5 h-5 text-indigo-600"></i>
-                                Distribuição de Processos por Turno (Mês Atual)
+                                <span>Distribuição de Processos por Turno (Mês Atual)</span>
                             </h4>
-                            <div id="shift-balance-badge" class="px-3 py-1.5 rounded-full text-xs font-bold flex items-center gap-1.5 bg-slate-100 text-slate-500">
-                                <span class="w-2 h-2 rounded-full bg-slate-400"></span>
-                                Sem dados
+                            <div class="flex items-center gap-3">
+                                <div class="flex gap-1 bg-slate-100 p-1 rounded-xl">
+                                    <button onclick="switchShiftDonut('processos')" id="btn-donut-processos"
+                                        class="px-4 py-1.5 rounded-lg text-sm font-semibold transition-all bg-white text-indigo-700 shadow">
+                                        Processos
+                                    </button>
+                                    <button onclick="switchShiftDonut('acoes')" id="btn-donut-acoes"
+                                        class="px-4 py-1.5 rounded-lg text-sm font-semibold transition-all text-slate-500 hover:text-slate-700">
+                                        Ações
+                                    </button>
+                                </div>
+                                <div id="shift-balance-badge" class="px-3 py-1.5 rounded-full text-xs font-bold flex items-center gap-1.5 bg-slate-100 text-slate-500">
+                                    <span class="w-2 h-2 rounded-full bg-slate-400"></span>
+                                    Sem dados
+                                </div>
                             </div>
                         </div>
                         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
@@ -746,62 +773,6 @@
                         </div>
                     </div>
 
-                    <!-- DONUT: Distribuição Total de Ações por Turno -->
-                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 mt-6">
-                        <div class="flex flex-wrap justify-between items-center mb-6 gap-3">
-                            <h4 class="text-lg font-bold flex items-center gap-2">
-                                <i data-lucide="zap" class="w-5 h-5 text-violet-600"></i>
-                                Distribuição de Ações por Turno (Mês Atual)
-                            </h4>
-                            <div id="action-shift-balance-badge" class="px-3 py-1.5 rounded-full text-xs font-bold flex items-center gap-1.5 bg-slate-100 text-slate-500">
-                                <span class="w-2 h-2 rounded-full bg-slate-400"></span>
-                                Sem dados
-                            </div>
-                        </div>
-                        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
-                            <!-- Donut -->
-                            <div class="lg:col-span-5 relative h-[300px]">
-                                <canvas id="chart-action-shift-donut"></canvas>
-                            </div>
-                            <!-- Legenda -->
-                            <div id="action-shift-donut-legend" class="lg:col-span-4 space-y-3">
-                                <!-- Preenchido dinamicamente -->
-                            </div>
-                            <!-- Termômetro de Equilíbrio -->
-                            <div class="lg:col-span-3">
-                                <div class="thermometer-wrapper">
-                                    <div class="thermometer-title">Termômetro de Equilíbrio</div>
-                                    <div class="thermometer-container">
-                                        <div class="thermometer-scale">
-                                            <span class="scale-label-top">
-                                                <i data-lucide="sunrise" class="w-3 h-3 inline"></i> Matutino
-                                            </span>
-                                            <div class="thermometer-track-wrapper">
-                                                <div class="thermometer-track">
-                                                    <div class="zone-extreme-top"></div>
-                                                    <div class="zone-warn-top"></div>
-                                                    <div class="zone-balanced"></div>
-                                                    <div class="zone-warn-bottom"></div>
-                                                    <div class="zone-extreme-bottom"></div>
-                                                    <div class="thermometer-midline"></div>
-                                                </div>
-                                                <div class="thermometer-marker" id="action-thermometer-marker">
-                                                    <div class="marker-arrow"></div>
-                                                </div>
-                                            </div>
-                                            <span class="scale-label-bottom">
-                                                <i data-lucide="sunset" class="w-3 h-3 inline"></i> Vespertino
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <div class="thermometer-status" id="action-thermometer-status">
-                                        <i data-lucide="info" class="w-3.5 h-3.5"></i>
-                                        <span>Aguardando dados</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                 </section>
 
                 <!-- USUÁRIOS -->
@@ -1983,6 +1954,25 @@
                 initCharts();
             }
 
+            window.switchProductivityChart = function(mode) {
+                window.currentProductivityMode = mode;
+                const btnP = document.getElementById('btn-prod-processos');
+                const btnA = document.getElementById('btn-prod-acoes');
+                const titleSpan = document.getElementById('productivity-chart-title') && document.getElementById('productivity-chart-title').querySelector('span');
+                if (btnP && btnA) {
+                    if (mode === 'processos') {
+                        btnP.className = 'px-4 py-1.5 rounded-lg text-sm font-semibold transition-all bg-white text-indigo-700 shadow';
+                        btnA.className = 'px-4 py-1.5 rounded-lg text-sm font-semibold transition-all text-slate-500 hover:text-slate-700';
+                        if (titleSpan) titleSpan.textContent = 'Processos por Prazo (Mês)';
+                    } else {
+                        btnA.className = 'px-4 py-1.5 rounded-lg text-sm font-semibold transition-all bg-white text-emerald-700 shadow';
+                        btnP.className = 'px-4 py-1.5 rounded-lg text-sm font-semibold transition-all text-slate-500 hover:text-slate-700';
+                        if (titleSpan) titleSpan.textContent = 'Ações por Data (Mês)';
+                    }
+                }
+                initCharts();
+            };
+
             function initCharts() {
                 try {
                     const ctxProd = document.getElementById('chart-productivity').getContext('2d');
@@ -2014,7 +2004,23 @@
                     };
                     const lc = lineColorByShift[shiftFilter] || lineColorByShift['Geral'];
 
-                    window.myChartProd = new Chart(ctxProd, { type: 'line', data: { labels: labelsDays, datasets: [{ label: 'Processos', data: dataDays, borderColor: lc.border, backgroundColor: lc.bg, fill: true, tension: 0.4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } } });
+                    const prodMode = window.currentProductivityMode || 'processos';
+                    let chartData = dataDays;
+                    let chartLabel = 'Processos';
+                    let chartColor = lc;
+                    if (prodMode === 'acoes') {
+                        chartData = labelsDays.map(day => {
+                            const dateToCompare = DateEngine.getDateOfMonth(day);
+                            return state.actions.filter(a => {
+                                if (DateEngine.normalize(a.date) !== dateToCompare) return false;
+                                if (shiftFilter === 'Geral') return true;
+                                return filteredServantIds.has(a.servantId);
+                            }).length;
+                        });
+                        chartLabel = 'Ações';
+                        chartColor = { border: '#10b981', bg: 'rgba(16, 185, 129, 0.12)' };
+                    }
+                    window.myChartProd = new Chart(ctxProd, { type: 'line', data: { labels: labelsDays, datasets: [{ label: chartLabel, data: chartData, borderColor: chartColor.border, backgroundColor: chartColor.bg, fill: true, tension: 0.4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } } });
 
                     const monthStr = DateEngine.getMonth();
                     const actionTypes = ['Ofício', 'Ofício Circular', 'E-mail', 'Traslado', 'Diligência', 'Comunicação'];
@@ -2027,9 +2033,30 @@
 
                     // Donut de distribuição por turno (sempre renderiza, ignora filtro de aba)
                     renderShiftDonut();
-                    renderActionShiftDonut();
                 } catch (e) { addLog("Erro nos gráficos: " + e.message, true); }
             }
+
+            // ===========================================================
+            // DASHBOARD: TOGGLE DONUT PROCESSOS / AÇÕES POR TURNO
+            // ===========================================================
+            window.switchShiftDonut = function(mode) {
+                window.currentShiftDonutMode = mode;
+                const btnP = document.getElementById('btn-donut-processos');
+                const btnA = document.getElementById('btn-donut-acoes');
+                const titleSpan = document.querySelector('#donut-shift-title span');
+                if (btnP && btnA) {
+                    if (mode === 'processos') {
+                        btnP.className = 'px-4 py-1.5 rounded-lg text-sm font-semibold transition-all bg-white text-indigo-700 shadow';
+                        btnA.className = 'px-4 py-1.5 rounded-lg text-sm font-semibold transition-all text-slate-500 hover:text-slate-700';
+                        if (titleSpan) titleSpan.textContent = 'Distribuição de Processos por Turno (Mês Atual)';
+                    } else {
+                        btnA.className = 'px-4 py-1.5 rounded-lg text-sm font-semibold transition-all bg-white text-violet-700 shadow';
+                        btnP.className = 'px-4 py-1.5 rounded-lg text-sm font-semibold transition-all text-slate-500 hover:text-slate-700';
+                        if (titleSpan) titleSpan.textContent = 'Distribuição de Ações por Turno (Mês Atual)';
+                    }
+                }
+                renderShiftDonut();
+            };
 
             // ===========================================================
             // DASHBOARD: DONUT DE DISTRIBUIÇÃO DE PROCESSOS POR TURNO
@@ -2043,14 +2070,25 @@
                 const servantShift = {};
                 state.servants.forEach(s => { servantShift[s.id] = s.shift || 'Não definido'; });
 
-                // Conta processos do mês por turno (a partir do servidor responsável)
+                // Modo: 'processos' (default) ou 'acoes'
+                const donutMode = window.currentShiftDonutMode || 'processos';
+
                 const counts = { 'Matutino': 0, 'Vespertino': 0, 'Não definido': 0 };
-                state.processes.forEach(p => {
-                    const created = DateEngine.normalize(p.deadline);
-                    if (!created.startsWith(monthStr)) return;
-                    const shift = servantShift[p.servantId] || 'Não definido';
-                    counts[shift] = (counts[shift] || 0) + 1;
-                });
+                if (donutMode === 'acoes') {
+                    state.actions.forEach(a => {
+                        const d = DateEngine.normalize(a.date);
+                        if (!d.startsWith(monthStr)) return;
+                        const shift = servantShift[a.servantId] || 'Não definido';
+                        counts[shift] = (counts[shift] || 0) + 1;
+                    });
+                } else {
+                    state.processes.forEach(p => {
+                        const created = DateEngine.normalize(p.deadline);
+                        if (!created.startsWith(monthStr)) return;
+                        const shift = servantShift[p.servantId] || 'Não definido';
+                        counts[shift] = (counts[shift] || 0) + 1;
+                    });
+                }
 
                 const labels = ['Matutino', 'Vespertino', 'Não definido'];
                 const values = labels.map(l => counts[l] || 0);
@@ -2084,7 +2122,7 @@
                 const legend = document.getElementById('shift-donut-legend');
                 if (legend) {
                     if (total === 0) {
-                        legend.innerHTML = '<div class="text-slate-400 italic text-sm text-center py-8">Nenhum processo cadastrado neste mês.</div>';
+                        legend.innerHTML = `<div class="text-slate-400 italic text-sm text-center py-8">Nenhum${donutMode === 'acoes' ? 'a ação registrada' : ' processo cadastrado'} neste mês.</div>`;
                     } else {
                         legend.innerHTML = labels.map((label, i) => {
                             const v = values[i];
@@ -2097,7 +2135,7 @@
                                 </div>
                                 <div class="text-right">
                                     <div class="text-2xl font-extrabold" style="color: ${colors[i]};">${pct}%</div>
-                                    <div class="text-xs text-slate-500">${v} processo${v === 1 ? '' : 's'}</div>
+                                    <div class="text-xs text-slate-500">${donutMode === 'acoes' ? (v === 1 ? '1 ação' : v + ' ações') : (v + ' processo' + (v === 1 ? '' : 's'))}</div>
                                 </div>
                             </div>`;
                         }).join('');
@@ -2142,7 +2180,7 @@
                         marker.style.top = markerPos + '%';
                         marker.classList.remove('critical');
                         status.className = 'thermometer-status no-data';
-                        status.innerHTML = `<i data-lucide="info" class="w-3.5 h-3.5"></i><span>Mín. ${MIN_SAMPLE} processos<br>(atual: ${totalReal})</span>`;
+                        status.innerHTML = `<i data-lucide="info" class="w-3.5 h-3.5"></i><span>Mín. ${MIN_SAMPLE} ${donutMode === 'acoes' ? 'ações' : 'processos'}<br>(atual: ${totalReal})</span>`;
                     } else {
                         // Análise confiável
                         const desvio = Math.abs(matPct - 50); // 0 = equilíbrio perfeito, 50 = totalmente desequilibrado
@@ -2178,140 +2216,6 @@
                 }
             }
 
-            // ===========================================================
-            // DASHBOARD: DONUT DE DISTRIBUIÇÃO DE AÇÕES POR TURNO
-            // ===========================================================
-            function renderActionShiftDonut() {
-                const canvas = document.getElementById('chart-action-shift-donut');
-                if (!canvas) return;
-
-                const monthStr = DateEngine.getMonth();
-                // Mapa servidor → turno
-                const servantShift = {};
-                state.servants.forEach(s => { servantShift[s.id] = s.shift || 'Não definido'; });
-
-                // Conta ações do mês por turno
-                const counts = { 'Matutino': 0, 'Vespertino': 0, 'Não definido': 0 };
-                state.actions.forEach(a => {
-                    const d = DateEngine.normalize(a.date);
-                    if (!d.startsWith(monthStr)) return;
-                    const shift = servantShift[a.servantId] || 'Não definido';
-                    counts[shift] = (counts[shift] || 0) + 1;
-                });
-
-                const labels = ['Matutino', 'Vespertino', 'Não definido'];
-                const values = labels.map(l => counts[l] || 0);
-                const colors = ['#f59e0b', '#8b5cf6', '#94a3b8'];
-                const total = values.reduce((a, b) => a + b, 0);
-
-                if (window.myChartActionShiftDonut) window.myChartActionShiftDonut.destroy();
-                const ctx = canvas.getContext('2d');
-                window.myChartActionShiftDonut = new Chart(ctx, {
-                    type: 'doughnut',
-                    data: { labels, datasets: [{ data: values, backgroundColor: colors, borderWidth: 3, borderColor: '#fff' }] },
-                    options: {
-                        responsive: true, maintainAspectRatio: false, cutout: '65%',
-                        plugins: {
-                            legend: { display: false },
-                            tooltip: {
-                                callbacks: {
-                                    label: function(ctx) {
-                                        const v = ctx.parsed;
-                                        const pct = total > 0 ? ((v / total) * 100).toFixed(1) : 0;
-                                        return `${ctx.label}: ${v} (${pct}%)`;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                });
-
-                // Legenda customizada
-                const legend = document.getElementById('action-shift-donut-legend');
-                if (legend) {
-                    if (total === 0) {
-                        legend.innerHTML = '<div class="text-slate-400 italic text-sm text-center py-8">Nenhuma ação registrada neste mês.</div>';
-                    } else {
-                        legend.innerHTML = labels.map((label, i) => {
-                            const v = values[i];
-                            if (v === 0) return '';
-                            const pct = ((v / total) * 100).toFixed(1);
-                            return `<div class="flex items-center justify-between p-3 rounded-lg" style="background: ${colors[i]}15; border-left: 4px solid ${colors[i]};">
-                                <div class="flex items-center gap-2">
-                                    <span class="w-3 h-3 rounded-full" style="background: ${colors[i]};"></span>
-                                    <span class="font-bold text-slate-700">${label}</span>
-                                </div>
-                                <div class="text-right">
-                                    <div class="text-2xl font-extrabold" style="color: ${colors[i]};">${pct}%</div>
-                                    <div class="text-xs text-slate-500">${v === 1 ? '1 ação' : v + ' ações'}</div>
-                                </div>
-                            </div>`;
-                        }).join('');
-                    }
-                }
-
-                // === BADGE + TERMÔMETRO DE EQUILÍBRIO ===
-                const badge = document.getElementById('action-shift-balance-badge');
-                const marker = document.getElementById('action-thermometer-marker');
-                const status = document.getElementById('action-thermometer-status');
-
-                const mat = counts['Matutino'] || 0;
-                const vesp = counts['Vespertino'] || 0;
-                const tot2 = mat + vesp;
-
-                let markerPos = 50;
-                let matPct = 50;
-                if (tot2 > 0) {
-                    matPct = (mat / tot2) * 100;
-                    markerPos = 100 - matPct;
-                }
-
-                const MIN_SAMPLE = 5;
-                const totalReal = mat + vesp;
-
-                if (badge && marker && status) {
-                    if (total === 0) {
-                        badge.className = 'px-3 py-1.5 rounded-full text-xs font-bold flex items-center gap-1.5 bg-slate-100 text-slate-500';
-                        badge.innerHTML = '<span class="w-2 h-2 rounded-full bg-slate-400"></span> Sem dados';
-                        marker.style.top = '50%';
-                        marker.classList.remove('critical');
-                        status.className = 'thermometer-status no-data';
-                        status.innerHTML = '<i data-lucide="info" class="w-3.5 h-3.5"></i><span>Aguardando dados</span>';
-                    } else if (totalReal < MIN_SAMPLE) {
-                        badge.className = 'px-3 py-1.5 rounded-full text-xs font-bold flex items-center gap-1.5 bg-blue-100 text-blue-700';
-                        badge.innerHTML = '<span class="w-2 h-2 rounded-full bg-blue-500"></span> Amostra pequena';
-                        marker.style.top = markerPos + '%';
-                        marker.classList.remove('critical');
-                        status.className = 'thermometer-status no-data';
-                        status.innerHTML = `<i data-lucide="info" class="w-3.5 h-3.5"></i><span>Mín. ${MIN_SAMPLE} ações<br>(atual: ${totalReal})</span>`;
-                    } else {
-                        const desvio = Math.abs(matPct - 50);
-                        marker.style.top = markerPos + '%';
-                        const dominante = matPct > 50 ? 'Matutino' : 'Vespertino';
-
-                        if (desvio >= 35) {
-                            badge.className = 'px-3 py-1.5 rounded-full text-xs font-bold flex items-center gap-1.5 bg-rose-100 text-rose-700';
-                            badge.innerHTML = '<span class="w-2 h-2 rounded-full bg-rose-500"></span> Desequilibrado';
-                            marker.classList.add('critical');
-                            status.className = 'thermometer-status extreme';
-                            status.innerHTML = `<i data-lucide="alert-triangle" class="w-3.5 h-3.5"></i><span>Concentração crítica<br>no ${dominante}</span>`;
-                        } else if (desvio >= 20) {
-                            badge.className = 'px-3 py-1.5 rounded-full text-xs font-bold flex items-center gap-1.5 bg-amber-100 text-amber-700';
-                            badge.innerHTML = '<span class="w-2 h-2 rounded-full bg-amber-500"></span> Atenção';
-                            marker.classList.remove('critical');
-                            status.className = 'thermometer-status warn';
-                            status.innerHTML = `<i data-lucide="alert-circle" class="w-3.5 h-3.5"></i><span>Pendendo para<br>o ${dominante}</span>`;
-                        } else {
-                            badge.className = 'px-3 py-1.5 rounded-full text-xs font-bold flex items-center gap-1.5 bg-emerald-100 text-emerald-700';
-                            badge.innerHTML = '<span class="w-2 h-2 rounded-full bg-emerald-500"></span> Equilibrado';
-                            marker.classList.remove('critical');
-                            status.className = 'thermometer-status balanced';
-                            status.innerHTML = '';
-                        }
-                    }
-                    if (window.lucide && lucide.createIcons) lucide.createIcons();
-                }
-            }
 
             // ===========================================================
             // RELATÓRIOS: ANÁLISE DETALHADA POR TURNO (período filtrado)
