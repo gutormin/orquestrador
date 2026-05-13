@@ -643,7 +643,7 @@
                                         <th class="px-6 py-4 font-semibold text-center">Ofícios</th>
                                         <th class="px-6 py-4 font-semibold text-center">Circulares</th>
                                         <th class="px-6 py-4 font-semibold text-center">E-mails</th>
-                                        <th class="px-6 py-4 font-semibold text-center">Traslados</th>
+                                        <th class="px-6 py-4 font-semibold text-center">Traslados/Apensamento</th>
                                         <th class="px-6 py-4 font-semibold text-center">Diligências</th>
                                         <th class="px-6 py-4 font-semibold text-center">Comun.</th>
                                     </tr>
@@ -669,7 +669,7 @@
                                         <th class="px-6 py-4 font-semibold text-center">Ofícios</th>
                                         <th class="px-6 py-4 font-semibold text-center">Circulares</th>
                                         <th class="px-6 py-4 font-semibold text-center">E-mails</th>
-                                        <th class="px-6 py-4 font-semibold text-center">Traslados</th>
+                                        <th class="px-6 py-4 font-semibold text-center">Traslados/Apensamento</th>
                                         <th class="px-6 py-4 font-semibold text-center">Diligências</th>
                                         <th class="px-6 py-4 font-semibold text-center">Comun.</th>
                                     </tr>
@@ -1188,7 +1188,7 @@
                             </select>
                         </div>
                         <div >
-                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Data (Prazo)</label>
+                            <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Data do Cumprimento</label>
                             <input type="date" name="deadline" required class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500">
                         </div>
                         <div >
@@ -1227,7 +1227,7 @@
                         <div ><label class="block text-xs font-medium text-slate-600 mb-1">Ofícios</label><input type="number" name="qty_oficio" min="0" value="0" class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500"></div>
                         <div ><label class="block text-xs font-medium text-slate-600 mb-1">Ofício Circular</label><input type="number" name="qty_oficio_circular" min="0" value="0" class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500"></div>
                         <div ><label class="block text-xs font-medium text-slate-600 mb-1">E-mails</label><input type="number" name="qty_email" min="0" value="0" class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500"></div>
-                        <div ><label class="block text-xs font-medium text-slate-600 mb-1">Traslados</label><input type="number" name="qty_traslado" min="0" value="0" class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500"></div>
+                        <div ><label class="block text-xs font-medium text-slate-600 mb-1">Traslados/Apensamento</label><input type="number" name="qty_traslado" min="0" value="0" class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500"></div>
                         <div ><label class="block text-xs font-medium text-slate-600 mb-1">Diligências</label><input type="number" name="qty_diligencia" min="0" value="0" class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500"></div>
                         <div ><label class="block text-xs font-medium text-slate-600 mb-1">Comunicações</label><input type="number" name="qty_comunicacao" min="0" value="0" class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500"></div>
                     </div>
@@ -1301,7 +1301,20 @@
                     <input type="text" name="destinationUnit" required class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500">
                 </div>
                 <div class="col-span-2">
-                    <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Prazo (Dias Úteis)</label>
+                    <label class="block text-xs font-bold uppercase text-slate-500 mb-2">Tipo de Prazo</label>
+                    <div class="flex gap-3">
+                        <label class="flex-1 flex items-center gap-2 cursor-pointer border-2 rounded-xl px-4 py-3 transition-all border-indigo-500 bg-indigo-50" id="label-uteis">
+                            <input type="radio" name="dayType" value="uteis" checked class="accent-indigo-600" onchange="updateDayTypeStyle()">
+                            <span class="text-sm font-semibold text-indigo-700">&#128197; Dias Úteis</span>
+                        </label>
+                        <label class="flex-1 flex items-center gap-2 cursor-pointer border-2 rounded-xl px-4 py-3 transition-all border-slate-200 bg-white" id="label-corridos">
+                            <input type="radio" name="dayType" value="corridos" class="accent-indigo-600" onchange="updateDayTypeStyle()">
+                            <span class="text-sm font-semibold text-slate-600">&#128197; Dias Corridos</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="col-span-2">
+                    <label class="block text-xs font-bold uppercase text-slate-500 mb-1" id="label-days-input">Prazo (Dias Úteis)</label>
                     <input type="number" name="daysLimit" required min="0" class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500">
                 </div>
                 <div class="col-span-2 flex justify-end gap-3 mt-4">
@@ -2116,7 +2129,7 @@
                             badge.innerHTML = '<span class="w-2 h-2 rounded-full bg-emerald-500"></span> Equilibrado';
                             marker.classList.remove('critical');
                             status.className = 'thermometer-status balanced';
-                            status.innerHTML = '<i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i><span>Distribuição<br>saudável</span>';
+                            status.innerHTML = '';
                         }
                     }
                     // Reinjeta os ícones lucide do termômetro
@@ -2513,7 +2526,7 @@
                             { label: 'Ofícios',      val: d.oficio },
                             { label: 'Circulares',   val: d.circular },
                             { label: 'E-mails',      val: d.email },
-                            { label: 'Traslados',    val: d.traslado },
+                            { label: 'Traslados/Apensamento',    val: d.traslado },
                             { label: 'Diligências',  val: d.diligencia },
                             { label: 'Comunicações', val: d.comunicacao }
                         ];
@@ -2538,7 +2551,7 @@
                     doc.text('PRODUTIVIDADE POR SERVIDOR', 14, y);
                     y += 4;
 
-                    const headers = [['Servidor', 'Turno', 'Proc.\nDistrib.', 'Total\nAções', 'Ofícios', 'Circulares', 'E-mails', 'Traslados', 'Diligências', 'Comun.']];
+                    const headers = [['Servidor', 'Turno', 'Proc.\nDistrib.', 'Total\nAções', 'Ofícios', 'Circulares', 'E-mails', 'Traslados/Apensamento', 'Diligências', 'Comun.']];
                     const rows = allData.map(s => [
                         s.name, s.shift,
                         s.processesReceived, s.totalActions,
@@ -2674,7 +2687,7 @@
                         ws_data.push(['Ofícios',      makeBar(d.oficio,      maxAction), d.oficio,
                                       'Circulares',   makeBar(d.circular,    maxAction), d.circular,
                                       'E-mails',      makeBar(d.email,       maxAction), d.email]);
-                        ws_data.push(['Traslados',    makeBar(d.traslado,    maxAction), d.traslado,
+                        ws_data.push(['Traslados/Apensamento',    makeBar(d.traslado,    maxAction), d.traslado,
                                       'Diligências',  makeBar(d.diligencia,  maxAction), d.diligencia,
                                       'Comunicações', makeBar(d.comunicacao, maxAction), d.comunicacao]);
                     });
@@ -2682,7 +2695,7 @@
 
                     // ── TABELA POR SERVIDOR ────────────────────────────────
                     // Cabeçalho da tabela
-                    ws_data.push(['Servidor', 'Turno', 'Proc. Distribuídos', 'Total Ações', 'Ofícios', 'Circulares', 'E-mails', 'Traslados', 'Diligências', 'Comunicações']);
+                    ws_data.push(['Servidor', 'Turno', 'Proc. Distribuídos', 'Total Ações', 'Ofícios', 'Circulares', 'E-mails', 'Traslados/Apensamento', 'Diligências', 'Comunicações']);
 
                     // Dados por servidor
                     allData.forEach(s => {
@@ -2850,7 +2863,7 @@
                     const dateStr = currentDate.toISOString().split('T')[0];
                     const dayActions = state.actions.filter(a => DateEngine.normalize(a.date) === dateStr);
                     let grandTotal = 0, tOficio = 0, tCircular = 0, tEmail = 0, tTraslado = 0, tDiligencia = 0, tComun = 0;
-                    let dayHtml = `<div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200"><h5 class="text-lg font-bold text-emerald-600 mb-4 flex items-center gap-2"><i data-lucide="calendar" class="w-5 h-5"></i> Data: ${dateStr.split('-').reverse().join('/')}</h5><div class="overflow-x-auto"><table class="w-full text-left text-sm"><thead class="bg-emerald-100 text-emerald-800 uppercase text-xs"><tr class="border-b border-emerald-200"><th class="px-4 py-3 font-bold">Servidor</th><th class="px-4 py-3 font-bold text-center bg-emerald-200">TOTAL</th><th class="px-4 py-3 font-bold text-center">Ofícios</th><th class="px-4 py-3 font-bold text-center">Circulares</th><th class="px-4 py-3 font-bold text-center">E-mails</th><th class="px-4 py-3 font-bold text-center">Traslados</th><th class="px-4 py-3 font-bold text-center">Diligências</th><th class="px-4 py-3 font-bold text-center">Comun.</th></tr></thead><tbody class="divide-y divide-slate-100">`;
+                    let dayHtml = `<div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200"><h5 class="text-lg font-bold text-emerald-600 mb-4 flex items-center gap-2"><i data-lucide="calendar" class="w-5 h-5"></i> Data: ${dateStr.split('-').reverse().join('/')}</h5><div class="overflow-x-auto"><table class="w-full text-left text-sm"><thead class="bg-emerald-100 text-emerald-800 uppercase text-xs"><tr class="border-b border-emerald-200"><th class="px-4 py-3 font-bold">Servidor</th><th class="px-4 py-3 font-bold text-center bg-emerald-200">TOTAL</th><th class="px-4 py-3 font-bold text-center">Ofícios</th><th class="px-4 py-3 font-bold text-center">Circulares</th><th class="px-4 py-3 font-bold text-center">E-mails</th><th class="px-4 py-3 font-bold text-center">Traslados/Apensamento</th><th class="px-4 py-3 font-bold text-center">Diligências</th><th class="px-4 py-3 font-bold text-center">Comun.</th></tr></thead><tbody class="divide-y divide-slate-100">`;
                     state.servants.forEach(s => {
                         const sActions = dayActions.filter(a => a.servantId == s.id);
                         const cOficio = sActions.filter(a => a.type === 'Ofício').length;
@@ -2943,7 +2956,7 @@
                                 'Ofícios': sActions.filter(a => a.type === 'Ofício').length,
                                 'Circulares': sActions.filter(a => a.type === 'Ofício Circular').length,
                                 'E-mails': sActions.filter(a => a.type === 'E-mail').length,
-                                'Traslados': sActions.filter(a => a.type === 'Traslado').length,
+                                'Traslados/Apensamento': sActions.filter(a => a.type === 'Traslado').length,
                                 'Diligências': sActions.filter(a => a.type === 'Diligência').length,
                                 'Comunicações': sActions.filter(a => a.type === 'Comunicação').length
                             });
@@ -3128,6 +3141,28 @@
                 return date.toISOString().split('T')[0];
             }
 
+            function calculateCalendarDays(startDateStr, days) {
+                let date = new Date(startDateStr + 'T00:00:00');
+                date.setDate(date.getDate() + days);
+                return date.toISOString().split('T')[0];
+            }
+
+            window.updateDayTypeStyle = function() {
+                const selected = document.querySelector('input[name="dayType"]:checked').value;
+                const labelUteis = document.getElementById('label-uteis');
+                const labelCorridos = document.getElementById('label-corridos');
+                const labelInput = document.getElementById('label-days-input');
+                if (selected === 'uteis') {
+                    labelUteis.className = 'flex-1 flex items-center gap-2 cursor-pointer border-2 rounded-xl px-4 py-3 transition-all border-indigo-500 bg-indigo-50';
+                    labelCorridos.className = 'flex-1 flex items-center gap-2 cursor-pointer border-2 rounded-xl px-4 py-3 transition-all border-slate-200 bg-white';
+                    labelInput.textContent = 'Prazo (Dias Úteis)';
+                } else {
+                    labelCorridos.className = 'flex-1 flex items-center gap-2 cursor-pointer border-2 rounded-xl px-4 py-3 transition-all border-indigo-500 bg-indigo-50';
+                    labelUteis.className = 'flex-1 flex items-center gap-2 cursor-pointer border-2 rounded-xl px-4 py-3 transition-all border-slate-200 bg-white';
+                    labelInput.textContent = 'Prazo (Dias Corridos)';
+                }
+            }
+
             function getDeadlineColor(dueDateStr) {
                 const today = new Date();
                 today.setHours(0, 0, 0, 0);
@@ -3158,8 +3193,10 @@
                 e.preventDefault();
                 const formData = new FormData(e.target);
                 const data = Object.fromEntries(formData);
-                const calculatedDate = calculateBusinessDays(data.dateDist, parseInt(data.daysLimit));
-                const deadlineObj = { dateDist: data.dateDist, distributor: data.distributor, processNumber: data.processNumber, destinationUnit: data.destinationUnit, daysLimit: data.daysLimit, dueDate: calculatedDate };
+                const calculatedDate = data.dayType === 'corridos'
+                    ? calculateCalendarDays(data.dateDist, parseInt(data.daysLimit))
+                    : calculateBusinessDays(data.dateDist, parseInt(data.daysLimit));
+                const deadlineObj = { dateDist: data.dateDist, distributor: data.distributor, processNumber: data.processNumber, destinationUnit: data.destinationUnit, daysLimit: data.daysLimit, dayType: data.dayType || 'uteis', dueDate: calculatedDate };
                 await db.collection("deadlines").add(deadlineObj);
                 closeModal('modal-deadline');
                 e.target.reset();
