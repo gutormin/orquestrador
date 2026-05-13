@@ -1141,23 +1141,6 @@
                     </div>
                 </div>
 
-                <div>
-                    <label class="block text-xs font-bold uppercase text-slate-500 mb-2">Status</label>
-                    <div class="grid grid-cols-2 gap-2">
-                        <label class="cursor-pointer">
-                            <input type="radio" name="status" value="Ativo" class="peer sr-only" required>
-                            <div class="px-3 py-2.5 rounded-lg border-2 border-slate-200 text-center font-semibold text-sm transition-all peer-checked:border-emerald-500 peer-checked:bg-emerald-50 peer-checked:text-emerald-700 hover:border-emerald-300">
-                                Ativo
-                            </div>
-                        </label>
-                        <label class="cursor-pointer">
-                            <input type="radio" name="status" value="Inativo" class="peer sr-only">
-                            <div class="px-3 py-2.5 rounded-lg border-2 border-slate-200 text-center font-semibold text-sm transition-all peer-checked:border-rose-500 peer-checked:bg-rose-50 peer-checked:text-rose-700 hover:border-rose-300">
-                                Inativo
-                            </div>
-                        </label>
-                    </div>
-                </div>
 
                 <div class="flex justify-end gap-3 pt-2 border-t border-slate-100">
                     <button type="button" onclick="closeModal('modal-edit-servant')" class="px-4 py-2 text-slate-500 font-medium hover:text-slate-700">Cancelar</button>
@@ -3015,7 +2998,6 @@
                 // Pré-seleciona turno (se houver) e status
                 const form = document.getElementById('form-edit-servant');
                 form.querySelectorAll('input[name="shift"]').forEach(r => r.checked = (r.value === s.shift));
-                form.querySelectorAll('input[name="status"]').forEach(r => r.checked = (r.value === (s.status || 'Ativo')));
 
                 openModal('modal-edit-servant');
             }
@@ -3028,12 +3010,12 @@
                 const data = Object.fromEntries(formData);
                 if (!data.shift) { alert('Selecione um turno.'); return; }
                 try {
+                    const s = state.servants.find(x => x.id === id);
                     await db.collection('servants').doc(id).update({
                         shift: data.shift,
-                        status: data.status
+                        status: s ? (s.status || 'Ativo') : 'Ativo'
                     });
-                    const s = state.servants.find(x => x.id === id);
-                    logAction('Servidor Atualizado', `Servidor ${s ? s.name : id} atualizado para turno ${data.shift} / ${data.status}`);
+                    logAction('Servidor Atualizado', `Servidor ${s ? s.name : id} atualizado para turno ${data.shift}`);
                     closeModal('modal-edit-servant');
                 } catch (err) {
                     console.error('Erro ao atualizar servidor:', err);
