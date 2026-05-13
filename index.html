@@ -2447,7 +2447,12 @@
             window.renderDeadlines = function() {
                 const body = document.getElementById('deadlines-body');
                 if(!body) return;
-                body.innerHTML = state.deadlines.map(d => {
+                const sortedDeadlines = [...state.deadlines].sort((a, b) => {
+                    const dateA = new Date(a.dueDate + 'T00:00:00');
+                    const dateB = new Date(b.dueDate + 'T00:00:00');
+                    return dateA - dateB; // mais vencido (data menor) fica no topo
+                });
+                body.innerHTML = sortedDeadlines.map(d => {
                     const colorClass = getDeadlineColor(d.dueDate);
                     return `<tr class="hover:bg-slate-50 transition-colors"><td class="px-6 py-4">${d.dateDist.split('-').reverse().join('/')}</td><td class="px-6 py-4">${d.distributor}</td><td class="px-6 py-4 font-medium">${d.processNumber}</td><td class="px-6 py-4">${d.destinationUnit}</td><td class="px-6 py-4 text-center">${d.daysLimit}</td><td class="px-6 py-4 text-center"><span class="px-3 py-1 rounded-full text-xs ${colorClass}">${d.dueDate.split('-').reverse().join('/')}</span></td><td class="px-6 py-4 text-center">${checkPermission('delete') ? `<button onclick="deleteItem('deadlines', '${d.id}')" class="text-rose-500 hover:text-rose-700 p-2"><i data-lucide="trash-2" class="w-4 h-4"></i></button>` : '---'}</td></tr>`;
                 }).join('');
