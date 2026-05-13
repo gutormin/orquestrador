@@ -1692,7 +1692,7 @@
 
                 // KPI: Processos distribuídos hoje (vinculados a servidores do turno filtrado)
                 const procsToday = state.processes.filter(p => {
-                    const dateOfCreation = DateEngine.normalize(p.createdAt);
+                    const dateOfCreation = DateEngine.normalize(p.deadline);
                     if (dateOfCreation !== todayStr) return false;
                     if (shiftFilter === 'Geral') return true;
                     return filteredServantIds.has(p.servantId);
@@ -1715,7 +1715,7 @@
                 const rankingBody = document.getElementById('ranking-body');
                 const servantMonthlyStats = filteredServants.map(s => {
                     const sActionsMonth = state.actions.filter(a => s.id == a.servantId && DateEngine.normalize(a.date).startsWith(monthStr));
-                    const sProcsMonth = state.processes.filter(p => p.servantId == s.id && DateEngine.normalize(p.createdAt).startsWith(monthStr)).length;
+                    const sProcsMonth = state.processes.filter(p => p.servantId == s.id && DateEngine.normalize(p.deadline).startsWith(monthStr)).length;
                     return { ...s, processosDistribuidos: sProcsMonth, total: sActionsMonth.length, oficio: sActionsMonth.filter(a => a.type === 'Ofício').length, circular: sActionsMonth.filter(a => a.type === 'Ofício Circular').length, email: sActionsMonth.filter(a => a.type === 'E-mail').length, traslado: sActionsMonth.filter(a => a.type === 'Traslado').length, diligencia: sActionsMonth.filter(a => a.type === 'Diligência').length, comunicacao: sActionsMonth.filter(a => a.type === 'Comunicação').length };
                 }).sort((a, b) => b.total - a.total);
                 rankingBody.innerHTML = servantMonthlyStats.map(s => {
@@ -1727,7 +1727,7 @@
                 const rankingTodayBody = document.getElementById('ranking-today-body');
                 const servantTodayStats = filteredServants.map(s => {
                     const sActionsToday = state.actions.filter(a => s.id == a.servantId && DateEngine.normalize(a.date) === todayStr);
-                    const sProcsToday = state.processes.filter(p => p.servantId == s.id && DateEngine.normalize(p.createdAt) === todayStr).length;
+                    const sProcsToday = state.processes.filter(p => p.servantId == s.id && DateEngine.normalize(p.deadline) === todayStr).length;
                     return { ...s, processosDistribuidos: sProcsToday, total: sActionsToday.length, oficio: sActionsToday.filter(a => a.type === 'Ofício').length, circular: sActionsToday.filter(a => a.type === 'Ofício Circular').length, email: sActionsToday.filter(a => a.type === 'E-mail').length, traslado: sActionsToday.filter(a => a.type === 'Traslado').length, diligencia: sActionsToday.filter(a => a.type === 'Diligência').length, comunicacao: sActionsToday.filter(a => a.type === 'Comunicação').length };
                 }).sort((a, b) => b.total - a.total);
                 rankingTodayBody.innerHTML = servantTodayStats.map(s => {
@@ -1801,7 +1801,7 @@
                 // Conta processos do mês por turno (a partir do servidor responsável)
                 const counts = { 'Matutino': 0, 'Vespertino': 0, 'Não definido': 0 };
                 state.processes.forEach(p => {
-                    const created = DateEngine.normalize(p.createdAt);
+                    const created = DateEngine.normalize(p.deadline);
                     if (!created.startsWith(monthStr)) return;
                     const shift = servantShift[p.servantId] || 'Não definido';
                     counts[shift] = (counts[shift] || 0) + 1;
@@ -1954,12 +1954,12 @@
                     cur.setDate(cur.getDate() + 1);
                 }
 
-                // Agrega processos por data e por turno (usa createdAt)
+                // Agrega processos por data e por turno (usa deadline)
                 const byDate = {};
                 dates.forEach(d => { byDate[d] = { 'Matutino': 0, 'Vespertino': 0, 'Não definido': 0 }; });
 
                 state.processes.forEach(p => {
-                    const created = DateEngine.normalize(p.createdAt);
+                    const created = DateEngine.normalize(p.deadline);
                     if (!created || created < start || created > end) return;
                     const shift = servantShift[p.servantId] || 'Não definido';
                     if (byDate[created]) byDate[created][shift] = (byDate[created][shift] || 0) + 1;
