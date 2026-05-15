@@ -322,7 +322,36 @@
         .thermometer-status.extreme { background: #fee2e2; color: #991b1b; }
         .thermometer-status.no-data { background: #f1f5f9; color: #64748b; }
 
-        /* Pulsação no marcador quando crítico */
+        /* === ABAS DE RELATÓRIO === */
+        .report-tab-btn { color: #64748b; }
+        .report-tab-btn:hover { background: #e2e8f0; color: #1e293b; }
+        .report-tab-btn.active { background: white; color: #4f46e5; box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
+        .rank-metric-btn { background: #f1f5f9; color: #64748b; }
+        .rank-metric-btn.active { background: #4f46e5; color: white; }
+        .rank-bar-track { background: #f1f5f9; border-radius: 999px; height: 10px; flex: 1; overflow: hidden; }
+        .rank-bar-fill { height: 10px; border-radius: 999px; transition: width 0.6s cubic-bezier(0.22,1,0.36,1); }
+
+        /* Filtro de período por aba */
+        .report-period-filter {
+            display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem;
+            background: white; border: 1px solid #e2e8f0;
+            border-radius: 0.875rem; padding: 0.75rem 1rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+        }
+        .report-date-input {
+            padding: 0.35rem 0.6rem; border-radius: 0.5rem;
+            border: 1px solid #e2e8f0; font-size: 0.8rem;
+            outline: none; color: #1e293b;
+            transition: border-color 0.2s;
+        }
+        .report-date-input:focus { border-color: #6366f1; box-shadow: 0 0 0 2px rgba(99,102,241,0.15); }
+        .report-preset-btn {
+            padding: 0.35rem 0.75rem; border-radius: 0.5rem;
+            background: #f1f5f9; color: #64748b;
+            font-size: 0.75rem; font-weight: 600;
+            border: none; cursor: pointer; transition: all 0.15s;
+        }
+        .report-preset-btn:hover { background: #e0e7ff; color: #4f46e5; }
         @keyframes marker-pulse {
             0%, 100% { transform: translateY(-50%) translateX(0); }
             50% { transform: translateY(-50%) translateX(6px); }
@@ -890,139 +919,210 @@
 
                 <!-- RELATÓRIOS -->
                 <section id="page-reports" class="page-content hidden">
-                    <div class="flex flex-wrap gap-2 mb-6 p-1 bg-slate-200 rounded-xl w-fit">
-                        <button onclick="switchReportTab('tables')" id="tab-tables" class="px-6 py-2 rounded-lg font-bold transition-all bg-white text-indigo-600 shadow-sm">Tabelas & Docs</button>
-                        <button onclick="switchReportTab('daily')" id="tab-daily" class="px-6 py-2 rounded-lg font-bold transition-all text-slate-600 hover:bg-slate-100">Análise Diária</button>
-                        <button onclick="switchReportTab('charts')" id="tab-charts" class="px-6 py-2 rounded-lg font-bold transition-all text-slate-600 hover:bg-slate-100">Gráficos Analíticos</button>
-                        <button onclick="switchReportTab('shift')" id="tab-shift" class="px-6 py-2 rounded-lg font-bold transition-all text-slate-600 hover:bg-slate-100 flex items-center gap-2">
-                            <i data-lucide="layers" class="w-4 h-4"></i> Distribuição por Turno
-                        </button>
+
+                    <!-- ABAS DE NAVEGAÇÃO -->
+                    <div class="flex flex-wrap gap-1 mb-5 p-1 bg-slate-100 rounded-xl w-fit">
+                        <button onclick="switchReportTab('executive')" id="tab-executive" class="report-tab-btn active px-4 py-2 rounded-lg font-bold text-sm transition-all flex items-center gap-2"><i data-lucide="layout-dashboard" class="w-4 h-4"></i><span class="hidden sm:inline">Visão Executiva</span><span class="sm:hidden">Executiva</span></button>
+                        <button onclick="switchReportTab('ranking')" id="tab-ranking" class="report-tab-btn px-4 py-2 rounded-lg font-bold text-sm transition-all flex items-center gap-2"><i data-lucide="bar-chart-horizontal" class="w-4 h-4"></i><span class="hidden sm:inline">Ranking</span></button>
+                        <button onclick="switchReportTab('evolution')" id="tab-evolution" class="report-tab-btn px-4 py-2 rounded-lg font-bold text-sm transition-all flex items-center gap-2"><i data-lucide="trending-up" class="w-4 h-4"></i><span class="hidden sm:inline">Evolução</span></button>
+                        <button onclick="switchReportTab('shift')" id="tab-shift" class="report-tab-btn px-4 py-2 rounded-lg font-bold text-sm transition-all flex items-center gap-2"><i data-lucide="layers" class="w-4 h-4"></i><span class="hidden sm:inline">Por Turno</span></button>
+                        <button onclick="switchReportTab('backup')" id="tab-backup" class="report-tab-btn px-4 py-2 rounded-lg font-bold text-sm transition-all flex items-center gap-2"><i data-lucide="hard-drive" class="w-4 h-4"></i><span class="hidden sm:inline">Backup & Export</span><span class="sm:hidden">Export</span></button>
                     </div>
-                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 mb-8">
-                        <h4 class="text-lg font-bold mb-4 flex items-center gap-2"><i data-lucide="calendar-days" class="w-5 h-5 text-indigo-600"></i> Filtrar Período do Relatório</h4>
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-end">
-                            <div ><label class="block text-xs font-bold uppercase text-slate-500 mb-1">Data Início</label><input type="date" id="report-start-date" onchange="updateAnalyticalReport()" class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500"></div>
-                            <div ><label class="block text-xs font-bold uppercase text-slate-500 mb-1">Data Fim</label><input type="date" id="report-end-date" onchange="updateAnalyticalReport()" class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500"></div>
-                            <div class="text-slate-400 text-sm italic pb-2"> * Defina o período para atualizar as tabelas.</div>
+
+                    <!-- ══════════════════════════════════════════
+                         ABA 1 — VISÃO EXECUTIVA
+                    ══════════════════════════════════════════ -->
+                    <div id="report-tab-executive" class="report-tab-content space-y-5">
+                        <!-- Filtro próprio -->
+                        <div class="report-period-filter">
+                            <i data-lucide="calendar-range" class="w-4 h-4 text-indigo-500"></i>
+                            <span class="text-xs font-bold uppercase text-slate-500">Período</span>
+                            <input type="date" id="exec-start" onchange="renderExecutive()" class="report-date-input">
+                            <span class="text-slate-400 text-sm">até</span>
+                            <input type="date" id="exec-end" onchange="renderExecutive()" class="report-date-input">
+                            <button onclick="setTabPeriod('exec','month')" class="report-preset-btn">Este mês</button>
+                            <button onclick="setTabPeriod('exec','week')" class="report-preset-btn">Esta semana</button>
+                            <button onclick="setTabPeriod('exec','today')" class="report-preset-btn">Hoje</button>
                         </div>
-                    </div>
-                    <div id="report-tab-tables" class="report-tab-content">
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 text-center">
-                                <div class="w-12 h-12 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4"><i data-lucide="file-text" class="w-6 h-6"></i></div>
-                                <h4 class="font-bold mb-2">Relatório Produtividade (PDF)</h4>
-                                <button onclick="exportData('pdf')" class="w-full py-2 px-4 bg-indigo-600 text-white rounded-lg transition-all font-medium hover:bg-indigo-700">Download PDF</button>
+
+                        <!-- KPIs executivos -->
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
+                                <div class="flex items-center justify-between mb-3">
+                                    <span class="text-xs font-bold uppercase text-slate-400">Total de Ações</span>
+                                    <div class="w-9 h-9 rounded-xl bg-indigo-100 flex items-center justify-center"><i data-lucide="zap" class="w-4 h-4 text-indigo-600"></i></div>
+                                </div>
+                                <p class="text-3xl font-black text-indigo-700" id="exec-total-actions">—</p>
+                                <p class="text-xs text-slate-400 mt-1" id="exec-avg-day">— / dia útil</p>
                             </div>
-                            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 text-center">
-                                <div class="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4"><i data-lucide="table" class="w-6 h-6"></i></div>
-                                <h4 class="font-bold mb-2">Relatório Produtividade (Excel)</h4>
-                                <button onclick="exportData('excel')" class="w-full py-2 px-4 bg-emerald-600 text-white rounded-lg transition-all font-medium hover:bg-emerald-700">Download Excel</button>
+                            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
+                                <div class="flex items-center justify-between mb-3">
+                                    <span class="text-xs font-bold uppercase text-slate-400">Proc. Distribuídos</span>
+                                    <div class="w-9 h-9 rounded-xl bg-emerald-100 flex items-center justify-center"><i data-lucide="folder-open" class="w-4 h-4 text-emerald-600"></i></div>
+                                </div>
+                                <p class="text-3xl font-black text-emerald-700" id="exec-total-procs">—</p>
+                                <p class="text-xs text-slate-400 mt-1" id="exec-procs-day">— / dia útil</p>
                             </div>
-                            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 text-center">
-                                <div class="w-12 h-12 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mx-auto mb-4"><i data-lucide="printer" class="w-6 h-6"></i></div>
-                                <h4 class="font-bold mb-2">Impressão Geral</h4>
-                                <button onclick="window.print()" class="w-full py-2 px-4 bg-amber-600 text-white rounded-lg transition-all font-medium hover:bg-amber-700">Imprimir Agora</button>
+                            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
+                                <div class="flex items-center justify-between mb-3">
+                                    <span class="text-xs font-bold uppercase text-slate-400">Servidor Destaque</span>
+                                    <div class="w-9 h-9 rounded-xl bg-amber-100 flex items-center justify-center"><i data-lucide="trophy" class="w-4 h-4 text-amber-600"></i></div>
+                                </div>
+                                <p class="text-base font-black text-amber-700 leading-tight" id="exec-top-servant">—</p>
+                                <p class="text-xs text-slate-400 mt-1" id="exec-top-servant-val">— ações</p>
+                            </div>
+                            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
+                                <div class="flex items-center justify-between mb-3">
+                                    <span class="text-xs font-bold uppercase text-slate-400">Turno Líder</span>
+                                    <div class="w-9 h-9 rounded-xl bg-violet-100 flex items-center justify-center"><i data-lucide="sun" class="w-4 h-4 text-violet-600"></i></div>
+                                </div>
+                                <p class="text-xl font-black text-violet-700" id="exec-top-shift">—</p>
+                                <p class="text-xs text-slate-400 mt-1" id="exec-top-shift-val">— ações (—%)</p>
                             </div>
                         </div>
-                    </div>
-                    <div id="report-tab-daily" class="report-tab-content hidden">
-                        <div id="daily-export-controls" class="hidden flex justify-end gap-3 mb-6">
-                            <button onclick="exportDailyData('pdf')" class="px-4 py-2 bg-rose-600 text-white rounded-lg text-sm font-bold hover:bg-rose-700 transition-all flex items-center gap-2 shadow-sm">
-                                <i data-lucide="file-text" class="w-4 h-4"></i> PDF Análise Diária
-                            </button>
-                            <button onclick="exportDailyData('excel')" class="px-4 py-2 bg-emerald-600 text-white rounded-lg text-sm font-bold hover:bg-emerald-700 transition-all flex items-center gap-2 shadow-sm">
-                                <i data-lucide="table" class="w-4 h-4"></i> Excel Análise Diária
-                            </button>
-                        </div>
-                        <div id="daily-reports-container" class="space-y-12">
-                            <div class="text-center py-10 text-slate-400">Selecione o período acima para gerar as tabelas diárias.</div>
-                        </div>
-                    </div>
-                    <div id="report-tab-charts" class="report-tab-content hidden">
-                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-                            <div class="flex justify-between items-center mb-6">
-                                <h4 class="text-lg font-bold flex items-center gap-2"><i data-lucide="pie-chart" class="w-5 h-5 text-indigo-600"></i> Distribuição de Ações no Período</h4>
-                                <button onclick="renderReportChart()" class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-indigo-700 transition-all flex items-center gap-2">
-                                    <i data-lucide="refresh-cw" class="w-4 h-4"></i> Atualizar
-                                </button>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+                                <h4 class="font-bold text-slate-700 mb-4 flex items-center gap-2"><i data-lucide="activity" class="w-4 h-4 text-indigo-500"></i> Performance por Tipo de Ação</h4>
+                                <div id="exec-action-bars" class="space-y-3"><div class="text-slate-400 text-sm text-center py-6">Selecione um período</div></div>
                             </div>
-                            <div class="relative h-[500px]"><canvas id="chart-report-servants"></canvas></div>
+                            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+                                <h4 class="font-bold text-slate-700 mb-4 flex items-center gap-2"><i data-lucide="pie-chart" class="w-4 h-4 text-indigo-500"></i> Distribuição por Tipo</h4>
+                                <div class="relative h-[220px]"><canvas id="chart-exec-donut"></canvas></div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+                            <h4 class="font-bold text-slate-700 mb-4 flex items-center gap-2"><i data-lucide="users" class="w-4 h-4 text-indigo-500"></i> Top 5 Servidores do Período</h4>
+                            <div id="exec-top5" class="space-y-3"><div class="text-slate-400 text-sm text-center py-4">Selecione um período</div></div>
                         </div>
                     </div>
 
-                    <!-- ABA: DISTRIBUIÇÃO POR TURNO -->
-                    <div id="report-tab-shift" class="report-tab-content hidden space-y-6">
-                        <!-- KPIs por turno do período -->
-                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                            <div class="kpi-shift matutino">
-                                <div class="kpi-shift-icon"><i data-lucide="sunrise" class="w-5 h-5 text-amber-700"></i></div>
-                                <div>
-                                    <p class="kpi-shift-label text-amber-900">Matutino</p>
-                                    <h3 class="kpi-shift-value text-amber-900" id="kpi-shift-mat">0</h3>
+                    <!-- ══════════════════════════════════════════
+                         ABA 2 — RANKING
+                    ══════════════════════════════════════════ -->
+                    <div id="report-tab-ranking" class="report-tab-content hidden space-y-5">
+                        <div class="report-period-filter">
+                            <i data-lucide="calendar-range" class="w-4 h-4 text-indigo-500"></i>
+                            <span class="text-xs font-bold uppercase text-slate-500">Período</span>
+                            <input type="date" id="rank-start" onchange="renderRanking()" class="report-date-input">
+                            <span class="text-slate-400 text-sm">até</span>
+                            <input type="date" id="rank-end" onchange="renderRanking()" class="report-date-input">
+                            <button onclick="setTabPeriod('rank','month')" class="report-preset-btn">Este mês</button>
+                            <button onclick="setTabPeriod('rank','week')" class="report-preset-btn">Esta semana</button>
+                            <button onclick="setTabPeriod('rank','today')" class="report-preset-btn">Hoje</button>
+                        </div>
+
+                        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+                            <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+                                <h4 class="font-bold text-slate-700 flex items-center gap-2"><i data-lucide="bar-chart-horizontal" class="w-4 h-4 text-indigo-500"></i> Ranking de Produtividade</h4>
+                                <div class="flex gap-2">
+                                    <button onclick="setRankingMetric('totalActions')" id="rank-btn-actions" class="rank-metric-btn active px-3 py-1.5 rounded-lg text-xs font-bold transition-all">Total Ações</button>
+                                    <button onclick="setRankingMetric('processesReceived')" id="rank-btn-procs" class="rank-metric-btn px-3 py-1.5 rounded-lg text-xs font-bold transition-all">Proc. Distrib.</button>
                                 </div>
                             </div>
-                            <div class="kpi-shift vespertino">
-                                <div class="kpi-shift-icon"><i data-lucide="sunset" class="w-5 h-5 text-violet-700"></i></div>
-                                <div>
-                                    <p class="kpi-shift-label text-violet-900">Vespertino</p>
-                                    <h3 class="kpi-shift-value text-violet-900" id="kpi-shift-vesp">0</h3>
-                                </div>
-                            </div>
-                            <div class="kpi-shift geral">
-                                <div class="kpi-shift-icon"><i data-lucide="trophy" class="w-5 h-5 text-indigo-700"></i></div>
-                                <div>
-                                    <p class="kpi-shift-label text-indigo-900">Pico do Período</p>
-                                    <h3 class="kpi-shift-value text-indigo-900 text-base" id="kpi-shift-peak" style="font-size:0.95rem;">—</h3>
-                                </div>
-                            </div>
+                            <div id="ranking-bars-container" class="space-y-3"><div class="text-slate-400 text-sm text-center py-8">Selecione um período</div></div>
                         </div>
 
-                        <!-- Botões de exportação -->
-                        <div class="flex justify-end gap-3">
-                            <button onclick="exportShiftData('pdf')" class="px-4 py-2 bg-rose-600 text-white rounded-lg text-sm font-bold hover:bg-rose-700 transition-all flex items-center gap-2 shadow-sm">
-                                <i data-lucide="file-text" class="w-4 h-4"></i> Exportar PDF
-                            </button>
-                            <button onclick="exportShiftData('excel')" class="px-4 py-2 bg-emerald-600 text-white rounded-lg text-sm font-bold hover:bg-emerald-700 transition-all flex items-center gap-2 shadow-sm">
-                                <i data-lucide="table" class="w-4 h-4"></i> Exportar Excel
-                            </button>
-                        </div>
-
-                        <!-- Comparativo diário (barras agrupadas) -->
-                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-                            <h4 class="text-lg font-bold mb-4 flex items-center gap-2">
-                                <i data-lucide="bar-chart-2" class="w-5 h-5 text-indigo-600"></i>
-                                Comparativo Diário — Matutino vs Vespertino
-                            </h4>
-                            <p class="text-xs text-slate-500 mb-4">Quantidade de processos cadastrados por dia, agrupados por turno do servidor responsável.</p>
-                            <div class="relative h-[380px]"><canvas id="chart-shift-daily"></canvas></div>
-                        </div>
-
-                        <!-- Acumulado mensal (linha) -->
-                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-                            <h4 class="text-lg font-bold mb-4 flex items-center gap-2">
-                                <i data-lucide="trending-up" class="w-5 h-5 text-indigo-600"></i>
-                                Acumulado no Período
-                            </h4>
-                            <p class="text-xs text-slate-500 mb-4">Tendência de crescimento ao longo do período selecionado.</p>
-                            <div class="relative h-[300px]"><canvas id="chart-shift-cumulative"></canvas></div>
-                        </div>
-
-                        <!-- Tabela detalhada -->
-                        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-                            <div class="p-6 border-b border-slate-100 bg-slate-50/50">
-                                <h4 class="text-lg font-bold flex items-center gap-2">
-                                    <i data-lucide="table" class="w-5 h-5 text-indigo-600"></i>
-                                    Tabela Detalhada por Data
-                                </h4>
+                        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                            <div class="p-5 border-b border-slate-100 bg-slate-50 flex items-center gap-2">
+                                <i data-lucide="table" class="w-4 h-4 text-indigo-500"></i>
+                                <h4 class="font-bold text-slate-700">Detalhamento Completo por Servidor</h4>
                             </div>
                             <div class="overflow-x-auto">
-                                <table class="w-full text-left mobile-card-table">
+                                <table class="w-full text-left mobile-card-table text-sm">
                                     <thead class="bg-slate-50 text-slate-500 text-xs uppercase">
                                         <tr>
-                                            <th class="px-6 py-4 font-semibold">Data</th>
-                                            <th class="px-6 py-4 font-semibold text-center">Matutino</th>
-                                            <th class="px-6 py-4 font-semibold text-center">Vespertino</th>
-                                            <th class="px-6 py-4 font-semibold text-center bg-indigo-50 text-indigo-700">Total</th>
+                                            <th class="px-4 py-3">#</th>
+                                            <th class="px-4 py-3">Servidor</th>
+                                            <th class="px-4 py-3 text-center">Turno</th>
+                                            <th class="px-4 py-3 text-center">Proc.</th>
+                                            <th class="px-4 py-3 text-center bg-indigo-50 text-indigo-700">Total</th>
+                                            <th class="px-4 py-3 text-center">Ofícios</th>
+                                            <th class="px-4 py-3 text-center">Circ.</th>
+                                            <th class="px-4 py-3 text-center">E-mails</th>
+                                            <th class="px-4 py-3 text-center">Trasl.</th>
+                                            <th class="px-4 py-3 text-center">Dilig.</th>
+                                            <th class="px-4 py-3 text-center">Comun.</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="ranking-table-body" class="divide-y divide-slate-100"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ══════════════════════════════════════════
+                         ABA 3 — EVOLUÇÃO TEMPORAL
+                    ══════════════════════════════════════════ -->
+                    <div id="report-tab-evolution" class="report-tab-content hidden space-y-5">
+                        <div class="report-period-filter">
+                            <i data-lucide="calendar-range" class="w-4 h-4 text-indigo-500"></i>
+                            <span class="text-xs font-bold uppercase text-slate-500">Período</span>
+                            <input type="date" id="evol-start" onchange="renderEvolution()" class="report-date-input">
+                            <span class="text-slate-400 text-sm">até</span>
+                            <input type="date" id="evol-end" onchange="renderEvolution()" class="report-date-input">
+                            <button onclick="setTabPeriod('evol','month')" class="report-preset-btn">Este mês</button>
+                            <button onclick="setTabPeriod('evol','week')" class="report-preset-btn">Esta semana</button>
+                            <button onclick="setTabPeriod('evol','today')" class="report-preset-btn">Hoje</button>
+                        </div>
+
+                        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+                            <h4 class="font-bold text-slate-700 mb-1 flex items-center gap-2"><i data-lucide="trending-up" class="w-4 h-4 text-indigo-500"></i> Curva de Produção Diária</h4>
+                            <p class="text-xs text-slate-400 mb-5">Total de ações por dia — identifica picos, quedas e tendências.</p>
+                            <div class="relative h-[300px]"><canvas id="chart-evolution-line"></canvas></div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+                                <h4 class="font-bold text-slate-700 mb-1 flex items-center gap-2"><i data-lucide="bar-chart-2" class="w-4 h-4 text-amber-500"></i> Matutino vs Vespertino</h4>
+                                <p class="text-xs text-slate-400 mb-4">Processos por turno dia a dia.</p>
+                                <div class="relative h-[240px]"><canvas id="chart-shift-daily"></canvas></div>
+                            </div>
+                            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+                                <h4 class="font-bold text-slate-700 mb-1 flex items-center gap-2"><i data-lucide="trending-up" class="w-4 h-4 text-violet-500"></i> Acumulado no Período</h4>
+                                <p class="text-xs text-slate-400 mb-4">Tendência de crescimento cumulativo.</p>
+                                <div class="relative h-[240px]"><canvas id="chart-shift-cumulative"></canvas></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ══════════════════════════════════════════
+                         ABA 4 — POR TURNO
+                    ══════════════════════════════════════════ -->
+                    <div id="report-tab-shift" class="report-tab-content hidden space-y-5">
+                        <div class="report-period-filter">
+                            <i data-lucide="calendar-range" class="w-4 h-4 text-indigo-500"></i>
+                            <span class="text-xs font-bold uppercase text-slate-500">Período</span>
+                            <input type="date" id="shift-start" onchange="renderShiftReport()" class="report-date-input">
+                            <span class="text-slate-400 text-sm">até</span>
+                            <input type="date" id="shift-end" onchange="renderShiftReport()" class="report-date-input">
+                            <button onclick="setTabPeriod('shift','month')" class="report-preset-btn">Este mês</button>
+                            <button onclick="setTabPeriod('shift','week')" class="report-preset-btn">Esta semana</button>
+                            <button onclick="setTabPeriod('shift','today')" class="report-preset-btn">Hoje</button>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="kpi-shift matutino"><div class="kpi-shift-icon"><i data-lucide="sunrise" class="w-5 h-5 text-amber-700"></i></div><div><p class="kpi-shift-label text-amber-900">Matutino — Ações</p><h3 class="kpi-shift-value text-amber-900" id="kpi-shift-mat">0</h3></div></div>
+                            <div class="kpi-shift vespertino"><div class="kpi-shift-icon"><i data-lucide="sunset" class="w-5 h-5 text-violet-700"></i></div><div><p class="kpi-shift-label text-violet-900">Vespertino — Ações</p><h3 class="kpi-shift-value text-violet-900" id="kpi-shift-vesp">0</h3></div></div>
+                            <div class="kpi-shift geral"><div class="kpi-shift-icon"><i data-lucide="trophy" class="w-5 h-5 text-indigo-700"></i></div><div><p class="kpi-shift-label text-indigo-900">Pico do Período</p><h3 class="kpi-shift-value text-indigo-900" id="kpi-shift-peak" style="font-size:0.85rem;">—</h3></div></div>
+                        </div>
+
+                        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                            <div class="p-5 border-b border-slate-100 bg-slate-50 flex justify-between items-center flex-wrap gap-3">
+                                <h4 class="font-bold text-slate-700 flex items-center gap-2"><i data-lucide="table" class="w-4 h-4 text-indigo-500"></i> Tabela por Data e Turno</h4>
+                                <div class="flex gap-2">
+                                    <button onclick="exportShiftData('pdf')" class="px-3 py-1.5 bg-rose-600 text-white rounded-lg text-xs font-bold hover:bg-rose-700 transition-all flex items-center gap-1"><i data-lucide="file-text" class="w-3 h-3"></i> PDF</button>
+                                    <button onclick="exportShiftData('excel')" class="px-3 py-1.5 bg-emerald-600 text-white rounded-lg text-xs font-bold hover:bg-emerald-700 transition-all flex items-center gap-1"><i data-lucide="table" class="w-3 h-3"></i> Excel</button>
+                                </div>
+                            </div>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left mobile-card-table text-sm">
+                                    <thead class="bg-slate-50 text-slate-500 text-xs uppercase">
+                                        <tr>
+                                            <th class="px-4 py-3">Data</th>
+                                            <th class="px-4 py-3 text-center">Matutino</th>
+                                            <th class="px-4 py-3 text-center">Vespertino</th>
+                                            <th class="px-4 py-3 text-center bg-indigo-50 text-indigo-700">Total</th>
                                         </tr>
                                     </thead>
                                     <tbody id="shift-table-body" class="divide-y divide-slate-100"></tbody>
@@ -1030,7 +1130,90 @@
                             </div>
                         </div>
                     </div>
+
+                    <!-- ══════════════════════════════════════════
+                         ABA 5 — BACKUP & EXPORTAÇÃO
+                    ══════════════════════════════════════════ -->
+                    <div id="report-tab-backup" class="report-tab-content hidden space-y-5">
+                        <div class="report-period-filter">
+                            <i data-lucide="calendar-range" class="w-4 h-4 text-indigo-500"></i>
+                            <span class="text-xs font-bold uppercase text-slate-500">Período</span>
+                            <input type="date" id="backup-start" onchange="renderBackupPreview()" class="report-date-input">
+                            <span class="text-slate-400 text-sm">até</span>
+                            <input type="date" id="backup-end" onchange="renderBackupPreview()" class="report-date-input">
+                            <button onclick="setTabPeriod('backup','month')" class="report-preset-btn">Este mês</button>
+                            <button onclick="setTabPeriod('backup','week')" class="report-preset-btn">Esta semana</button>
+                            <button onclick="setTabPeriod('backup','today')" class="report-preset-btn">Hoje</button>
+                        </div>
+
+                        <!-- Cards de download -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <!-- CONSOLIDADO -->
+                            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                                <div class="bg-gradient-to-r from-indigo-600 to-indigo-700 p-5 text-white">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-11 h-11 bg-white/20 rounded-xl flex items-center justify-center"><i data-lucide="layers" class="w-5 h-5"></i></div>
+                                        <div>
+                                            <h4 class="font-bold text-lg">Relatório Consolidado</h4>
+                                            <p class="text-xs text-indigo-200">Período todo somado — visão geral</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="p-5 space-y-2 text-sm text-slate-600">
+                                    <div class="flex items-center gap-2"><i data-lucide="check-circle" class="w-4 h-4 text-emerald-500 flex-shrink-0"></i> Dashboard por turno com velocímetros (PDF)</div>
+                                    <div class="flex items-center gap-2"><i data-lucide="check-circle" class="w-4 h-4 text-emerald-500 flex-shrink-0"></i> Tabela por servidor com totalizadores</div>
+                                    <div class="flex items-center gap-2"><i data-lucide="check-circle" class="w-4 h-4 text-emerald-500 flex-shrink-0"></i> Cores por turno + linha TOTAL GERAL</div>
+                                    <div class="flex items-center gap-2"><i data-lucide="check-circle" class="w-4 h-4 text-emerald-500 flex-shrink-0"></i> Cabeçalho institucional + rodapé paginado</div>
+                                </div>
+                                <div class="px-5 pb-5 flex gap-3">
+                                    <button onclick="exportConsolidated('pdf')" class="flex-1 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 shadow-md">
+                                        <i data-lucide="file-text" class="w-4 h-4"></i> PDF
+                                    </button>
+                                    <button onclick="exportConsolidated('excel')" class="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 shadow-md">
+                                        <i data-lucide="table" class="w-4 h-4"></i> Excel
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- DIÁRIO -->
+                            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                                <div class="bg-gradient-to-r from-emerald-600 to-emerald-700 p-5 text-white">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-11 h-11 bg-white/20 rounded-xl flex items-center justify-center"><i data-lucide="calendar-days" class="w-5 h-5"></i></div>
+                                        <div>
+                                            <h4 class="font-bold text-lg">Relatório Diário</h4>
+                                            <p class="text-xs text-emerald-200">Cada dia em seção separada — backup completo</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="p-5 space-y-2 text-sm text-slate-600">
+                                    <div class="flex items-center gap-2"><i data-lucide="check-circle" class="w-4 h-4 text-emerald-500 flex-shrink-0"></i> Uma tabela por dia do período</div>
+                                    <div class="flex items-center gap-2"><i data-lucide="check-circle" class="w-4 h-4 text-emerald-500 flex-shrink-0"></i> Todos os servidores por dia</div>
+                                    <div class="flex items-center gap-2"><i data-lucide="check-circle" class="w-4 h-4 text-emerald-500 flex-shrink-0"></i> Subtotal por dia + TOTAL GERAL no final</div>
+                                    <div class="flex items-center gap-2"><i data-lucide="check-circle" class="w-4 h-4 text-emerald-500 flex-shrink-0"></i> Excel: aba separada por dia</div>
+                                </div>
+                                <div class="px-5 pb-5 flex gap-3">
+                                    <button onclick="exportDaily('pdf')" class="flex-1 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 shadow-md">
+                                        <i data-lucide="file-text" class="w-4 h-4"></i> PDF
+                                    </button>
+                                    <button onclick="exportDaily('excel')" class="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 shadow-md">
+                                        <i data-lucide="table" class="w-4 h-4"></i> Excel
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Preview -->
+                        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+                            <h4 class="font-bold text-slate-700 mb-4 flex items-center gap-2"><i data-lucide="eye" class="w-4 h-4 text-indigo-500"></i> Preview — Tabela Consolidada</h4>
+                            <div id="backup-preview" class="overflow-x-auto">
+                                <div class="text-slate-400 text-sm text-center py-8">Selecione um período para pré-visualizar</div>
+                            </div>
+                        </div>
+                    </div>
+
                 </section>
+
 
                 <!-- AUDITORIA -->
                 <section id="page-audit" class="page-content hidden">
@@ -2217,850 +2400,609 @@
             }
 
 
-            // ===========================================================
-            // RELATÓRIOS: ANÁLISE DETALHADA POR TURNO (período filtrado)
-            // ===========================================================
-            function getShiftAnalysisData() {
-                const start = document.getElementById('report-start-date').value;
-                const end = document.getElementById('report-end-date').value;
-                if (!start || !end) return null;
+            }
 
-                // Mapa servidor → turno
+            // ══════════════════════════════════════════════════════════════
+            // RELATÓRIOS — SISTEMA COMPLETO REFORMULADO
+            // ══════════════════════════════════════════════════════════════
+
+            window.currentReportTab = 'executive';
+            window.currentRankingMetric = 'totalActions';
+
+            // ── Troca de aba ───────────────────────────────────────────────
+            window.switchReportTab = function(tab) {
+                window.currentReportTab = tab;
+                document.querySelectorAll('.report-tab-content').forEach(c => c.classList.add('hidden'));
+                document.querySelectorAll('.report-tab-btn').forEach(b => b.classList.remove('active'));
+                document.getElementById(`report-tab-${tab}`).classList.remove('hidden');
+                document.getElementById(`tab-${tab}`).classList.add('active');
+                lucide.createIcons();
+            }
+
+            // ── Preset de período por aba ──────────────────────────────────
+            window.setTabPeriod = function(prefix, preset) {
+                const today = new Date();
+                let start, end;
+                if (preset === 'today') {
+                    start = end = DateEngine.getToday();
+                } else if (preset === 'week') {
+                    const day = today.getDay();
+                    const diff = (day === 0 ? -6 : 1 - day);
+                    const mon = new Date(today); mon.setDate(today.getDate() + diff);
+                    start = mon.toISOString().split('T')[0];
+                    end = DateEngine.getToday();
+                } else if (preset === 'month') {
+                    start = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-01`;
+                    end = DateEngine.getToday();
+                }
+                document.getElementById(`${prefix}-start`).value = start;
+                document.getElementById(`${prefix}-end`).value = end;
+                // Dispara a função de renderização correspondente
+                const renderMap = { exec: renderExecutive, rank: renderRanking, evol: renderEvolution, shift: renderShiftReport, backup: renderBackupPreview };
+                if (renderMap[prefix]) renderMap[prefix]();
+            }
+
+            // ── Helper: dados filtrados por período ────────────────────────
+            function getTabData(prefix) {
+                const start = document.getElementById(`${prefix}-start`).value;
+                const end = document.getElementById(`${prefix}-end`).value;
+                if (!start || !end) return null;
+                const acts = state.actions.filter(a => a.status === 'Concluído' && DateEngine.normalize(a.date) >= start && DateEngine.normalize(a.date) <= end);
+                const procs = state.processes.filter(p => { const d = DateEngine.normalize(p.deadline); return d >= start && d <= end; });
+                const data = state.servants.map(s => {
+                    const sa = acts.filter(a => a.servantId == s.id);
+                    const sp = procs.filter(p => p.servantId == s.id).length;
+                    return { id: s.id, name: s.name, shift: s.shift || 'Não definido',
+                        processesReceived: sp, totalActions: sa.length,
+                        oficio: sa.filter(a => a.type==='Ofício').length,
+                        circular: sa.filter(a => a.type==='Ofício Circular').length,
+                        email: sa.filter(a => a.type==='E-mail').length,
+                        traslado: sa.filter(a => a.type==='Traslado').length,
+                        diligencia: sa.filter(a => a.type==='Diligência').length,
+                        comunicacao: sa.filter(a => a.type==='Comunicação').length };
+                });
+                return { data, acts, procs, start, end };
+            }
+
+            function workDays(start, end) {
+                let dias = 0, cur = new Date(start + 'T00:00:00'), endD = new Date(end + 'T00:00:00');
+                while (cur <= endD) { const wd = cur.getDay(); if (wd > 0 && wd < 6) dias++; cur.setDate(cur.getDate()+1); }
+                return Math.max(dias, 1);
+            }
+
+            function getDatesInRange(start, end) {
+                const dates = []; let cur = new Date(start + 'T00:00:00'), endD = new Date(end + 'T00:00:00');
+                while (cur <= endD) { dates.push(cur.toISOString().split('T')[0]); cur.setDate(cur.getDate()+1); }
+                return dates;
+            }
+
+            // ── ABA 1: VISÃO EXECUTIVA ─────────────────────────────────────
+            window.renderExecutive = function() {
+                const res = getTabData('exec');
+                if (!res) return;
+                const { data, acts, procs, start, end } = res;
+
+                const totA = data.reduce((s,d) => s+d.totalActions, 0);
+                const totP = data.reduce((s,d) => s+d.processesReceived, 0);
+                const dias = workDays(start, end);
+                const top = [...data].sort((a,b) => b.totalActions - a.totalActions)[0];
+                const byShift = {};
+                data.forEach(s => { byShift[s.shift] = (byShift[s.shift]||0) + s.totalActions; });
+                const topShift = Object.entries(byShift).sort((a,b) => b[1]-a[1])[0] || ['—', 0];
+
+                document.getElementById('exec-total-actions').textContent = totA;
+                document.getElementById('exec-avg-day').textContent = `${(totA/dias).toFixed(1)} / dia útil`;
+                document.getElementById('exec-total-procs').textContent = totP;
+                document.getElementById('exec-procs-day').textContent = `${(totP/dias).toFixed(1)} / dia útil`;
+                document.getElementById('exec-top-servant').textContent = top ? top.name : '—';
+                document.getElementById('exec-top-servant-val').textContent = top ? `${top.totalActions} ações` : '';
+                document.getElementById('exec-top-shift').textContent = topShift[0];
+                document.getElementById('exec-top-shift-val').textContent = `${topShift[1]} ações (${totA ? Math.round(topShift[1]/totA*100) : 0}%)`;
+
+                // Barras por tipo de ação
+                const types = [
+                    { label: 'Ofícios', key: 'oficio', color: '#4f46e5' },
+                    { label: 'Circulares', key: 'circular', color: '#8b5cf6' },
+                    { label: 'E-mails', key: 'email', color: '#10b981' },
+                    { label: 'Traslados', key: 'traslado', color: '#f59e0b' },
+                    { label: 'Diligências', key: 'diligencia', color: '#ec4899' },
+                    { label: 'Comunicações', key: 'comunicacao', color: '#64748b' }
+                ];
+                const totByType = types.map(t => ({ ...t, val: data.reduce((s,d) => s+d[t.key], 0) }));
+                const maxType = Math.max(...totByType.map(t => t.val), 1);
+                document.getElementById('exec-action-bars').innerHTML = totByType.map(t => `
+                    <div>
+                        <div class="flex justify-between text-xs mb-1">
+                            <span class="font-semibold text-slate-600">${t.label}</span>
+                            <span class="font-bold" style="color:${t.color}">${t.val}</span>
+                        </div>
+                        <div class="rank-bar-track"><div class="rank-bar-fill" style="width:${Math.round(t.val/maxType*100)}%;background:${t.color}"></div></div>
+                    </div>`).join('');
+
+                // Donut
+                const ctxD = document.getElementById('chart-exec-donut').getContext('2d');
+                if (window._chartExecDonut) window._chartExecDonut.destroy();
+                window._chartExecDonut = new Chart(ctxD, {
+                    type: 'doughnut',
+                    data: { labels: totByType.map(t=>t.label), datasets: [{ data: totByType.map(t=>t.val), backgroundColor: totByType.map(t=>t.color), borderWidth: 2, borderColor: '#fff' }] },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { font: { size: 11 } } } }, cutout: '65%' }
+                });
+
+                // Top 5
+                const top5 = [...data].sort((a,b) => b.totalActions - a.totalActions).slice(0,5);
+                const maxTop = Math.max(...top5.map(t=>t.totalActions), 1);
+                const shiftColors = { Matutino: '#f59e0b', Vespertino: '#8b5cf6' };
+                document.getElementById('exec-top5').innerHTML = top5.map((s,i) => `
+                    <div class="flex items-center gap-3">
+                        <div class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-black ${i===0?'bg-amber-400 text-white':i===1?'bg-slate-300 text-slate-700':i===2?'bg-orange-300 text-white':'bg-slate-100 text-slate-500'}">${i+1}</div>
+                        <div class="flex-1 min-w-0">
+                            <div class="flex justify-between text-sm mb-1">
+                                <span class="font-bold text-slate-700 truncate">${s.name}</span>
+                                <span class="font-black text-indigo-700 ml-2">${s.totalActions}</span>
+                            </div>
+                            <div class="rank-bar-track"><div class="rank-bar-fill" style="width:${Math.round(s.totalActions/maxTop*100)}%;background:${shiftColors[s.shift]||'#6366f1'}"></div></div>
+                        </div>
+                        <span class="text-xs px-2 py-0.5 rounded-full font-semibold" style="background:${shiftColors[s.shift]||'#e0e7ff'}20;color:${shiftColors[s.shift]||'#6366f1'}">${s.shift}</span>
+                    </div>`).join('');
+            }
+
+            // ── ABA 2: RANKING ────────────────────────────────────────────
+            window.renderRanking = function() {
+                const res = getTabData('rank');
+                if (!res) return;
+                const { data } = res;
+                const metric = window.currentRankingMetric || 'totalActions';
+                const sorted = [...data].sort((a,b) => b[metric] - a[metric]);
+                const maxVal = Math.max(...sorted.map(s=>s[metric]), 1);
+                const shiftColors = { Matutino: '#f59e0b', Vespertino: '#8b5cf6' };
+                const avg = sorted.reduce((s,d)=>s+d[metric],0) / (sorted.length||1);
+
+                document.getElementById('ranking-bars-container').innerHTML = sorted.map((s,i) => `
+                    <div class="flex items-center gap-3 group">
+                        <div class="w-6 text-right text-xs font-bold text-slate-400">${i+1}</div>
+                        <div class="w-36 truncate text-sm font-semibold text-slate-700" title="${s.name}">${s.name}</div>
+                        <div class="flex-1 flex items-center gap-2">
+                            <div class="rank-bar-track flex-1">
+                                <div class="rank-bar-fill" style="width:${Math.round(s[metric]/maxVal*100)}%;background:${shiftColors[s.shift]||'#6366f1'}"></div>
+                            </div>
+                            ${s[metric] >= avg ? '<span class="text-xs text-emerald-600 font-bold">↑</span>' : '<span class="text-xs text-rose-400 font-bold">↓</span>'}
+                        </div>
+                        <div class="w-10 text-right font-black text-slate-700">${s[metric]}</div>
+                        <span class="text-xs px-2 py-0.5 rounded-full font-semibold hidden md:block" style="background:${(shiftColors[s.shift]||'#6366f1')}20;color:${shiftColors[s.shift]||'#6366f1'}">${s.shift}</span>
+                    </div>`).join('');
+
+                // Linha de média
+                document.getElementById('ranking-bars-container').innerHTML += `
+                    <div class="mt-3 pt-3 border-t border-dashed border-slate-200 text-xs text-slate-400 text-right">
+                        Média da equipe: <span class="font-bold text-slate-600">${avg.toFixed(1)}</span> ${metric==='totalActions'?'ações':'processos'}
+                        &nbsp;·&nbsp; ↑ acima da média &nbsp;·&nbsp; ↓ abaixo da média
+                    </div>`;
+
+                // Tabela
+                const totals = sorted.reduce((acc,s) => {
+                    acc.processesReceived+=s.processesReceived; acc.totalActions+=s.totalActions;
+                    acc.oficio+=s.oficio; acc.circular+=s.circular; acc.email+=s.email;
+                    acc.traslado+=s.traslado; acc.diligencia+=s.diligencia; acc.comunicacao+=s.comunicacao;
+                    return acc;
+                }, { processesReceived:0,totalActions:0,oficio:0,circular:0,email:0,traslado:0,diligencia:0,comunicacao:0 });
+
+                document.getElementById('ranking-table-body').innerHTML =
+                    sorted.map((s,i) => {
+                        const rowBg = s.shift==='Matutino'?'bg-amber-50/40':s.shift==='Vespertino'?'bg-violet-50/40':'';
+                        return `<tr class="${rowBg} hover:bg-slate-50 transition-colors">
+                            <td data-label="#" class="px-4 py-3 text-slate-400 font-bold text-sm">${i+1}</td>
+                            <td data-label="Servidor" class="px-4 py-3 font-semibold text-slate-700">${s.name}</td>
+                            <td data-label="Turno" class="px-4 py-3 text-center">${getShiftBadge(s.shift)}</td>
+                            <td data-label="Proc." class="px-4 py-3 text-center text-blue-700 font-bold">${s.processesReceived}</td>
+                            <td data-label="Total" class="px-4 py-3 text-center font-black text-indigo-700 bg-indigo-50">${s.totalActions}</td>
+                            <td data-label="Ofícios" class="px-4 py-3 text-center">${s.oficio}</td>
+                            <td data-label="Circ." class="px-4 py-3 text-center">${s.circular}</td>
+                            <td data-label="E-mails" class="px-4 py-3 text-center">${s.email}</td>
+                            <td data-label="Trasl." class="px-4 py-3 text-center">${s.traslado}</td>
+                            <td data-label="Dilig." class="px-4 py-3 text-center">${s.diligencia}</td>
+                            <td data-label="Comun." class="px-4 py-3 text-center">${s.comunicacao}</td>
+                        </tr>`;
+                    }).join('') +
+                    `<tr class="bg-indigo-900 text-white font-bold text-sm">
+                        <td class="px-4 py-3" colspan="2">TOTAL GERAL</td>
+                        <td class="px-4 py-3 text-center">—</td>
+                        <td class="px-4 py-3 text-center">${totals.processesReceived}</td>
+                        <td class="px-4 py-3 text-center bg-indigo-700">${totals.totalActions}</td>
+                        <td class="px-4 py-3 text-center">${totals.oficio}</td>
+                        <td class="px-4 py-3 text-center">${totals.circular}</td>
+                        <td class="px-4 py-3 text-center">${totals.email}</td>
+                        <td class="px-4 py-3 text-center">${totals.traslado}</td>
+                        <td class="px-4 py-3 text-center">${totals.diligencia}</td>
+                        <td class="px-4 py-3 text-center">${totals.comunicacao}</td>
+                    </tr>`;
+                lucide.createIcons();
+            }
+
+            window.setRankingMetric = function(metric) {
+                window.currentRankingMetric = metric;
+                document.querySelectorAll('.rank-metric-btn').forEach(b => b.classList.remove('active'));
+                document.getElementById(metric==='totalActions'?'rank-btn-actions':'rank-btn-procs').classList.add('active');
+                renderRanking();
+            }
+
+            // ── ABA 3: EVOLUÇÃO TEMPORAL ──────────────────────────────────
+            window.renderEvolution = function() {
+                const start = document.getElementById('evol-start').value;
+                const end = document.getElementById('evol-end').value;
+                if (!start || !end) return;
+
+                const dates = getDatesInRange(start, end);
+                const labels = dates.map(d => d.split('-').reverse().slice(0,2).join('/'));
                 const servantShift = {};
                 state.servants.forEach(s => { servantShift[s.id] = s.shift || 'Não definido'; });
 
-                // Lista de datas no período
-                const dates = [];
-                let cur = new Date(start + 'T00:00:00');
-                const endD = new Date(end + 'T00:00:00');
-                while (cur <= endD) {
-                    dates.push(cur.toISOString().split('T')[0]);
-                    cur.setDate(cur.getDate() + 1);
-                }
-
-                // Agrega processos por data e por turno (usa deadline)
-                const byDate = {};
-                dates.forEach(d => { byDate[d] = { 'Matutino': 0, 'Vespertino': 0, 'Não definido': 0 }; });
-
-                state.processes.forEach(p => {
-                    const created = DateEngine.normalize(p.deadline);
-                    if (!created || created < start || created > end) return;
-                    const shift = servantShift[p.servantId] || 'Não definido';
-                    if (byDate[created]) byDate[created][shift] = (byDate[created][shift] || 0) + 1;
+                // Curva de ações diárias
+                const dailyActions = dates.map(d => state.actions.filter(a => a.status==='Concluído' && DateEngine.normalize(a.date)===d).length);
+                const ctxL = document.getElementById('chart-evolution-line').getContext('2d');
+                if (window._chartEvolutionLine) window._chartEvolutionLine.destroy();
+                window._chartEvolutionLine = new Chart(ctxL, {
+                    type: 'line',
+                    data: { labels, datasets: [{ label: 'Ações por dia', data: dailyActions, borderColor: '#4f46e5', backgroundColor: 'rgba(79,70,229,0.08)', fill: true, tension: 0.4, pointBackgroundColor: '#4f46e5', pointRadius: 4 }] },
+                    options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }, plugins: { legend: { display: false } } }
                 });
 
-                return { dates, byDate, start, end };
+                // Matutino vs Vespertino por dia
+                const matIds = state.servants.filter(s=>s.shift==='Matutino').map(s=>s.id);
+                const vespIds = state.servants.filter(s=>s.shift==='Vespertino').map(s=>s.id);
+                const matDaily = dates.map(d => state.processes.filter(p => DateEngine.normalize(p.deadline)===d && matIds.includes(p.servantId)).length);
+                const vespDaily = dates.map(d => state.processes.filter(p => DateEngine.normalize(p.deadline)===d && vespIds.includes(p.servantId)).length);
+                const ctxS = document.getElementById('chart-shift-daily').getContext('2d');
+                if (window._chartShiftDaily) window._chartShiftDaily.destroy();
+                window._chartShiftDaily = new Chart(ctxS, {
+                    type: 'bar',
+                    data: { labels, datasets: [{ label: 'Matutino', data: matDaily, backgroundColor: '#f59e0b' }, { label: 'Vespertino', data: vespDaily, backgroundColor: '#8b5cf6' }] },
+                    options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }, plugins: { legend: { position: 'bottom' } } }
+                });
+
+                // Acumulado
+                let accA = 0, accV = 0;
+                const accMat = matDaily.map(v => { accA += v; return accA; });
+                const accVesp = vespDaily.map(v => { accV += v; return accV; });
+                const ctxC = document.getElementById('chart-shift-cumulative').getContext('2d');
+                if (window._chartShiftCum) window._chartShiftCum.destroy();
+                window._chartShiftCum = new Chart(ctxC, {
+                    type: 'line',
+                    data: { labels, datasets: [
+                        { label: 'Matutino (acum.)', data: accMat, borderColor: '#f59e0b', backgroundColor: 'rgba(245,158,11,0.1)', fill: true, tension: 0.3 },
+                        { label: 'Vespertino (acum.)', data: accVesp, borderColor: '#8b5cf6', backgroundColor: 'rgba(139,92,246,0.1)', fill: true, tension: 0.3 }
+                    ] },
+                    options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }, plugins: { legend: { position: 'bottom' } } }
+                });
             }
 
+            // ── ABA 4: POR TURNO ──────────────────────────────────────────
             window.renderShiftReport = function() {
-                const data = getShiftAnalysisData();
-                if (!data) {
-                    document.getElementById('shift-table-body').innerHTML = '<tr><td colspan="4" class="text-center py-10 text-slate-400">Selecione o período acima para gerar a análise.</td></tr>';
-                    return;
-                }
-                const { dates, byDate } = data;
+                const start = document.getElementById('shift-start').value;
+                const end = document.getElementById('shift-end').value;
+                if (!start || !end) return;
 
-                // KPIs totais
-                let totMat = 0, totVesp = 0, totND = 0;
-                let peakDay = null, peakValue = 0, peakShift = null;
-                dates.forEach(d => {
-                    const row = byDate[d];
-                    totMat += row['Matutino'];
-                    totVesp += row['Vespertino'];
-                    totND += row['Não definido'];
-                    ['Matutino', 'Vespertino'].forEach(shift => {
-                        if (row[shift] > peakValue) { peakValue = row[shift]; peakDay = d; peakShift = shift; }
-                    });
+                const servantShift = {};
+                state.servants.forEach(s => { servantShift[s.id] = s.shift || 'Não definido'; });
+                const dates = getDatesInRange(start, end);
+                const byDate = {};
+                dates.forEach(d => { byDate[d] = { Matutino: 0, Vespertino: 0, 'Não definido': 0 }; });
+                state.processes.forEach(p => {
+                    const d = DateEngine.normalize(p.deadline);
+                    if (byDate[d]) {
+                        const sh = servantShift[p.servantId] || 'Não definido';
+                        byDate[d][sh] = (byDate[d][sh]||0) + 1;
+                    }
                 });
 
-                document.getElementById('kpi-shift-mat').textContent = totMat;
-                document.getElementById('kpi-shift-vesp').textContent = totVesp;
-                document.getElementById('kpi-shift-peak').textContent = peakDay
-                    ? `${peakValue} (${peakShift})\n${peakDay.split('-').reverse().join('/')}`
-                    : '—';
+                const acts = state.actions.filter(a => a.status==='Concluído' && DateEngine.normalize(a.date) >= start && DateEngine.normalize(a.date) <= end);
+                const matActs = acts.filter(a => { const s = state.servants.find(sv=>sv.id==a.servantId); return s?.shift==='Matutino'; }).length;
+                const vespActs = acts.filter(a => { const s = state.servants.find(sv=>sv.id==a.servantId); return s?.shift==='Vespertino'; }).length;
+                document.getElementById('kpi-shift-mat').textContent = matActs;
+                document.getElementById('kpi-shift-vesp').textContent = vespActs;
+
+                // Pico
+                let peakDay = null, peakVal = 0, peakShift = '';
+                dates.forEach(d => { ['Matutino','Vespertino'].forEach(sh => { if (byDate[d][sh] > peakVal) { peakVal=byDate[d][sh]; peakDay=d; peakShift=sh; } }); });
+                document.getElementById('kpi-shift-peak').textContent = peakDay ? `${peakVal} proc. (${peakShift}) em ${peakDay.split('-').reverse().join('/')}` : '—';
 
                 // Tabela
-                const tbody = document.getElementById('shift-table-body');
-                tbody.innerHTML = dates.map(d => {
-                    const r = byDate[d];
-                    const tot = r['Matutino'] + r['Vespertino'] + r['Não definido'];
+                let totM=0, totV=0;
+                document.getElementById('shift-table-body').innerHTML = dates.map(d => {
+                    const r = byDate[d]; const tot = r.Matutino+r.Vespertino+r['Não definido'];
+                    totM+=r.Matutino; totV+=r.Vespertino;
                     return `<tr class="hover:bg-slate-50 transition-colors">
-                        <td class="px-6 py-3 font-medium">${d.split('-').reverse().join('/')}</td>
-                        <td class="px-6 py-3 text-center"><span class="font-semibold text-amber-700">${r['Matutino']}</span></td>
-                        <td class="px-6 py-3 text-center"><span class="font-semibold text-violet-700">${r['Vespertino']}</span></td>
-                        <td class="px-6 py-3 text-center font-bold text-indigo-700 bg-indigo-50">${tot}</td>
+                        <td data-label="Data" class="px-4 py-3 font-medium">${d.split('-').reverse().join('/')}</td>
+                        <td data-label="Matutino" class="px-4 py-3 text-center font-semibold text-amber-700">${r.Matutino}</td>
+                        <td data-label="Vespertino" class="px-4 py-3 text-center font-semibold text-violet-700">${r.Vespertino}</td>
+                        <td data-label="Total" class="px-4 py-3 text-center font-black text-indigo-700 bg-indigo-50">${tot}</td>
                     </tr>`;
-                }).join('') + `<tr class="bg-slate-100 font-bold border-t-2 border-slate-300">
-                        <td class="px-6 py-3">TOTAL</td>
-                        <td class="px-6 py-3 text-center text-amber-700">${totMat}</td>
-                        <td class="px-6 py-3 text-center text-violet-700">${totVesp}</td>
-                        <td class="px-6 py-3 text-center text-indigo-700 bg-indigo-100">${totMat + totVesp + totND}</td>
-                    </tr>`;
-
-                // Gráfico de barras agrupadas (diário)
-                const labels = dates.map(d => d.split('-').reverse().slice(0, 2).join('/'));
-                const ctxDaily = document.getElementById('chart-shift-daily').getContext('2d');
-                if (window.myChartShiftDaily) window.myChartShiftDaily.destroy();
-                window.myChartShiftDaily = new Chart(ctxDaily, {
-                    type: 'bar',
-                    data: {
-                        labels,
-                        datasets: [
-                            { label: 'Matutino', data: dates.map(d => byDate[d]['Matutino']), backgroundColor: '#f59e0b' },
-                            { label: 'Vespertino', data: dates.map(d => byDate[d]['Vespertino']), backgroundColor: '#8b5cf6' }
-                        ]
-                    },
-                    options: {
-                        responsive: true, maintainAspectRatio: false,
-                        scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } },
-                        plugins: { legend: { position: 'bottom' } }
-                    }
-                });
-
-                // Gráfico de linha acumulada
-                let accMat = 0, accVesp = 0;
-                const accMatArr = dates.map(d => { accMat += byDate[d]['Matutino']; return accMat; });
-                const accVespArr = dates.map(d => { accVesp += byDate[d]['Vespertino']; return accVesp; });
-
-                const ctxCum = document.getElementById('chart-shift-cumulative').getContext('2d');
-                if (window.myChartShiftCum) window.myChartShiftCum.destroy();
-                window.myChartShiftCum = new Chart(ctxCum, {
-                    type: 'line',
-                    data: {
-                        labels,
-                        datasets: [
-                            { label: 'Matutino (acum.)', data: accMatArr, borderColor: '#f59e0b', backgroundColor: 'rgba(245,158,11,0.1)', fill: true, tension: 0.3 },
-                            { label: 'Vespertino (acum.)', data: accVespArr, borderColor: '#8b5cf6', backgroundColor: 'rgba(139,92,246,0.1)', fill: true, tension: 0.3 }
-                        ]
-                    },
-                    options: {
-                        responsive: true, maintainAspectRatio: false,
-                        scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } },
-                        plugins: { legend: { position: 'bottom' } }
-                    }
-                });
+                }).join('') +
+                `<tr class="bg-indigo-900 text-white font-bold">
+                    <td class="px-4 py-3">TOTAL</td>
+                    <td class="px-4 py-3 text-center">${totM}</td>
+                    <td class="px-4 py-3 text-center">${totV}</td>
+                    <td class="px-4 py-3 text-center bg-indigo-700">${totM+totV}</td>
+                </tr>`;
             }
 
             window.exportShiftData = function(format) {
-                const data = getShiftAnalysisData();
-                if (!data) { alert('Selecione o período para gerar o relatório.'); return; }
-                const { dates, byDate, start, end } = data;
-
-                let totMat = 0, totVesp = 0, totND = 0;
-                const rows = dates.map(d => {
-                    const r = byDate[d];
-                    totMat += r['Matutino']; totVesp += r['Vespertino']; totND += r['Não definido'];
-                    return [
-                        d.split('-').reverse().join('/'),
-                        r['Matutino'], r['Vespertino'], r['Não definido'],
-                        r['Matutino'] + r['Vespertino'] + r['Não definido']
-                    ];
-                });
+                const start = document.getElementById('shift-start').value;
+                const end = document.getElementById('shift-end').value;
+                if (!start || !end) { alert('Selecione o período na aba Por Turno.'); return; }
+                const fmtDate = d => d.split('-').reverse().join('/');
+                const servantShift = {};
+                state.servants.forEach(s => { servantShift[s.id] = s.shift || 'Não definido'; });
+                const dates = getDatesInRange(start, end);
+                const byDate = {};
+                dates.forEach(d => { byDate[d] = { Matutino: 0, Vespertino: 0, 'Não definido': 0 }; });
+                state.processes.forEach(p => { const d = DateEngine.normalize(p.deadline); if (byDate[d]) { const sh = servantShift[p.servantId]||'Não definido'; byDate[d][sh]=(byDate[d][sh]||0)+1; } });
+                let totM=0, totV=0, totND=0;
+                const rows = dates.map(d => { const r=byDate[d]; totM+=r.Matutino; totV+=r.Vespertino; totND+=r['Não definido']; return [fmtDate(d), r.Matutino, r.Vespertino, r.Matutino+r.Vespertino+r['Não definido']]; });
 
                 if (format === 'pdf') {
-                    const { jsPDF } = window.jspdf;
-                    const doc = new jsPDF();
-                    doc.setFontSize(16); doc.text('Distribuição de Processos por Turno', 14, 18);
-                    doc.setFontSize(11); doc.text(`Período: ${start.split('-').reverse().join('/')} a ${end.split('-').reverse().join('/')}`, 14, 26);
-                    doc.autoTable({
-                        startY: 32,
-                        head: [['Data', 'Matutino', 'Vespertino', 'Não def.', 'Total']],
-                        body: rows,
-                        foot: [['TOTAL', totMat, totVesp, totND, totMat + totVesp + totND]],
-                        theme: 'grid',
-                        headStyles: { fillColor: [79, 70, 229] },
-                        footStyles: { fillColor: [226, 232, 240], textColor: [30, 41, 59], fontStyle: 'bold' }
-                    });
-                    doc.save(`distribuicao_turnos_${start}_${end}.pdf`);
+                    const { jsPDF } = window.jspdf; const doc = new jsPDF();
+                    doc.setFillColor(49,46,129); doc.rect(0,0,210,30,'F');
+                    doc.setTextColor(255,255,255); doc.setFontSize(14); doc.setFont('helvetica','bold');
+                    doc.text('Distribuição por Turno — SecExecPres', 14, 14);
+                    doc.setFontSize(10); doc.setFont('helvetica','normal');
+                    doc.text(`Período: ${fmtDate(start)} a ${fmtDate(end)}`, 14, 22);
+                    doc.autoTable({ startY: 36, head: [['Data','Matutino','Vespertino','Total']], body: rows, foot: [['TOTAL', totM, totV, totM+totV+totND]], theme: 'grid', headStyles: { fillColor: [49,46,129], textColor: 255 }, footStyles: { fillColor: [49,46,129], textColor: 255, fontStyle: 'bold' } });
+                    doc.save(`turnos_${start}_${end}.pdf`);
                 } else {
-                    const dataJson = rows.map(r => ({ Data: r[0], Matutino: r[1], Vespertino: r[2], 'Não definido': r[3], Total: r[4] }));
-                    dataJson.push({ Data: 'TOTAL', Matutino: totMat, Vespertino: totVesp, 'Não definido': totND, Total: totMat + totVesp + totND });
-                    const ws = XLSX.utils.json_to_sheet(dataJson);
-                    const wb = XLSX.utils.book_new();
-                    XLSX.utils.book_append_sheet(wb, ws, 'Distribuição Turnos');
-                    XLSX.writeFile(wb, `distribuicao_turnos_${start}_${end}.xlsx`);
+                    const ws_data = [['Distribuição por Turno — SecExecPres'], [`Período: ${fmtDate(start)} a ${fmtDate(end)}`], [], ['Data','Matutino','Vespertino','Total'], ...rows, ['TOTAL',totM,totV,totM+totV+totND]];
+                    const ws = XLSX.utils.aoa_to_sheet(ws_data); ws['!cols']=[{wch:14},{wch:12},{wch:12},{wch:10}];
+                    const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,ws,'Por Turno');
+                    XLSX.writeFile(wb, `turnos_${start}_${end}.xlsx`, { cellStyles: true });
                 }
             }
 
-            function getFilteredData() {
-                const start = document.getElementById('report-start-date').value;
-                const end = document.getElementById('report-end-date').value;
-                if (!start || !end) { alert("Selecione as datas."); return null; }
-                const filteredActions = state.actions.filter(a => DateEngine.normalize(a.date) >= start && DateEngine.normalize(a.date) <= end);
-                const filteredProcesses = state.processes.filter(p => { const d = DateEngine.normalize(p.deadline); return d >= start && d <= end; });
-                return state.servants.map(s => {
-                    const sActions = filteredActions.filter(a => a.servantId == s.id);
-                    const sProcs = filteredProcesses.filter(p => p.servantId == s.id);
-                    return { name: s.name, shift: s.shift || 'Não definido', processesReceived: sProcs.length, totalActions: sActions.length, oficio: sActions.filter(a => a.type === 'Ofício').length, circular: sActions.filter(a => a.type === 'Ofício Circular').length, email: sActions.filter(a => a.type === 'E-mail').length, traslado: sActions.filter(a => a.type === 'Traslado').length, diligencia: sActions.filter(a => a.type === 'Diligência').length, comunicacao: sActions.filter(a => a.type === 'Comunicação').length };
-                });
+            // ── ABA 5: BACKUP & EXPORTAÇÃO ────────────────────────────────
+            window.renderBackupPreview = function() {
+                const res = getTabData('backup');
+                if (!res) return;
+                const { data, start, end } = res;
+                const fmtDate = d => d.split('-').reverse().join('/');
+                const sorted = [...data].sort((a,b) => b.totalActions - a.totalActions);
+                const totals = sorted.reduce((acc,s) => {
+                    acc.processesReceived+=s.processesReceived; acc.totalActions+=s.totalActions;
+                    acc.oficio+=s.oficio; acc.circular+=s.circular; acc.email+=s.email;
+                    acc.traslado+=s.traslado; acc.diligencia+=s.diligencia; acc.comunicacao+=s.comunicacao;
+                    return acc;
+                }, { processesReceived:0,totalActions:0,oficio:0,circular:0,email:0,traslado:0,diligencia:0,comunicacao:0 });
+
+                document.getElementById('backup-preview').innerHTML = `
+                    <div class="mb-3 text-xs font-bold uppercase text-slate-500 flex items-center gap-2">
+                        <i data-lucide="eye" class="w-3 h-3"></i> Período: ${fmtDate(start)} a ${fmtDate(end)} — ${sorted.length} servidores
+                    </div>
+                    <table class="w-full text-left text-sm mobile-card-table">
+                        <thead class="bg-indigo-900 text-white text-xs uppercase">
+                            <tr>
+                                <th class="px-3 py-2">Servidor</th><th class="px-3 py-2 text-center">Turno</th>
+                                <th class="px-3 py-2 text-center">Proc.</th><th class="px-3 py-2 text-center bg-indigo-700">Total</th>
+                                <th class="px-3 py-2 text-center">Of.</th><th class="px-3 py-2 text-center">Circ.</th>
+                                <th class="px-3 py-2 text-center">Email</th><th class="px-3 py-2 text-center">Trasl.</th>
+                                <th class="px-3 py-2 text-center">Dilig.</th><th class="px-3 py-2 text-center">Com.</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            ${sorted.map(s => {
+                                const bg = s.shift==='Matutino'?'bg-amber-50/50':s.shift==='Vespertino'?'bg-violet-50/50':'';
+                                return `<tr class="${bg}">
+                                    <td data-label="Servidor" class="px-3 py-2 font-semibold">${s.name}</td>
+                                    <td data-label="Turno" class="px-3 py-2 text-center">${getShiftBadge(s.shift)}</td>
+                                    <td data-label="Proc." class="px-3 py-2 text-center text-blue-700 font-bold">${s.processesReceived}</td>
+                                    <td data-label="Total" class="px-3 py-2 text-center font-black text-indigo-700 bg-indigo-50">${s.totalActions}</td>
+                                    <td data-label="Of." class="px-3 py-2 text-center">${s.oficio}</td>
+                                    <td data-label="Circ." class="px-3 py-2 text-center">${s.circular}</td>
+                                    <td data-label="Email" class="px-3 py-2 text-center">${s.email}</td>
+                                    <td data-label="Trasl." class="px-3 py-2 text-center">${s.traslado}</td>
+                                    <td data-label="Dilig." class="px-3 py-2 text-center">${s.diligencia}</td>
+                                    <td data-label="Com." class="px-3 py-2 text-center">${s.comunicacao}</td>
+                                </tr>`;
+                            }).join('')}
+                            <tr class="bg-indigo-900 text-white font-bold text-sm">
+                                <td class="px-3 py-2" colspan="2">TOTAL GERAL</td>
+                                <td class="px-3 py-2 text-center">${totals.processesReceived}</td>
+                                <td class="px-3 py-2 text-center bg-indigo-700">${totals.totalActions}</td>
+                                <td class="px-3 py-2 text-center">${totals.oficio}</td>
+                                <td class="px-3 py-2 text-center">${totals.circular}</td>
+                                <td class="px-3 py-2 text-center">${totals.email}</td>
+                                <td class="px-3 py-2 text-center">${totals.traslado}</td>
+                                <td class="px-3 py-2 text-center">${totals.diligencia}</td>
+                                <td class="px-3 py-2 text-center">${totals.comunicacao}</td>
+                            </tr>
+                        </tbody>
+                    </table>`;
+                lucide.createIcons();
             }
 
-            window.exportData = function(type) {
-                const data = getFilteredData();
-                if (!data) return;
-                const start = document.getElementById('report-start-date').value;
-                const end = document.getElementById('report-end-date').value;
+            // Consolidado (usa getTabData com prefix 'backup')
+            window.exportConsolidated = function(format) { exportData(format, 'backup'); }
+
+            window.exportData = function(format, prefix) {
+                prefix = prefix || 'backup';
+                const res = getTabData(prefix);
+                if (!res) { alert('Selecione o período na aba Backup & Export.'); return; }
+                const { data: allData, start, end } = res;
                 const fmtDate = d => d.split('-').reverse().join('/');
-                const startFmt = fmtDate(start);
-                const endFmt = fmtDate(end);
+                const startFmt = fmtDate(start), endFmt = fmtDate(end);
 
-                // Filtra só servidores com algum dado
-                const activeData = data.filter(s => s.processesReceived > 0 || s.totalActions > 0);
-                const allData = data; // mantém todos para o Excel
-
-                // Totalizadores
-                const totals = allData.reduce((acc, s) => {
-                    acc.processesReceived += s.processesReceived;
-                    acc.totalActions += s.totalActions;
-                    acc.oficio += s.oficio;
-                    acc.circular += s.circular;
-                    acc.email += s.email;
-                    acc.traslado += s.traslado;
-                    acc.diligencia += s.diligencia;
-                    acc.comunicacao += s.comunicacao;
+                const totals = allData.reduce((acc,s) => {
+                    acc.processesReceived+=s.processesReceived; acc.totalActions+=s.totalActions;
+                    acc.oficio+=s.oficio; acc.circular+=s.circular; acc.email+=s.email;
+                    acc.traslado+=s.traslado; acc.diligencia+=s.diligencia; acc.comunicacao+=s.comunicacao;
                     return acc;
-                }, { processesReceived: 0, totalActions: 0, oficio: 0, circular: 0, email: 0, traslado: 0, diligencia: 0, comunicacao: 0 });
+                }, { processesReceived:0,totalActions:0,oficio:0,circular:0,email:0,traslado:0,diligencia:0,comunicacao:0 });
 
-                if (type === 'pdf') {
+                if (format === 'pdf') {
                     const { jsPDF } = window.jspdf;
-                    const doc = new jsPDF('l', 'mm', 'a4'); // landscape A4
-                    const W = doc.internal.pageSize.getWidth();
-                    const H = doc.internal.pageSize.getHeight();
-
-                    // ── CABEÇALHO ──────────────────────────────────────────
-                    doc.setFillColor(49, 46, 129); // indigo-900
-                    doc.rect(0, 0, W, 38, 'F');
-
-                    doc.setTextColor(255, 255, 255);
-                    doc.setFontSize(20);
-                    doc.setFont('helvetica', 'bold');
+                    const doc = new jsPDF('l','mm','a4');
+                    const W = doc.internal.pageSize.getWidth(), H = doc.internal.pageSize.getHeight();
+                    // Cabeçalho
+                    doc.setFillColor(49,46,129); doc.rect(0,0,W,38,'F');
+                    doc.setTextColor(255,255,255); doc.setFontSize(18); doc.setFont('helvetica','bold');
                     doc.text('RELATÓRIO DE PRODUTIVIDADE', 14, 16);
-
-                    doc.setFontSize(11);
-                    doc.setFont('helvetica', 'normal');
+                    doc.setFontSize(10); doc.setFont('helvetica','normal');
                     doc.text('SecExecPres — Secretaria de Execuções da Presidência', 14, 24);
                     doc.text(`Período: ${startFmt} a ${endFmt}`, 14, 31);
-
-                    // Data de emissão (canto direito)
                     const now = new Date();
-                    const emissao = `Emitido em: ${now.toLocaleDateString('pt-BR')} às ${now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`;
-                    doc.setFontSize(9);
-                    doc.text(emissao, W - 14, 31, { align: 'right' });
-
-                    // ── CARDS DE RESUMO ────────────────────────────────────
+                    doc.setFontSize(9); doc.text(`Emitido em: ${now.toLocaleDateString('pt-BR')} às ${now.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}`, W-14, 31, {align:'right'});
+                    // Cards
                     let y = 46;
-                    const cardW = (W - 28 - 10) / 3;
-                    const cards = [
-                        { label: 'Total de Servidores', value: allData.length, color: [79, 70, 229] },
-                        { label: 'Processos Distribuídos', value: totals.processesReceived, color: [16, 185, 129] },
-                        { label: 'Total de Ações no Período', value: totals.totalActions, color: [245, 158, 11] }
-                    ];
-                    cards.forEach((c, i) => {
-                        const cx = 14 + i * (cardW + 5);
-                        doc.setFillColor(...c.color);
-                        doc.roundedRect(cx, y, cardW, 22, 3, 3, 'F');
-                        doc.setTextColor(255, 255, 255);
-                        doc.setFontSize(9);
-                        doc.setFont('helvetica', 'normal');
-                        doc.text(c.label, cx + 5, y + 8);
-                        doc.setFontSize(20);
-                        doc.setFont('helvetica', 'bold');
-                        doc.text(String(c.value), cx + 5, y + 18);
-                    });
-
-                    // ── RESUMO POR TURNO ───────────────────────────────────
+                    const cards = [{ label:'Servidores', value: allData.length, color:[79,70,229]},{label:'Proc. Distribuídos',value:totals.processesReceived,color:[16,185,129]},{label:'Total de Ações',value:totals.totalActions,color:[245,158,11]}];
+                    const cw = (W-28-10)/3;
+                    cards.forEach((c,i) => { const cx=14+i*(cw+5); doc.setFillColor(...c.color); doc.roundedRect(cx,y,cw,20,3,3,'F'); doc.setTextColor(255,255,255); doc.setFontSize(8); doc.setFont('helvetica','normal'); doc.text(c.label,cx+4,y+8); doc.setFontSize(16); doc.setFont('helvetica','bold'); doc.text(String(c.value),cx+4,y+17); });
                     y += 28;
-
-                    // Calcula totais por turno
-                    const byShift = {};
-                    allData.forEach(s => {
-                        const sh = s.shift || 'Não definido';
-                        if (!byShift[sh]) byShift[sh] = { servidores: 0, processesReceived: 0, totalActions: 0, oficio: 0, circular: 0, email: 0, traslado: 0, diligencia: 0, comunicacao: 0 };
-                        byShift[sh].servidores++;
-                        byShift[sh].processesReceived += s.processesReceived;
-                        byShift[sh].totalActions += s.totalActions;
-                        byShift[sh].oficio += s.oficio;
-                        byShift[sh].circular += s.circular;
-                        byShift[sh].email += s.email;
-                        byShift[sh].traslado += s.traslado;
-                        byShift[sh].diligencia += s.diligencia;
-                        byShift[sh].comunicacao += s.comunicacao;
+                    // Tabela
+                    doc.setTextColor(49,46,129); doc.setFontSize(11); doc.setFont('helvetica','bold');
+                    doc.text('PRODUTIVIDADE POR SERVIDOR', 14, y); y += 4;
+                    const rows = allData.map(s => [s.name, s.shift, s.processesReceived, s.totalActions, s.oficio, s.circular, s.email, s.traslado, s.diligencia, s.comunicacao]);
+                    rows.push(['TOTAL GERAL','—',totals.processesReceived,totals.totalActions,totals.oficio,totals.circular,totals.email,totals.traslado,totals.diligencia,totals.comunicacao]);
+                    doc.autoTable({ startY: y, head:[['Servidor','Turno','Proc.','Total','Ofícios','Circ.','E-mails','Trasl.','Dilig.','Comun.']], body: rows, theme:'grid', styles:{fontSize:8,halign:'center'}, headStyles:{fillColor:[49,46,129],textColor:255,fontStyle:'bold'}, columnStyles:{0:{halign:'left',cellWidth:38,fontStyle:'bold'},1:{cellWidth:22}},
+                        didParseCell(d){ if(d.section==='body'){ const isTot=d.row.index===rows.length-1; if(isTot){d.cell.styles.fillColor=[49,46,129];d.cell.styles.textColor=255;d.cell.styles.fontStyle='bold';} else { const sh=allData[d.row.index]?.shift; if(sh==='Matutino')d.cell.styles.fillColor=[255,251,235]; else if(sh==='Vespertino')d.cell.styles.fillColor=[245,243,255]; } } }
                     });
-
-                    const shiftOrder = ['Matutino', 'Vespertino', 'Não definido'].filter(sh => byShift[sh]);
-                    const shiftColors  = { 'Matutino': [245, 158, 11], 'Vespertino': [139, 92, 246], 'Não definido': [148, 163, 184] };
-                    const shiftBg      = { 'Matutino': [255, 251, 235], 'Vespertino': [245, 243, 255], 'Não definido': [248, 250, 252] };
-                    const shiftTrack   = { 'Matutino': [254, 243, 199], 'Vespertino': [237, 233, 254], 'Não definido': [241, 245, 249] };
-
-                    // ── Título da seção ────────────────────────────────────
-                    doc.setFillColor(49, 46, 129);
-                    doc.rect(14, y, W - 28, 7, 'F');
-                    doc.setTextColor(255, 255, 255);
-                    doc.setFontSize(9);
-                    doc.setFont('helvetica', 'bold');
-                    doc.text('DASHBOARD POR TURNO', 18, y + 5);
-                    y += 10;
-
-                    // Helpers de desenho
-                    const deg2rad = d => (d * Math.PI) / 180;
-
-                    // Velocímetro semicircular
-                    function drawGauge(cx, cy, r, pct, color, trackColor) {
-                        const startA = 180, endA = 0;
-                        // Trilha (fundo cinza)
-                        doc.setDrawColor(...trackColor);
-                        doc.setLineWidth(3.5);
-                        for (let a = startA; a >= endA; a -= 2) {
-                            const x1 = cx + r * Math.cos(deg2rad(a));
-                            const y1 = cy - r * Math.sin(deg2rad(a));
-                            const x2 = cx + r * Math.cos(deg2rad(a - 2));
-                            const y2 = cy - r * Math.sin(deg2rad(a - 2));
-                            doc.line(x1, y1, x2, y2);
-                        }
-                        // Arco preenchido
-                        const fillEnd = startA - pct * 180;
-                        doc.setDrawColor(...color);
-                        doc.setLineWidth(3.5);
-                        for (let a = startA; a >= fillEnd; a -= 2) {
-                            const x1 = cx + r * Math.cos(deg2rad(a));
-                            const y1 = cy - r * Math.sin(deg2rad(a));
-                            const x2 = cx + r * Math.cos(deg2rad(a - 2));
-                            const y2 = cy - r * Math.sin(deg2rad(a - 2));
-                            doc.line(x1, y1, x2, y2);
-                        }
-                        // Ponteiro
-                        const needleA = startA - pct * 180;
-                        const nx = cx + (r - 2) * Math.cos(deg2rad(needleA));
-                        const ny = cy - (r - 2) * Math.sin(deg2rad(needleA));
-                        doc.setDrawColor(...color);
-                        doc.setLineWidth(1.2);
-                        doc.line(cx, cy, nx, ny);
-                        // Centro
-                        doc.setFillColor(...color);
-                        doc.circle(cx, cy, 1.5, 'F');
-                    }
-
-                    // Barra de progresso horizontal
-                    function drawBar(x, y2, w, h, pct, color, trackColor) {
-                        doc.setFillColor(...trackColor);
-                        doc.roundedRect(x, y2, w, h, h / 2, h / 2, 'F');
-                        if (pct > 0) {
-                            doc.setFillColor(...color);
-                            doc.roundedRect(x, y2, Math.max(w * pct, h), h, h / 2, h / 2, 'F');
-                        }
-                    }
-
-                    const panelH = 68;
-                    const panelW = (W - 28 - (shiftOrder.length - 1) * 5) / shiftOrder.length;
-
-                    shiftOrder.forEach((sh, i) => {
-                        const d = byShift[sh];
-                        const px = 14 + i * (panelW + 5);
-                        const [cr, cg, cb] = shiftColors[sh];
-                        const [br2, bg3, bb2] = shiftBg[sh];
-                        const [tr, tg, tb] = shiftTrack[sh];
-
-                        // Painel de fundo
-                        doc.setFillColor(br2, bg3, bb2);
-                        doc.roundedRect(px, y, panelW, panelH, 3, 3, 'F');
-                        // Faixa superior colorida
-                        doc.setFillColor(cr, cg, cb);
-                        doc.roundedRect(px, y, panelW, 9, 3, 3, 'F');
-                        doc.rect(px, y + 4, panelW, 5, 'F'); // quadrar cantos inferiores
-
-                        // Nome do turno
-                        doc.setTextColor(255, 255, 255);
-                        doc.setFontSize(8.5);
-                        doc.setFont('helvetica', 'bold');
-                        doc.text(sh.toUpperCase(), px + panelW / 2, y + 6.5, { align: 'center' });
-
-                        // ── Velocímetro (coluna esquerda) ──────────────────
-                        const gaugePct = totals.totalActions > 0 ? d.totalActions / totals.totalActions : 0;
-                        const gaugeCx = px + 22;
-                        const gaugeCy = y + 28;
-                        drawGauge(gaugeCx, gaugeCy, 13, gaugePct, [cr, cg, cb], [tr, tg, tb]);
-
-                        // % e label abaixo do velocímetro
-                        doc.setTextColor(cr, cg, cb);
-                        doc.setFontSize(10);
-                        doc.setFont('helvetica', 'bold');
-                        doc.text(`${Math.round(gaugePct * 100)}%`, gaugeCx, gaugeCy + 3, { align: 'center' });
-                        doc.setTextColor(100, 116, 139);
-                        doc.setFontSize(6.5);
-                        doc.setFont('helvetica', 'normal');
-                        doc.text('do total de ações', gaugeCx, gaugeCy + 8, { align: 'center' });
-
-                        // KPIs numéricos abaixo do velocímetro
-                        doc.setTextColor(50, 50, 50);
-                        doc.setFontSize(7);
-                        doc.setFont('helvetica', 'bold');
-                        doc.text(`${d.servidores} servidores`, gaugeCx, gaugeCy + 14, { align: 'center' });
-                        doc.setFont('helvetica', 'normal');
-                        doc.text(`${d.processesReceived} proc.  •  ${d.totalActions} ações`, gaugeCx, gaugeCy + 19, { align: 'center' });
-
-                        // ── Barras de ações (coluna direita) ───────────────
-                        const barX = px + 48;
-                        const barW = panelW - 52;
-                        const actionMax = Math.max(d.oficio, d.circular, d.email, d.traslado, d.diligencia, d.comunicacao, 1);
-                        const barItems = [
-                            { label: 'Ofícios',      val: d.oficio },
-                            { label: 'Circulares',   val: d.circular },
-                            { label: 'E-mails',      val: d.email },
-                            { label: 'Traslados/Apensamento',    val: d.traslado },
-                            { label: 'Diligências',  val: d.diligencia },
-                            { label: 'Comunicações', val: d.comunicacao }
-                        ];
-                        let by = y + 14;
-                        barItems.forEach(item => {
-                            doc.setTextColor(80, 80, 80);
-                            doc.setFontSize(6.5);
-                            doc.setFont('helvetica', 'normal');
-                            doc.text(item.label, barX, by + 2.5);
-                            drawBar(barX + 22, by, barW - 24, 3, item.val / actionMax, [cr, cg, cb], [tr, tg, tb]);
-                            doc.setTextColor(cr, cg, cb);
-                            doc.setFont('helvetica', 'bold');
-                            doc.text(String(item.val), barX + barW - 1, by + 2.5, { align: 'right' });
-                            by += 8.5;
-                        });
-                    });
-
-                    y += panelH + 8;
-                    doc.setTextColor(49, 46, 129);
-                    doc.setFontSize(12);
-                    doc.setFont('helvetica', 'bold');
-                    doc.text('PRODUTIVIDADE POR SERVIDOR', 14, y);
-                    y += 4;
-
-                    const headers = [['Servidor', 'Turno', 'Proc.\nDistrib.', 'Total\nAções', 'Ofícios', 'Circulares', 'E-mails', 'Traslados/Apensamento', 'Diligências', 'Comun.']];
-                    const rows = allData.map(s => [
-                        s.name, s.shift,
-                        s.processesReceived, s.totalActions,
-                        s.oficio, s.circular, s.email,
-                        s.traslado, s.diligencia, s.comunicacao
-                    ]);
-
-                    // Linha de totais
-                    rows.push([
-                        'TOTAL GERAL', '—',
-                        totals.processesReceived, totals.totalActions,
-                        totals.oficio, totals.circular, totals.email,
-                        totals.traslado, totals.diligencia, totals.comunicacao
-                    ]);
-
-                    doc.autoTable({
-                        startY: y,
-                        head: headers,
-                        body: rows,
-                        theme: 'grid',
-                        styles: {
-                            fontSize: 9,
-                            cellPadding: 3,
-                            valign: 'middle',
-                            halign: 'center'
-                        },
-                        headStyles: {
-                            fillColor: [49, 46, 129],
-                            textColor: [255, 255, 255],
-                            fontStyle: 'bold',
-                            halign: 'center',
-                            fontSize: 9
-                        },
-                        columnStyles: {
-                            0: { halign: 'left', cellWidth: 40, fontStyle: 'bold' },
-                            1: { cellWidth: 24 }
-                        },
-                        // Cor por turno nas linhas
-                        didParseCell: function(data) {
-                            if (data.section === 'body') {
-                                const isTotal = data.row.index === rows.length - 1;
-                                if (isTotal) {
-                                    data.cell.styles.fillColor = [49, 46, 129];
-                                    data.cell.styles.textColor = [255, 255, 255];
-                                    data.cell.styles.fontStyle = 'bold';
-                                } else {
-                                    const shift = allData[data.row.index]?.shift;
-                                    if (shift === 'Matutino') data.cell.styles.fillColor = [255, 251, 235];
-                                    else if (shift === 'Vespertino') data.cell.styles.fillColor = [245, 243, 255];
-                                }
-                            }
-                        },
-                        // Destaca colunas Proc. Distrib. e Total Ações
-                        willDrawCell: function(data) {
-                            if (data.section === 'body' && (data.column.index === 2 || data.column.index === 3)) {
-                                const isTotal = data.row.index === rows.length - 1;
-                                if (!isTotal) {
-                                    const shift = allData[data.row.index]?.shift;
-                                    if (shift === 'Matutino') data.cell.styles.textColor = [180, 83, 9];
-                                    else if (shift === 'Vespertino') data.cell.styles.textColor = [109, 40, 217];
-                                    data.cell.styles.fontStyle = 'bold';
-                                }
-                            }
-                        }
-                    });
-
-                    // ── RODAPÉ ─────────────────────────────────────────────
-                    const pageCount = doc.internal.getNumberOfPages();
-                    for (let i = 1; i <= pageCount; i++) {
-                        doc.setPage(i);
-                        doc.setFillColor(241, 245, 249);
-                        doc.rect(0, H - 10, W, 10, 'F');
-                        doc.setTextColor(100, 116, 139);
-                        doc.setFontSize(8);
-                        doc.setFont('helvetica', 'normal');
-                        doc.text('SecExecPres — Relatório gerado automaticamente pelo sistema de gestão', 14, H - 3);
-                        doc.text(`Página ${i} de ${pageCount}`, W - 14, H - 3, { align: 'right' });
-                    }
-
-                    doc.save(`Produtividade_${start}_${end}.pdf`);
-
+                    // Rodapé
+                    const pc = doc.internal.getNumberOfPages();
+                    for(let i=1;i<=pc;i++){ doc.setPage(i); doc.setFillColor(241,245,249); doc.rect(0,H-10,W,10,'F'); doc.setTextColor(100,116,139); doc.setFontSize(8); doc.setFont('helvetica','normal'); doc.text('SecExecPres — Relatório Consolidado de Produtividade',14,H-3); doc.text(`Página ${i} de ${pc}`,W-14,H-3,{align:'right'}); }
+                    doc.save(`Consolidado_${start}_${end}.pdf`);
                 } else {
-                    // ── EXCEL PROFISSIONAL ─────────────────────────────────
                     const wb = XLSX.utils.book_new();
-                    const ws_data = [];
-
-                    // Título
-                    ws_data.push(['RELATÓRIO DE PRODUTIVIDADE — SecExecPres']);
-                    ws_data.push([`Período: ${startFmt} a ${endFmt}`]);
-                    ws_data.push([`Emitido em: ${new Date().toLocaleDateString('pt-BR')}`]);
-                    ws_data.push([]); // linha em branco
-
-                    // Cards de resumo geral
-                    ws_data.push(['Servidores', 'Proc. Distribuídos', 'Total de Ações']);
-                    ws_data.push([allData.length, totals.processesReceived, totals.totalActions]);
-                    ws_data.push([]); // linha em branco
-
-                    // ── DASHBOARD POR TURNO NO EXCEL ──────────────────────
-                    ws_data.push(['DASHBOARD POR TURNO']);
-
-                    // Calcula totais por turno
-                    const byShiftXls = {};
-                    allData.forEach(s => {
-                        const sh = s.shift || 'Não definido';
-                        if (!byShiftXls[sh]) byShiftXls[sh] = { servidores: 0, processesReceived: 0, totalActions: 0, oficio: 0, circular: 0, email: 0, traslado: 0, diligencia: 0, comunicacao: 0 };
-                        byShiftXls[sh].servidores++;
-                        byShiftXls[sh].processesReceived += s.processesReceived;
-                        byShiftXls[sh].totalActions += s.totalActions;
-                        byShiftXls[sh].oficio += s.oficio;
-                        byShiftXls[sh].circular += s.circular;
-                        byShiftXls[sh].email += s.email;
-                        byShiftXls[sh].traslado += s.traslado;
-                        byShiftXls[sh].diligencia += s.diligencia;
-                        byShiftXls[sh].comunicacao += s.comunicacao;
-                    });
-
-                    // Helper: gera barra unicode (█) proporcional ao valor
-                    const makeBar = (val, maxVal, width = 15) => {
-                        if (maxVal === 0) return '░'.repeat(width);
-                        const filled = Math.round((val / maxVal) * width);
-                        return '█'.repeat(filled) + '░'.repeat(width - filled);
-                    };
-
-                    // Para cada turno: bloco de 8 linhas com KPIs + barras
-                    ['Matutino', 'Vespertino', 'Não definido'].forEach(sh => {
-                        if (!byShiftXls[sh]) return;
-                        const d = byShiftXls[sh];
-                        const pctAcoes = totals.totalActions > 0 ? Math.round((d.totalActions / totals.totalActions) * 100) : 0;
-                        const maxAction = Math.max(d.oficio, d.circular, d.email, d.traslado, d.diligencia, d.comunicacao, 1);
-
-                        ws_data.push([]); // separador
-                        ws_data.push([`▌ ${sh.toUpperCase()}`, '', `${pctAcoes}% do total de ações`, '', `${d.servidores} servidores`, '', `${d.processesReceived} proc. distribuídos`, '', `${d.totalActions} ações totais`]);
-                        ws_data.push(['Ofícios',      makeBar(d.oficio,      maxAction), d.oficio,
-                                      'Circulares',   makeBar(d.circular,    maxAction), d.circular,
-                                      'E-mails',      makeBar(d.email,       maxAction), d.email]);
-                        ws_data.push(['Traslados/Apensamento',    makeBar(d.traslado,    maxAction), d.traslado,
-                                      'Diligências',  makeBar(d.diligencia,  maxAction), d.diligencia,
-                                      'Comunicações', makeBar(d.comunicacao, maxAction), d.comunicacao]);
-                    });
-                    ws_data.push([]); // linha em branco
-
-                    // ── TABELA POR SERVIDOR ────────────────────────────────
-                    // Cabeçalho da tabela
-                    ws_data.push(['Servidor', 'Turno', 'Proc. Distribuídos', 'Total Ações', 'Ofícios', 'Circulares', 'E-mails', 'Traslados/Apensamento', 'Diligências', 'Comunicações']);
-
-                    // Dados por servidor
-                    allData.forEach(s => {
-                        ws_data.push([s.name, s.shift, s.processesReceived, s.totalActions, s.oficio, s.circular, s.email, s.traslado, s.diligencia, s.comunicacao]);
-                    });
-
-                    // Linha de totais
-                    ws_data.push(['TOTAL GERAL', '—', totals.processesReceived, totals.totalActions, totals.oficio, totals.circular, totals.email, totals.traslado, totals.diligencia, totals.comunicacao]);
-
+                    const ws_data = [
+                        ['RELATÓRIO CONSOLIDADO DE PRODUTIVIDADE — SecExecPres'],
+                        [`Período: ${startFmt} a ${endFmt}`],
+                        [`Emitido em: ${new Date().toLocaleDateString('pt-BR')}`],
+                        [],
+                        ['Servidores', 'Proc. Distribuídos', 'Total de Ações'],
+                        [allData.length, totals.processesReceived, totals.totalActions],
+                        [],
+                        ['Servidor','Turno','Proc. Distribuídos','Total Ações','Ofícios','Circulares','E-mails','Traslados','Diligências','Comunicações'],
+                        ...allData.map(s=>[s.name,s.shift,s.processesReceived,s.totalActions,s.oficio,s.circular,s.email,s.traslado,s.diligencia,s.comunicacao]),
+                        ['TOTAL GERAL','—',totals.processesReceived,totals.totalActions,totals.oficio,totals.circular,totals.email,totals.traslado,totals.diligencia,totals.comunicacao]
+                    ];
                     const ws = XLSX.utils.aoa_to_sheet(ws_data);
-
-                    // Larguras das colunas
-                    ws['!cols'] = [
-                        { wch: 28 }, { wch: 18 }, { wch: 18 }, { wch: 14 },
-                        { wch: 14 }, { wch: 18 }, { wch: 12 }, { wch: 14 }, { wch: 14 }, { wch: 14 }
-                    ];
-
-                    // Mesclar células do título
-                    ws['!merges'] = [
-                        { s: { r: 0, c: 0 }, e: { r: 0, c: 9 } }, // título
-                        { s: { r: 1, c: 0 }, e: { r: 1, c: 9 } }, // período
-                        { s: { r: 2, c: 0 }, e: { r: 2, c: 9 } }, // emissão
-                        { s: { r: 7, c: 0 }, e: { r: 7, c: 9 } }, // label "RESUMO POR TURNO"
-                    ];
-
-                    // Calcula linha do cabeçalho da tabela dinamicamente:
-                    // 0: título, 1: período, 2: emissão, 3: branco,
-                    // 4: labels resumo geral, 5: valores resumo geral, 6: branco,
-                    // 7: label "RESUMO POR TURNO", 8: cabeçalho turno,
-                    // 9..9+N: linhas de turno (N = qtd turnos), depois branco, depois cabeçalho da tabela
-                    const numShifts = ['Matutino', 'Vespertino', 'Não definido'].filter(sh => byShiftXls[sh]).length;
-                    const headerRowIdx = 9 + numShifts + 1; // +1 linha branco depois turnos
-                    const totalRowIdx = headerRowIdx + allData.length + 1;
-
-                    // Estilo do título (linha 0)
-                    const titleCell = ws['A1'];
-                    if (titleCell) {
-                        titleCell.s = {
-                            font: { bold: true, sz: 16, color: { rgb: '312E81' } },
-                            alignment: { horizontal: 'center', vertical: 'center' },
-                            fill: { fgColor: { rgb: 'EEF2FF' } }
-                        };
-                    }
-
-                    // Estilo do cabeçalho (linha headerRowIdx)
-                    const headerCols = ['A','B','C','D','E','F','G','H','I','J'];
-                    headerCols.forEach(col => {
-                        const cell = ws[`${col}${headerRowIdx + 1}`];
-                        if (cell) {
-                            cell.s = {
-                                font: { bold: true, color: { rgb: 'FFFFFF' }, sz: 11 },
-                                fill: { fgColor: { rgb: '312E81' } },
-                                alignment: { horizontal: 'center', vertical: 'center', wrapText: true },
-                                border: {
-                                    top: { style: 'thin', color: { rgb: 'FFFFFF' } },
-                                    bottom: { style: 'thin', color: { rgb: 'FFFFFF' } },
-                                    left: { style: 'thin', color: { rgb: 'FFFFFF' } },
-                                    right: { style: 'thin', color: { rgb: 'FFFFFF' } }
-                                }
-                            };
-                        }
-                    });
-
-                    // Estilo das linhas de TURNO (cabeçalho turno = linha 8+1=9, dados turno = 10, 11...)
-                    const shiftFills = { 'Matutino': 'FEF3C7', 'Vespertino': 'EDE9FE', 'Não definido': 'F1F5F9' };
-                    const shiftFonts = { 'Matutino': 'B45309', 'Vespertino': '6D28D9', 'Não definido': '475569' };
-                    // Cabeçalho da seção de turno (linha 8, 0-based = linha 9 no Excel)
-                    headerCols.forEach(col => {
-                        const cell = ws[`${col}9`];
-                        if (cell) {
-                            cell.s = {
-                                font: { bold: true, sz: 10, color: { rgb: 'FFFFFF' } },
-                                fill: { fgColor: { rgb: '4C1D95' } },
-                                alignment: { horizontal: col === 'A' ? 'left' : 'center', vertical: 'center' },
-                                border: { top: { style: 'thin', color: { rgb: 'FFFFFF' } }, bottom: { style: 'thin', color: { rgb: 'FFFFFF' } }, left: { style: 'thin', color: { rgb: 'FFFFFF' } }, right: { style: 'thin', color: { rgb: 'FFFFFF' } } }
-                            };
-                        }
-                    });
-                    // Linhas de dados por turno
-                    let shiftRowXls = 10;
-                    ['Matutino', 'Vespertino', 'Não definido'].forEach(sh => {
-                        if (!byShiftXls[sh]) return;
-                        headerCols.forEach(col => {
-                            const cell = ws[`${col}${shiftRowXls}`];
-                            if (cell) {
-                                cell.s = {
-                                    font: { bold: col === 'A', sz: 10, color: { rgb: shiftFonts[sh] || '1E293B' } },
-                                    fill: { fgColor: { rgb: shiftFills[sh] || 'FFFFFF' } },
-                                    alignment: { horizontal: col === 'A' ? 'left' : 'center', vertical: 'center' },
-                                    border: { top: { style: 'thin', color: { rgb: 'E2E8F0' } }, bottom: { style: 'thin', color: { rgb: 'E2E8F0' } }, left: { style: 'thin', color: { rgb: 'E2E8F0' } }, right: { style: 'thin', color: { rgb: 'E2E8F0' } } }
-                                };
-                            }
-                        });
-                        shiftRowXls++;
-                    });
-
-                    // Estilo das linhas de dados de servidor (cor por turno)
-                    allData.forEach((s, i) => {
-                        const rowIdx = headerRowIdx + i + 2; // 1-based
-                        const fillColor = s.shift === 'Matutino' ? 'FFFBEB' : s.shift === 'Vespertino' ? 'F5F3FF' : 'FFFFFF';
-                        const boldCols = ['A', 'C', 'D'];
-                        headerCols.forEach(col => {
-                            const cell = ws[`${col}${rowIdx}`];
-                            if (cell) {
-                                cell.s = {
-                                    font: { bold: boldCols.includes(col), sz: 10 },
-                                    fill: { fgColor: { rgb: fillColor } },
-                                    alignment: { horizontal: col === 'A' ? 'left' : 'center', vertical: 'center' },
-                                    border: {
-                                        top: { style: 'thin', color: { rgb: 'E2E8F0' } },
-                                        bottom: { style: 'thin', color: { rgb: 'E2E8F0' } },
-                                        left: { style: 'thin', color: { rgb: 'E2E8F0' } },
-                                        right: { style: 'thin', color: { rgb: 'E2E8F0' } }
-                                    }
-                                };
-                            }
-                        });
-                    });
-
-                    // Estilo da linha TOTAL GERAL
-                    headerCols.forEach(col => {
-                        const cell = ws[`${col}${totalRowIdx + 1}`];
-                        if (cell) {
-                            cell.s = {
-                                font: { bold: true, sz: 11, color: { rgb: 'FFFFFF' } },
-                                fill: { fgColor: { rgb: '312E81' } },
-                                alignment: { horizontal: col === 'A' ? 'left' : 'center', vertical: 'center' },
-                                border: {
-                                    top: { style: 'medium', color: { rgb: 'FFFFFF' } },
-                                    bottom: { style: 'medium', color: { rgb: 'FFFFFF' } },
-                                    left: { style: 'thin', color: { rgb: 'FFFFFF' } },
-                                    right: { style: 'thin', color: { rgb: 'FFFFFF' } }
-                                }
-                            };
-                        }
-                    });
-
-                    XLSX.utils.book_append_sheet(wb, ws, 'Produtividade');
-                    XLSX.writeFile(wb, `Produtividade_${start}_${end}.xlsx`, { cellStyles: true });
+                    ws['!cols'] = [{wch:28},{wch:14},{wch:18},{wch:14},{wch:10},{wch:12},{wch:10},{wch:12},{wch:14},{wch:14}];
+                    ws['!merges'] = [{s:{r:0,c:0},e:{r:0,c:9}},{s:{r:1,c:0},e:{r:1,c:9}},{s:{r:2,c:0},e:{r:2,c:9}}];
+                    XLSX.utils.book_append_sheet(wb, ws, 'Consolidado');
+                    XLSX.writeFile(wb, `Consolidado_${start}_${end}.xlsx`, { cellStyles: true });
                 }
             }
 
-            window.switchReportTab = function(tab) {
-                document.querySelectorAll('.report-tab-content').forEach(c => c.classList.add('hidden'));
-                document.querySelectorAll('[id^="tab-"]').forEach(b => { b.classList.remove('bg-white', 'text-indigo-600', 'shadow-sm'); b.classList.add('text-slate-600', 'hover:bg-slate-100'); });
-                document.getElementById(`report-tab-${tab}`).classList.remove('hidden');
-                document.getElementById(`tab-${tab}`).classList.add('bg-white', 'text-indigo-600', 'shadow-sm');
-                document.getElementById(`tab-${tab}`).classList.remove('text-slate-600', 'hover:bg-slate-100');
-                if(tab === 'charts') renderReportChart();
-                if(tab === 'shift') renderShiftReport();
-            }
+            // ── RELATÓRIO DIÁRIO ──────────────────────────────────────────
+            window.exportDaily = function(format) {
+                const start = document.getElementById('backup-start').value;
+                const end = document.getElementById('backup-end').value;
+                if (!start || !end) { alert('Selecione o período na aba Backup & Export.'); return; }
+                const fmtDate = d => d.split('-').reverse().join('/');
+                const dates = getDatesInRange(start, end);
 
-            window.updateAnalyticalReport = function() {
-                const start = document.getElementById('report-start-date').value;
-                const end = document.getElementById('report-end-date').value;
-                const container = document.getElementById('daily-reports-container');
-                const controls = document.getElementById('daily-export-controls');
-                if (!start || !end) return;
-                
-                controls.classList.remove('hidden');
-                container.innerHTML = '';
-                let currentDate = new Date(start + 'T00:00:00');
-                const endDate = new Date(end + 'T00:00:00');
-                while (currentDate <= endDate) {
-                    const dateStr = currentDate.toISOString().split('T')[0];
-                    const dayActions = state.actions.filter(a => DateEngine.normalize(a.date) === dateStr);
-                    let grandTotal = 0, tOficio = 0, tCircular = 0, tEmail = 0, tTraslado = 0, tDiligencia = 0, tComun = 0;
-                    let dayHtml = `<div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200"><h5 class="text-lg font-bold text-emerald-600 mb-4 flex items-center gap-2"><i data-lucide="calendar" class="w-5 h-5"></i> Data: ${dateStr.split('-').reverse().join('/')}</h5><div class="overflow-x-auto"><table class="w-full text-left text-sm"><thead class="bg-emerald-100 text-emerald-800 uppercase text-xs"><tr class="border-b border-emerald-200"><th class="px-4 py-3 font-bold">Servidor</th><th class="px-4 py-3 font-bold text-center bg-emerald-200">TOTAL</th><th class="px-4 py-3 font-bold text-center">Ofícios</th><th class="px-4 py-3 font-bold text-center">Circulares</th><th class="px-4 py-3 font-bold text-center">E-mails</th><th class="px-4 py-3 font-bold text-center">Traslados/Apensamento</th><th class="px-4 py-3 font-bold text-center">Diligências</th><th class="px-4 py-3 font-bold text-center">Comun.</th></tr></thead><tbody class="divide-y divide-slate-100">`;
-                    state.servants.forEach(s => {
-                        const sActions = dayActions.filter(a => a.servantId == s.id);
-                        const cOficio = sActions.filter(a => a.type === 'Ofício').length;
-                        const cCircular = sActions.filter(a => a.type === 'Ofício Circular').length;
-                        const cEmail = sActions.filter(a => a.type === 'E-mail').length;
-                        const cTraslado = sActions.filter(a => a.type === 'Traslado').length;
-                        const cDiligencia = sActions.filter(a => a.type === 'Diligência').length;
-                        const cComun = sActions.filter(a => a.type === 'Comunicação').length;
-                        const rowTotal = sActions.length;
-                        grandTotal += rowTotal; tOficio += cOficio; tCircular += cCircular; tEmail += cEmail; tTraslado += cTraslado; tDiligencia += cDiligencia; tComun += cComun;
-                        dayHtml += `<tr class="hover:bg-emerald-50/50 transition-colors"><td class="px-4 py-2 font-medium text-slate-700">${s.name}</td><td class="px-4 py-2 text-center font-bold text-emerald-700 bg-emerald-50/50">${rowTotal}</td><td class="px-4 py-2 text-center">${cOficio}</td><td class="px-4 py-2 text-center">${cCircular}</td><td class="px-4 py-2 text-center">${cEmail}</td><td class="px-4 py-2 text-center">${cTraslado}</td><td class="px-4 py-2 text-center">${cDiligencia}</td><td class="px-4 py-2 text-center">${cComun}</td></tr>`;
-                    });
-                    dayHtml += `<tr class="bg-emerald-200 font-bold text-emerald-900"><td class="px-4 py-3">TOTAL GERAL</td><td class="px-4 py-3 text-center bg-emerald-300">${grandTotal}</td><td class="px-4 py-3 text-center">${tOficio}</td><td class="px-4 py-3 text-center">${tCircular}</td><td class="px-4 py-3 text-center">${tEmail}</td><td class="px-4 py-3 text-center">${tTraslado}</td><td class="px-4 py-3 text-center">${tDiligencia}</td><td class="px-4 py-3 text-center">${tComun}</td></tr></tbody></table></div></div>`;
-                    container.innerHTML += dayHtml;
-                    currentDate.setDate(currentDate.getDate() + 1);
-                }
-                lucide.createIcons();
-
-                // Se a aba de Distribuição por Turno estiver aberta, atualiza ela também
-                const shiftTab = document.getElementById('report-tab-shift');
-                if (shiftTab && !shiftTab.classList.contains('hidden')) {
-                    renderShiftReport();
-                }
-            }
-
-            window.exportDailyData = function(format) {
-                const start = document.getElementById('report-start-date').value;
-                const end = document.getElementById('report-end-date').value;
-                if (!start || !end) { alert("Selecione as datas primeiro."); return; }
-
-                let currentDate = new Date(start + 'T00:00:00');
-                const endDate = new Date(end + 'T00:00:00');
-                
                 if (format === 'pdf') {
                     const { jsPDF } = window.jspdf;
                     const doc = new jsPDF();
-                    doc.setFontSize(16);
-                    doc.text('Análise Diária de Produtividade - SecExecPres', 14, 15);
-                    doc.setFontSize(10);
-                    doc.text(`Período: ${start} até ${end}`, 14, 22);
+                    const W = doc.internal.pageSize.getWidth();
+                    // Capa
+                    doc.setFillColor(16,185,129); doc.rect(0,0,W,35,'F');
+                    doc.setTextColor(255,255,255); doc.setFontSize(16); doc.setFont('helvetica','bold');
+                    doc.text('RELATÓRIO DIÁRIO DE PRODUTIVIDADE', 14, 15);
+                    doc.setFontSize(10); doc.setFont('helvetica','normal');
+                    doc.text('SecExecPres — Secretaria de Execuções da Presidência', 14, 23);
+                    doc.text(`Período: ${fmtDate(start)} a ${fmtDate(end)}`, 14, 30);
 
-                    let startY = 30;
-                    while (currentDate <= endDate) {
-                        const dateStr = currentDate.toISOString().split('T')[0];
-                        const dayActions = state.actions.filter(a => DateEngine.normalize(a.date) === dateStr);
-                        
-                        const rows = state.servants.map(s => {
-                            const sActions = dayActions.filter(a => a.servantId == s.id);
-                            return [
-                                s.name,
-                                sActions.length,
-                                sActions.filter(a => a.type === 'Ofício').length,
-                                sActions.filter(a => a.type === 'Ofício Circular').length,
-                                sActions.filter(a => a.type === 'E-mail').length,
-                                sActions.filter(a => a.type === 'Traslado').length,
-                                sActions.filter(a => a.type === 'Diligência').length,
-                                sActions.filter(a => a.type === 'Comunicação').length
-                            ];
-                        });
+                    let startY = 42;
+                    let grandTotals = { oficio:0, circular:0, email:0, traslado:0, diligencia:0, comunicacao:0, total:0 };
 
-                        doc.setFontSize(12);
-                        doc.text(`Data: ${dateStr.split('-').reverse().join('/')}`, 14, startY);
-                        
-                        doc.autoTable({
-                            startY: startY + 5,
-                            head: [['Servidor', 'Total', 'Ofíc.', 'Circ.', 'Email', 'Tras.', 'Dil.', 'Comun.']],
-                            body: rows,
-                            theme: 'grid',
-                            headStyles: { fillColor: [16, 185, 129] },
-                            margin: { top: 20 }
-                        });
+                    dates.forEach(dateStr => {
+                        const dayActions = state.actions.filter(a => a.status==='Concluído' && DateEngine.normalize(a.date)===dateStr);
+                        if (dayActions.length === 0 && !state.processes.some(p => DateEngine.normalize(p.deadline)===dateStr)) return;
 
-                        startY = doc.lastAutoTable.finalY + 15;
-                        if (startY > 270) { doc.addPage(); startY = 20; }
-                        currentDate.setDate(currentDate.getDate() + 1);
-                    }
-                    doc.save(`analise_diaria_${start}_${end}.pdf`);
-                } else {
-                    const excelData = [];
-                    while (currentDate <= endDate) {
-                        const dateStr = currentDate.toISOString().split('T')[0];
-                        const dayActions = state.actions.filter(a => DateEngine.normalize(a.date) === dateStr);
-                        
+                        const rows = [];
+                        let dTot=0, dOf=0, dCir=0, dEmail=0, dTrasl=0, dDilig=0, dCom=0;
                         state.servants.forEach(s => {
-                            const sActions = dayActions.filter(a => a.servantId == s.id);
-                            excelData.push({
-                                'Data': dateStr.split('-').reverse().join('/'),
-                                'Servidor': s.name,
-                                'Total': sActions.length,
-                                'Ofícios': sActions.filter(a => a.type === 'Ofício').length,
-                                'Circulares': sActions.filter(a => a.type === 'Ofício Circular').length,
-                                'E-mails': sActions.filter(a => a.type === 'E-mail').length,
-                                'Traslados/Apensamento': sActions.filter(a => a.type === 'Traslado').length,
-                                'Diligências': sActions.filter(a => a.type === 'Diligência').length,
-                                'Comunicações': sActions.filter(a => a.type === 'Comunicação').length
-                            });
+                            const sa = dayActions.filter(a => a.servantId==s.id);
+                            if (sa.length === 0) return;
+                            const of=sa.filter(a=>a.type==='Ofício').length, cir=sa.filter(a=>a.type==='Ofício Circular').length,
+                                  em=sa.filter(a=>a.type==='E-mail').length, tr=sa.filter(a=>a.type==='Traslado').length,
+                                  di=sa.filter(a=>a.type==='Diligência').length, co=sa.filter(a=>a.type==='Comunicação').length;
+                            dTot+=sa.length; dOf+=of; dCir+=cir; dEmail+=em; dTrasl+=tr; dDilig+=di; dCom+=co;
+                            rows.push([s.name, sa.length, of, cir, em, tr, di, co]);
                         });
-                        currentDate.setDate(currentDate.getDate() + 1);
-                    }
-                    const worksheet = XLSX.utils.json_to_sheet(excelData);
-                    const workbook = XLSX.utils.book_new();
-                    XLSX.utils.book_append_sheet(workbook, worksheet, "Análise Diária");
-                    XLSX.writeFile(workbook, `analise_diaria_${start}_${end}.xlsx`);
-                }
-            }
+                        if (rows.length === 0) return;
+                        grandTotals.oficio+=dOf; grandTotals.circular+=dCir; grandTotals.email+=dEmail;
+                        grandTotals.traslado+=dTrasl; grandTotals.diligencia+=dDilig; grandTotals.comunicacao+=dCom; grandTotals.total+=dTot;
 
-            window.renderReportChart = function() {
-                const ctx = document.getElementById('chart-report-servants').getContext('2d');
-                if (window.myReportChart) window.myReportChart.destroy();
-                const start = document.getElementById('report-start-date').value;
-                const end = document.getElementById('report-end-date').value;
-                if (!start || !end) return;
-                const filteredActions = state.actions.filter(a => DateEngine.normalize(a.date) >= start && DateEngine.normalize(a.date) <= end);
-                const actionTypes = ['Ofício', 'Ofício Circular', 'E-mail', 'Traslado', 'Diligência', 'Comunicação'];
-                const colors = ['#4f46e5', '#10b981', '#f59e0b', '#ec4899', '#8b5cf6', '#64748b'];
-                const dataCounts = actionTypes.map(type => filteredActions.filter(a => a.type === type).length);
-                window.myReportChart = new Chart(ctx, { type: 'doughnut', data: { labels: actionTypes, datasets: [{ data: dataCounts, backgroundColor: colors, borderWidth: 2, borderColor: '#fff' }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right' } } } });
+                        if (startY > 240) { doc.addPage(); startY = 15; }
+                        doc.setFontSize(10); doc.setFont('helvetica','bold'); doc.setTextColor(16,130,90);
+                        doc.text(`Data: ${fmtDate(dateStr)}`, 14, startY); startY += 3;
+
+                        doc.autoTable({
+                            startY,
+                            head:[['Servidor','Total','Ofícios','Circ.','E-mails','Trasl.','Dilig.','Comun.']],
+                            body: rows,
+                            foot:[['TOTAL DO DIA', dTot, dOf, dCir, dEmail, dTrasl, dDilig, dCom]],
+                            theme:'grid', styles:{fontSize:8,halign:'center'},
+                            headStyles:{fillColor:[16,185,129],textColor:255,fontStyle:'bold'},
+                            columnStyles:{0:{halign:'left',cellWidth:42,fontStyle:'bold'}},
+                            footStyles:{fillColor:[16,130,90],textColor:255,fontStyle:'bold'},
+                            margin:{left:14,right:14}
+                        });
+                        startY = doc.lastAutoTable.finalY + 10;
+                    });
+
+                    // Última página: totais gerais
+                    if (startY > 220) { doc.addPage(); startY = 15; }
+                    doc.setFontSize(11); doc.setFont('helvetica','bold'); doc.setTextColor(49,46,129);
+                    doc.text('TOTAIS GERAIS DO PERÍODO', 14, startY); startY += 4;
+                    doc.autoTable({ startY, head:[['Total Geral','Ofícios','Circulares','E-mails','Traslados','Diligências','Comunicações']],
+                        body:[[grandTotals.total, grandTotals.oficio, grandTotals.circular, grandTotals.email, grandTotals.traslado, grandTotals.diligencia, grandTotals.comunicacao]],
+                        theme:'grid', styles:{fontSize:9,halign:'center',fontStyle:'bold'}, headStyles:{fillColor:[49,46,129],textColor:255} });
+
+                    // Rodapé
+                    const pc = doc.internal.getNumberOfPages();
+                    for(let i=1;i<=pc;i++){ doc.setPage(i); doc.setFontSize(8); doc.setTextColor(150,150,150); doc.setFont('helvetica','normal'); doc.text(`SecExecPres — Relatório Diário | Página ${i} de ${pc}`, 14, 290); }
+                    doc.save(`Diario_${start}_${end}.pdf`);
+
+                } else {
+                    // Excel: uma aba por dia + aba de resumo
+                    const wb = XLSX.utils.book_new();
+                    const fmtDate = d => d.split('-').reverse().join('/');
+                    let grandTotals = { oficio:0,circular:0,email:0,traslado:0,diligencia:0,comunicacao:0,total:0 };
+                    const resumoRows = [];
+
+                    dates.forEach(dateStr => {
+                        const dayActions = state.actions.filter(a => a.status==='Concluído' && DateEngine.normalize(a.date)===dateStr);
+                        const ws_data = [[`PRODUTIVIDADE — ${fmtDate(dateStr)}`],[`SecExecPres | Período: ${fmtDate(start)} a ${fmtDate(end)}`],[],
+                            ['Servidor','Total','Ofícios','Circulares','E-mails','Traslados','Diligências','Comunicações']];
+                        let dTot=0,dOf=0,dCir=0,dEmail=0,dTrasl=0,dDilig=0,dCom=0;
+                        state.servants.forEach(s => {
+                            const sa = dayActions.filter(a => a.servantId==s.id);
+                            if (!sa.length) return;
+                            const of=sa.filter(a=>a.type==='Ofício').length, cir=sa.filter(a=>a.type==='Ofício Circular').length,
+                                  em=sa.filter(a=>a.type==='E-mail').length, tr=sa.filter(a=>a.type==='Traslado').length,
+                                  di=sa.filter(a=>a.type==='Diligência').length, co=sa.filter(a=>a.type==='Comunicação').length;
+                            dTot+=sa.length; dOf+=of; dCir+=cir; dEmail+=em; dTrasl+=tr; dDilig+=di; dCom+=co;
+                            ws_data.push([s.name,sa.length,of,cir,em,tr,di,co]);
+                        });
+                        ws_data.push(['TOTAL',dTot,dOf,dCir,dEmail,dTrasl,dDilig,dCom]);
+                        grandTotals.oficio+=dOf; grandTotals.circular+=dCir; grandTotals.email+=dEmail;
+                        grandTotals.traslado+=dTrasl; grandTotals.diligencia+=dDilig; grandTotals.comunicacao+=dCom; grandTotals.total+=dTot;
+                        resumoRows.push([fmtDate(dateStr), dTot, dOf, dCir, dEmail, dTrasl, dDilig, dCom]);
+                        if (ws_data.length > 4) { // só cria aba se tiver dados
+                            const ws = XLSX.utils.aoa_to_sheet(ws_data);
+                            ws['!cols'] = [{wch:28},{wch:8},{wch:10},{wch:10},{wch:10},{wch:10},{wch:12},{wch:12}];
+                            XLSX.utils.book_append_sheet(wb, ws, fmtDate(dateStr).replace(/\//g,'-'));
+                        }
+                    });
+
+                    // Aba de resumo geral
+                    const resumoData = [['RESUMO DO PERÍODO — SecExecPres'],[`${fmtDate(start)} a ${fmtDate(end)}`],[],
+                        ['Data','Total','Ofícios','Circulares','E-mails','Traslados','Diligências','Comunicações'],
+                        ...resumoRows,
+                        ['TOTAL GERAL',grandTotals.total,grandTotals.oficio,grandTotals.circular,grandTotals.email,grandTotals.traslado,grandTotals.diligencia,grandTotals.comunicacao]];
+                    const wsRes = XLSX.utils.aoa_to_sheet(resumoData);
+                    wsRes['!cols']=[{wch:14},{wch:8},{wch:10},{wch:10},{wch:10},{wch:10},{wch:12},{wch:12}];
+                    wsRes['!merges']=[{s:{r:0,c:0},e:{r:0,c:7}},{s:{r:1,c:0},e:{r:1,c:7}}];
+                    XLSX.utils.book_append_sheet(wb, wsRes, 'Resumo Geral');
+                    XLSX.writeFile(wb, `Diario_${start}_${end}.xlsx`, { cellStyles: true });
+                }
             }
 
             document.getElementById('form-user').addEventListener('submit', async (e) => {
