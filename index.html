@@ -352,6 +352,10 @@
             border: none; cursor: pointer; transition: all 0.15s;
         }
         .report-preset-btn:hover { background: #e0e7ff; color: #4f46e5; }
+        /* Toggle métricas evolução */
+        .evol-metric-btn { background: transparent; color: #64748b; border: none; cursor: pointer; border-radius: 0.4rem; }
+        .evol-metric-btn:hover { background: #e2e8f0; }
+        .evol-metric-btn.active { background: #4f46e5; color: white; }
         @keyframes marker-pulse {
             0%, 100% { transform: translateY(-50%) translateX(0); }
             50% { transform: translateY(-50%) translateX(6px); }
@@ -922,11 +926,11 @@
 
                     <!-- ABAS DE NAVEGAÇÃO -->
                     <div class="flex flex-wrap gap-1 mb-5 p-1 bg-slate-100 rounded-xl w-fit">
-                        <button onclick="switchReportTab('executive')" id="tab-executive" class="report-tab-btn active px-4 py-2 rounded-lg font-bold text-sm transition-all flex items-center gap-2"><i data-lucide="layout-dashboard" class="w-4 h-4"></i><span class="hidden sm:inline">Visão Executiva</span><span class="sm:hidden">Executiva</span></button>
-                        <button onclick="switchReportTab('ranking')" id="tab-ranking" class="report-tab-btn px-4 py-2 rounded-lg font-bold text-sm transition-all flex items-center gap-2"><i data-lucide="bar-chart-horizontal" class="w-4 h-4"></i><span class="hidden sm:inline">Ranking</span></button>
-                        <button onclick="switchReportTab('evolution')" id="tab-evolution" class="report-tab-btn px-4 py-2 rounded-lg font-bold text-sm transition-all flex items-center gap-2"><i data-lucide="trending-up" class="w-4 h-4"></i><span class="hidden sm:inline">Evolução</span></button>
-                        <button onclick="switchReportTab('shift')" id="tab-shift" class="report-tab-btn px-4 py-2 rounded-lg font-bold text-sm transition-all flex items-center gap-2"><i data-lucide="layers" class="w-4 h-4"></i><span class="hidden sm:inline">Por Turno</span></button>
-                        <button onclick="switchReportTab('backup')" id="tab-backup" class="report-tab-btn px-4 py-2 rounded-lg font-bold text-sm transition-all flex items-center gap-2"><i data-lucide="hard-drive" class="w-4 h-4"></i><span class="hidden sm:inline">Backup & Export</span><span class="sm:hidden">Export</span></button>
+                        <button onclick="switchReportTab('executive')" id="tab-executive" title="Visão Executiva" class="report-tab-btn active px-4 py-2 rounded-lg font-bold text-sm transition-all flex items-center gap-2"><i data-lucide="layout-dashboard" class="w-4 h-4"></i><span class="hidden sm:inline">Visão Executiva</span><span class="sm:hidden">Executiva</span></button>
+                        <button onclick="switchReportTab('ranking')" id="tab-ranking" title="Ranking de Produtividade" class="report-tab-btn px-4 py-2 rounded-lg font-bold text-sm transition-all flex items-center gap-2"><i data-lucide="bar-chart-horizontal" class="w-4 h-4"></i><span class="hidden sm:inline">Ranking</span></button>
+                        <button onclick="switchReportTab('evolution')" id="tab-evolution" title="Evolução Temporal" class="report-tab-btn px-4 py-2 rounded-lg font-bold text-sm transition-all flex items-center gap-2"><i data-lucide="trending-up" class="w-4 h-4"></i><span class="hidden sm:inline">Evolução</span></button>
+                        <button onclick="switchReportTab('shift')" id="tab-shift" title="Distribuição por Turno" class="report-tab-btn px-4 py-2 rounded-lg font-bold text-sm transition-all flex items-center gap-2"><i data-lucide="layers" class="w-4 h-4"></i><span class="hidden sm:inline">Por Turno</span></button>
+                        <button onclick="switchReportTab('backup')" id="tab-backup" title="Backup & Exportação" class="report-tab-btn px-4 py-2 rounded-lg font-bold text-sm transition-all flex items-center gap-2"><i data-lucide="hard-drive" class="w-4 h-4"></i><span class="hidden sm:inline">Backup & Export</span><span class="sm:hidden">Export</span></button>
                     </div>
 
                     <!-- ══════════════════════════════════════════
@@ -981,20 +985,41 @@
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
-                                <h4 class="font-bold text-slate-700 mb-4 flex items-center gap-2"><i data-lucide="activity" class="w-4 h-4 text-indigo-500"></i> Performance por Tipo de Ação</h4>
-                                <div id="exec-action-bars" class="space-y-3"><div class="text-slate-400 text-sm text-center py-6">Selecione um período</div></div>
-                            </div>
-                            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
-                                <h4 class="font-bold text-slate-700 mb-4 flex items-center gap-2"><i data-lucide="pie-chart" class="w-4 h-4 text-indigo-500"></i> Distribuição por Tipo</h4>
-                                <div class="relative h-[220px]"><canvas id="chart-exec-donut"></canvas></div>
-                            </div>
+                        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+                            <h4 class="font-bold text-slate-700 mb-4 flex items-center gap-2"><i data-lucide="activity" class="w-4 h-4 text-indigo-500"></i> Performance por Tipo de Ação</h4>
+                            <div id="exec-action-bars" class="space-y-3"><div class="text-slate-400 text-sm text-center py-6">Selecione um período</div></div>
                         </div>
 
                         <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
                             <h4 class="font-bold text-slate-700 mb-4 flex items-center gap-2"><i data-lucide="users" class="w-4 h-4 text-indigo-500"></i> Top 5 Servidores do Período</h4>
                             <div id="exec-top5" class="space-y-3"><div class="text-slate-400 text-sm text-center py-4">Selecione um período</div></div>
+                        </div>
+
+                        <!-- Card de médias por servidor -->
+                        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                            <div class="p-5 border-b border-slate-100 bg-indigo-50/50 flex items-center gap-2">
+                                <i data-lucide="calculator" class="w-4 h-4 text-indigo-600"></i>
+                                <h4 class="font-bold text-slate-700">Média por Servidor / Dia Útil</h4>
+                                <span id="exec-avg-dias-label" class="ml-auto text-xs text-slate-400"></span>
+                            </div>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-sm text-left mobile-card-table">
+                                    <thead class="bg-slate-50 text-slate-500 text-xs uppercase">
+                                        <tr>
+                                            <th class="px-4 py-3">Servidor</th>
+                                            <th class="px-4 py-3 text-center">Turno</th>
+                                            <th class="px-4 py-3 text-center text-slate-500">Dias Trab.</th>
+                                            <th class="px-4 py-3 text-center text-violet-700">Méd. Ações/Dia</th>
+                                            <th class="px-4 py-3 text-center text-amber-700">Méd. Proc./Dia</th>
+                                            <th class="px-4 py-3 text-center bg-indigo-50 text-indigo-700">Total Ações</th>
+                                            <th class="px-4 py-3 text-center bg-blue-50 text-blue-700">Total Proc.</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="exec-avg-body" class="divide-y divide-slate-100">
+                                        <tr><td colspan="7" class="text-center py-6 text-slate-400 text-sm">Selecione um período</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
 
@@ -1065,17 +1090,22 @@
                             <button onclick="setTabPeriod('evol','month')" class="report-preset-btn">Este mês</button>
                             <button onclick="setTabPeriod('evol','week')" class="report-preset-btn">Esta semana</button>
                             <button onclick="setTabPeriod('evol','today')" class="report-preset-btn">Hoje</button>
+                            <!-- Toggle Ações / Processos -->
+                            <div class="flex gap-1 p-1 bg-slate-100 rounded-lg ml-auto">
+                                <button onclick="setEvolMetric('acoes')" id="evol-btn-acoes" class="evol-metric-btn active px-3 py-1 rounded-md text-xs font-bold transition-all">Ações</button>
+                                <button onclick="setEvolMetric('processos')" id="evol-btn-processos" class="evol-metric-btn px-3 py-1 rounded-md text-xs font-bold transition-all">Processos</button>
+                            </div>
                         </div>
 
                         <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
-                            <h4 class="font-bold text-slate-700 mb-1 flex items-center gap-2"><i data-lucide="trending-up" class="w-4 h-4 text-indigo-500"></i> Curva de Produção Diária</h4>
-                            <p class="text-xs text-slate-400 mb-5">Total de ações por dia — identifica picos, quedas e tendências.</p>
+                            <h4 class="font-bold text-slate-700 mb-1 flex items-center gap-2"><i data-lucide="trending-up" class="w-4 h-4 text-indigo-500"></i> <span id="evol-line-title">Curva de Produção Diária — Ações</span></h4>
+                            <p class="text-xs text-slate-400 mb-5">Total por dia — identifica picos, quedas e tendências.</p>
                             <div class="relative h-[300px]"><canvas id="chart-evolution-line"></canvas></div>
                         </div>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                             <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
                                 <h4 class="font-bold text-slate-700 mb-1 flex items-center gap-2"><i data-lucide="bar-chart-2" class="w-4 h-4 text-amber-500"></i> Matutino vs Vespertino</h4>
-                                <p class="text-xs text-slate-400 mb-4">Processos por turno dia a dia.</p>
+                                <p class="text-xs text-slate-400 mb-4" id="evol-bar-desc">Processos por turno dia a dia.</p>
                                 <div class="relative h-[240px]"><canvas id="chart-shift-daily"></canvas></div>
                             </div>
                             <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
@@ -2505,7 +2535,9 @@
                     { label: 'Diligências', key: 'diligencia', color: '#ec4899' },
                     { label: 'Comunicações', key: 'comunicacao', color: '#64748b' }
                 ];
-                const totByType = types.map(t => ({ ...t, val: data.reduce((s,d) => s+d[t.key], 0) }));
+                // Ordenar barras por valor decrescente
+                const totByType = types.map(t => ({ ...t, val: data.reduce((s,d) => s+d[t.key], 0) }))
+                    .sort((a, b) => b.val - a.val);
                 const maxType = Math.max(...totByType.map(t => t.val), 1);
                 document.getElementById('exec-action-bars').innerHTML = totByType.map(t => `
                     <div>
@@ -2515,15 +2547,6 @@
                         </div>
                         <div class="rank-bar-track"><div class="rank-bar-fill" style="width:${Math.round(t.val/maxType*100)}%;background:${t.color}"></div></div>
                     </div>`).join('');
-
-                // Donut
-                const ctxD = document.getElementById('chart-exec-donut').getContext('2d');
-                if (window._chartExecDonut) window._chartExecDonut.destroy();
-                window._chartExecDonut = new Chart(ctxD, {
-                    type: 'doughnut',
-                    data: { labels: totByType.map(t=>t.label), datasets: [{ data: totByType.map(t=>t.val), backgroundColor: totByType.map(t=>t.color), borderWidth: 2, borderColor: '#fff' }] },
-                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { font: { size: 11 } } } }, cutout: '65%' }
-                });
 
                 // Top 5
                 const top5 = [...data].sort((a,b) => b.totalActions - a.totalActions).slice(0,5);
@@ -2541,6 +2564,73 @@
                         </div>
                         <span class="text-xs px-2 py-0.5 rounded-full font-semibold" style="background:${shiftColors[s.shift]||'#e0e7ff'}20;color:${shiftColors[s.shift]||'#6366f1'}">${s.shift}</span>
                     </div>`).join('');
+
+                // Médias por servidor — dias em que teve pelo menos 1 ação ou processo
+                const shiftColorsAvg = { Matutino: '#f59e0b', Vespertino: '#8b5cf6' };
+                const avgLabel = document.getElementById('exec-avg-dias-label');
+
+                // Para cada servidor: descobrir os dias únicos em que trabalhou (teve ação ou processo)
+                const servantWorkDays = {};
+                state.servants.forEach(s => {
+                    const diasComAcao = new Set(
+                        acts.filter(a => a.servantId == s.id).map(a => DateEngine.normalize(a.date))
+                    );
+                    const diasComProc = new Set(
+                        procs.filter(p => p.servantId == s.id).map(p => DateEngine.normalize(p.deadline))
+                    );
+                    const diasTrabalhados = new Set([...diasComAcao, ...diasComProc]);
+                    servantWorkDays[s.id] = Math.max(diasTrabalhados.size, 1);
+                });
+
+                // Dias trabalhados totais da equipe (union de todos os dias com movimento)
+                const diasEquipe = new Set([
+                    ...acts.map(a => DateEngine.normalize(a.date)),
+                    ...procs.map(p => DateEngine.normalize(p.deadline))
+                ]);
+
+                if (avgLabel) avgLabel.textContent = `Dias da equipe: ${diasEquipe.size}`;
+
+                // Montar dados com dias individuais e ordenar:
+                // 1º critério: Méd. Ações/Dia decrescente
+                // 2º critério (desempate): Méd. Proc./Dia decrescente
+                const sortedAvg = [...data]
+                    .filter(s => s.totalActions > 0 || s.processesReceived > 0)
+                    .map(s => ({
+                        ...s,
+                        diasTrab: servantWorkDays[s.id] || 1,
+                        medAcoes: s.totalActions / (servantWorkDays[s.id] || 1),
+                        medProcs: s.processesReceived / (servantWorkDays[s.id] || 1)
+                    }))
+                    .sort((a, b) => {
+                        if (Math.abs(b.medAcoes - a.medAcoes) > 0.001) return b.medAcoes - a.medAcoes;
+                        return b.medProcs - a.medProcs; // desempate por média de processos
+                    });
+
+                const avgBody = document.getElementById('exec-avg-body');
+                if (avgBody) {
+                    const totA2 = data.reduce((s,d)=>s+d.totalActions,0);
+                    const totP2 = data.reduce((s,d)=>s+d.processesReceived,0);
+                    const diasEq = Math.max(diasEquipe.size, 1);
+                    avgBody.innerHTML = sortedAvg.map(s => `
+                        <tr class="hover:bg-slate-50 transition-colors ${s.shift==='Matutino'?'bg-amber-50/30':'bg-violet-50/20'}">
+                            <td data-label="Servidor" class="px-4 py-2.5 font-semibold text-slate-700">${s.name}</td>
+                            <td data-label="Turno" class="px-4 py-2.5 text-center">${getShiftBadge(s.shift)}</td>
+                            <td data-label="Dias Trab." class="px-4 py-2.5 text-center text-slate-500 text-xs">${s.diasTrab}d</td>
+                            <td data-label="Méd. Ações/Dia" class="px-4 py-2.5 text-center font-bold text-lg" style="color:${shiftColorsAvg[s.shift]||'#6366f1'}">${s.medAcoes.toFixed(1)}</td>
+                            <td data-label="Méd. Proc./Dia" class="px-4 py-2.5 text-center font-bold" style="color:${shiftColorsAvg[s.shift]||'#6366f1'}">${s.medProcs.toFixed(1)}</td>
+                            <td data-label="Total Ações" class="px-4 py-2.5 text-center font-bold text-indigo-700 bg-indigo-50">${s.totalActions}</td>
+                            <td data-label="Total Proc." class="px-4 py-2.5 text-center font-bold text-blue-700 bg-blue-50">${s.processesReceived}</td>
+                        </tr>`).join('') +
+                        `<tr class="bg-indigo-900 text-white font-bold text-sm">
+                            <td class="px-4 py-2.5" colspan="2">MÉDIA GERAL DA EQUIPE</td>
+                            <td class="px-4 py-2.5 text-center text-indigo-300 text-xs">${diasEq}d</td>
+                            <td class="px-4 py-2.5 text-center bg-indigo-700">${(totA2/diasEq).toFixed(1)}</td>
+                            <td class="px-4 py-2.5 text-center">${(totP2/diasEq).toFixed(1)}</td>
+                            <td class="px-4 py-2.5 text-center">${totA2}</td>
+                            <td class="px-4 py-2.5 text-center">${totP2}</td>
+                        </tr>`;
+                    lucide.createIcons();
+                }
             }
 
             // ── ABA 2: RANKING ────────────────────────────────────────────
@@ -2622,32 +2712,51 @@
                 renderRanking();
             }
 
+            window.currentEvolMetric = 'acoes';
+            window.setEvolMetric = function(metric) {
+                window.currentEvolMetric = metric;
+                document.querySelectorAll('.evol-metric-btn').forEach(b => b.classList.remove('active'));
+                document.getElementById(`evol-btn-${metric}`).classList.add('active');
+                const titleEl = document.getElementById('evol-line-title');
+                const descEl = document.getElementById('evol-bar-desc');
+                if (titleEl) titleEl.textContent = metric === 'acoes' ? 'Curva de Produção Diária — Ações' : 'Curva de Produção Diária — Processos';
+                if (descEl) descEl.textContent = metric === 'acoes' ? 'Ações por turno dia a dia.' : 'Processos por turno dia a dia.';
+                renderEvolution();
+            }
+
             // ── ABA 3: EVOLUÇÃO TEMPORAL ──────────────────────────────────
             window.renderEvolution = function() {
                 const start = document.getElementById('evol-start').value;
                 const end = document.getElementById('evol-end').value;
                 if (!start || !end) return;
 
+                const metric = window.currentEvolMetric || 'acoes';
+                const useActions = metric === 'acoes';
                 const dates = getDatesInRange(start, end);
                 const labels = dates.map(d => d.split('-').reverse().slice(0,2).join('/'));
-                const servantShift = {};
-                state.servants.forEach(s => { servantShift[s.id] = s.shift || 'Não definido'; });
+                const matIds = state.servants.filter(s=>s.shift==='Matutino').map(s=>s.id);
+                const vespIds = state.servants.filter(s=>s.shift==='Vespertino').map(s=>s.id);
 
-                // Curva de ações diárias
-                const dailyActions = dates.map(d => state.actions.filter(a => a.status==='Concluído' && DateEngine.normalize(a.date)===d).length);
+                let totalDaily, matDaily, vespDaily;
+                if (useActions) {
+                    matDaily = dates.map(d => state.actions.filter(a => a.status==='Concluído' && DateEngine.normalize(a.date)===d && matIds.includes(a.servantId)).length);
+                    vespDaily = dates.map(d => state.actions.filter(a => a.status==='Concluído' && DateEngine.normalize(a.date)===d && vespIds.includes(a.servantId)).length);
+                } else {
+                    matDaily = dates.map(d => state.processes.filter(p => DateEngine.normalize(p.deadline)===d && matIds.includes(p.servantId)).length);
+                    vespDaily = dates.map(d => state.processes.filter(p => DateEngine.normalize(p.deadline)===d && vespIds.includes(p.servantId)).length);
+                }
+                totalDaily = dates.map((_,i) => matDaily[i] + vespDaily[i]);
+
+                // Curva total diária
                 const ctxL = document.getElementById('chart-evolution-line').getContext('2d');
                 if (window._chartEvolutionLine) window._chartEvolutionLine.destroy();
                 window._chartEvolutionLine = new Chart(ctxL, {
                     type: 'line',
-                    data: { labels, datasets: [{ label: 'Ações por dia', data: dailyActions, borderColor: '#4f46e5', backgroundColor: 'rgba(79,70,229,0.08)', fill: true, tension: 0.4, pointBackgroundColor: '#4f46e5', pointRadius: 4 }] },
+                    data: { labels, datasets: [{ label: useActions ? 'Ações por dia' : 'Processos por dia', data: totalDaily, borderColor: '#4f46e5', backgroundColor: 'rgba(79,70,229,0.08)', fill: true, tension: 0.4, pointBackgroundColor: '#4f46e5', pointRadius: 4 }] },
                     options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }, plugins: { legend: { display: false } } }
                 });
 
-                // Matutino vs Vespertino por dia
-                const matIds = state.servants.filter(s=>s.shift==='Matutino').map(s=>s.id);
-                const vespIds = state.servants.filter(s=>s.shift==='Vespertino').map(s=>s.id);
-                const matDaily = dates.map(d => state.processes.filter(p => DateEngine.normalize(p.deadline)===d && matIds.includes(p.servantId)).length);
-                const vespDaily = dates.map(d => state.processes.filter(p => DateEngine.normalize(p.deadline)===d && vespIds.includes(p.servantId)).length);
+                // Matutino vs Vespertino
                 const ctxS = document.getElementById('chart-shift-daily').getContext('2d');
                 if (window._chartShiftDaily) window._chartShiftDaily.destroy();
                 window._chartShiftDaily = new Chart(ctxS, {
@@ -2853,7 +2962,7 @@
                     // Tabela
                     doc.setTextColor(49,46,129); doc.setFontSize(11); doc.setFont('helvetica','bold');
                     doc.text('PRODUTIVIDADE POR SERVIDOR', 14, y); y += 4;
-                    const rows = allData.map(s => [s.name, s.shift, s.processesReceived, s.totalActions, s.oficio, s.circular, s.email, s.traslado, s.diligencia, s.comunicacao]);
+                    const rows = [...allData].sort((a,b) => b.totalActions - a.totalActions).map(s => [s.name, s.shift, s.processesReceived, s.totalActions, s.oficio, s.circular, s.email, s.traslado, s.diligencia, s.comunicacao]);
                     rows.push(['TOTAL GERAL','—',totals.processesReceived,totals.totalActions,totals.oficio,totals.circular,totals.email,totals.traslado,totals.diligencia,totals.comunicacao]);
                     doc.autoTable({ startY: y, head:[['Servidor','Turno','Proc.','Total','Ofícios','Circ.','E-mails','Trasl.','Dilig.','Comun.']], body: rows, theme:'grid', styles:{fontSize:8,halign:'center'}, headStyles:{fillColor:[49,46,129],textColor:255,fontStyle:'bold'}, columnStyles:{0:{halign:'left',cellWidth:38,fontStyle:'bold'},1:{cellWidth:22}},
                         didParseCell(d){ if(d.section==='body'){ const isTot=d.row.index===rows.length-1; if(isTot){d.cell.styles.fillColor=[49,46,129];d.cell.styles.textColor=255;d.cell.styles.fontStyle='bold';} else { const sh=allData[d.row.index]?.shift; if(sh==='Matutino')d.cell.styles.fillColor=[255,251,235]; else if(sh==='Vespertino')d.cell.styles.fillColor=[245,243,255]; } } }
