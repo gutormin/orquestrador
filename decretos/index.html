@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sistema de Decretos</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:        #F7F6F3;
+    --surface:   #FFFFFF;
+    --border:    #E2E0DA;
+    --border2:   #C8C6BF;
+    --text:      #1A1917;
+    --muted:     #6B6963;
+    --hint:      #9E9B94;
+    --accent-bg: #1A1917;
+    --accent-fg: #F7F6F3;
+    --success-bg:#EAF3DE;
+    --success:   #3B6D11;
+    --warn-bg:   #FFF8E1;
+    --warn:      #856404;
+    --mono:      'Courier New', Courier, monospace;
+    --radius:    8px;
+    --radius-lg: 12px;
+  }
+
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; font-size: 15px; line-height: 1.6; }
+
+  /* TOPBAR */
+  .topbar { background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 2rem; height: 56px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 50; }
+  .topbar-brand { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 15px; }
+  .topbar-year { font-size: 12px; color: var(--muted); background: var(--bg); border: 1px solid var(--border); border-radius: 20px; padding: 3px 12px; font-family: var(--mono); }
+
+  /* LAYOUT */
+  .page { max-width: 980px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+
+  /* STATS */
+  .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 1.5rem; }
+  .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1rem 1.25rem; }
+  .stat-card .slabel { font-size: 12px; color: var(--muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.05em; }
+  .stat-card .sval { font-size: 22px; font-weight: 600; font-family: var(--mono); }
+
+  /* EMIT CARD */
+  .emit-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.5rem; margin-bottom: 2rem; }
+  .next-num-bar { display: flex; align-items: center; gap: 16px; background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem 1.25rem; margin-bottom: 1.25rem; }
+  .next-num-bar .nlabel { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 3px; }
+  .next-num-bar .nval { font-size: 30px; font-weight: 700; font-family: var(--mono); letter-spacing: 0.04em; }
+  .next-icon { width: 44px; height: 44px; background: var(--accent-bg); border-radius: var(--radius); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 1rem; }
+  .form-group { display: flex; flex-direction: column; gap: 6px; }
+  .form-group label { font-size: 12px; font-weight: 500; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+  .form-group input { height: 40px; padding: 0 12px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg); color: var(--text); font-size: 14px; font-family: inherit; outline: none; transition: border-color 0.15s, box-shadow 0.15s; }
+  .form-group input:focus { border-color: var(--border2); box-shadow: 0 0 0 3px rgba(26,25,23,0.08); background: var(--surface); }
+  .form-group input::placeholder { color: var(--hint); }
+
+  .btn-emit { width: 100%; height: 44px; background: var(--accent-bg); color: var(--accent-fg); border: none; border-radius: var(--radius); font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit; transition: opacity 0.15s, transform 0.1s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+  .btn-emit:hover:not(:disabled) { opacity: 0.85; }
+  .btn-emit:active:not(:disabled) { transform: scale(0.99); }
+  .btn-emit:disabled { opacity: 0.35; cursor: not-allowed; }
+
+  /* HISTORY */
+  .history-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem; }
+  .section-title { font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.07em; }
+  .search-input { height: 34px; padding: 0 12px; border: 1px solid var(--border); border-radius: 20px; background: var(--surface); color: var(--text); font-size: 13px; font-family: inherit; outline: none; width: 220px; transition: border-color 0.15s, width 0.2s; }
+  .search-input:focus { border-color: var(--border2); width: 260px; }
+  .search-input::placeholder { color: var(--hint); }
+
+  .history-table-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
+  table { width: 100%; border-collapse: collapse; }
+  thead th { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.07em; padding: 10px 14px; background: var(--bg); border-bottom: 1px solid var(--border); text-align: left; white-space: nowrap; }
+  thead th.col-num    { width: 120px; }
+  thead th.col-proad  { width: 200px; }
+  thead th.col-date   { width: 130px; }
+  tbody tr { border-bottom: 1px solid var(--border); transition: background 0.1s; }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: var(--bg); }
+  tbody td { padding: 10px 14px; font-size: 14px; vertical-align: middle; }
+
+  .num-pill { display: inline-block; font-family: var(--mono); font-size: 13px; font-weight: 600; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 3px 10px; letter-spacing: 0.03em; }
+  .td-name { font-weight: 500; }
+  .td-unit { color: var(--muted); font-size: 13px; }
+  .td-date { font-size: 12px; color: var(--hint); font-family: var(--mono); white-space: nowrap; }
+
+  /* PROAD inline */
+  .proad-cell { display: flex; align-items: center; gap: 6px; }
+  .proad-value { font-family: var(--mono); font-size: 13px; font-weight: 600; color: var(--success); background: var(--success-bg); border: 1px solid #c3e6a0; border-radius: 6px; padding: 3px 10px; }
+  .proad-empty { font-size: 12px; color: var(--hint); font-style: italic; }
+  .btn-proad { height: 28px; padding: 0 10px; background: transparent; border: 1px dashed var(--border2); border-radius: 6px; font-size: 12px; color: var(--muted); cursor: pointer; font-family: inherit; white-space: nowrap; transition: all 0.15s; display: flex; align-items: center; gap: 4px; }
+  .btn-proad:hover { background: var(--bg); border-color: var(--text); color: var(--text); border-style: solid; }
+  .btn-proad-edit { height: 26px; padding: 0 8px; background: transparent; border: none; font-size: 11px; color: var(--muted); cursor: pointer; font-family: inherit; border-radius: 4px; transition: background 0.12s; }
+  .btn-proad-edit:hover { background: var(--bg); color: var(--text); }
+
+  .empty-row td { text-align: center; padding: 3rem; color: var(--muted); font-size: 14px; }
+
+  /* MODAL */
+  .modal-backdrop { display: none; position: fixed; inset: 0; background: rgba(10,10,10,0.4); z-index: 200; align-items: center; justify-content: center; }
+  .modal-backdrop.open { display: flex; }
+  .modal { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.75rem; width: 400px; max-width: 92vw; animation: pop 0.18s ease; }
+  @keyframes pop { from { transform: scale(0.94); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  .modal-icon { width: 48px; height: 48px; background: var(--bg); border: 1px solid var(--border); border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 1rem; }
+  .modal h2 { font-size: 17px; font-weight: 600; margin-bottom: 0.4rem; }
+  .modal .modal-sub { font-size: 13px; color: var(--muted); margin-bottom: 1rem; }
+  .modal-info { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 0.875rem 1rem; margin-bottom: 1.25rem; display: flex; flex-direction: column; gap: 8px; }
+  .modal-info-row { display: flex; justify-content: space-between; align-items: center; }
+  .modal-info-row .key { font-size: 12px; color: var(--muted); }
+  .modal-info-row .val { font-size: 14px; font-weight: 500; font-family: var(--mono); }
+  .modal-info-row .val.big { font-size: 20px; font-weight: 700; letter-spacing: 0.04em; }
+  .modal p.warn { font-size: 13px; color: var(--muted); margin-bottom: 1.25rem; }
+  .modal-actions { display: flex; gap: 8px; }
+
+  /* PROAD MODAL específico */
+  .proad-modal-ref { font-family: var(--mono); font-size: 16px; font-weight: 700; color: var(--text); background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 6px 14px; display: inline-block; margin-bottom: 1rem; }
+  .proad-input-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 1.25rem; }
+  .proad-input-group label { font-size: 12px; font-weight: 500; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+  .proad-input-group input { height: 44px; padding: 0 14px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg); color: var(--text); font-size: 16px; font-family: var(--mono); font-weight: 600; outline: none; letter-spacing: 0.03em; transition: border-color 0.15s, box-shadow 0.15s; }
+  .proad-input-group input:focus { border-color: var(--border2); box-shadow: 0 0 0 3px rgba(26,25,23,0.08); background: var(--surface); }
+  .proad-input-group input::placeholder { color: var(--hint); font-weight: 400; font-size: 14px; letter-spacing: 0; }
+
+  .btn-cancel { flex: 1; height: 40px; background: transparent; border: 1px solid var(--border); border-radius: var(--radius); font-size: 14px; cursor: pointer; color: var(--text); font-family: inherit; transition: background 0.15s; }
+  .btn-cancel:hover { background: var(--bg); }
+  .btn-confirm { flex: 1; height: 40px; background: var(--accent-bg); color: var(--accent-fg); border: none; border-radius: var(--radius); font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit; transition: opacity 0.15s; }
+  .btn-confirm:hover { opacity: 0.85; }
+  .btn-confirm:disabled { opacity: 0.35; cursor: not-allowed; }
+
+  /* EXPORT */
+  .btn-export { height: 34px; padding: 0 14px; background: transparent; border: 1px solid var(--border); border-radius: 20px; font-size: 13px; cursor: pointer; color: var(--muted); font-family: inherit; display: flex; align-items: center; gap: 6px; transition: all 0.15s; }
+  .btn-export:hover { background: var(--surface); color: var(--text); border-color: var(--border2); }
+
+  /* TOAST */
+  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--text); color: #fff; font-size: 14px; font-weight: 500; padding: 12px 20px; border-radius: 30px; z-index: 999; opacity: 0; transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1), opacity 0.25s; white-space: nowrap; pointer-events: none; }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  @media (max-width: 640px) {
+    .form-row { grid-template-columns: 1fr; }
+    .stats-row { grid-template-columns: 1fr 1fr; }
+    .stats-row .stat-card:last-child { grid-column: span 2; }
+    .history-header { flex-direction: column; align-items: flex-start; gap: 10px; }
+    .search-input, .search-input:focus { width: 100%; }
+    .page { padding: 1rem 1rem 3rem; }
+    .topbar { padding: 0 1rem; }
+    thead th.col-unit, tbody td.col-unit { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-brand">
+    <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+      <rect x="2" y="1" width="14" height="18" rx="2" stroke="#1A1917" stroke-width="1.5"/>
+      <path d="M5 6h8M5 9.5h8M5 13h5" stroke="#1A1917" stroke-width="1.5" stroke-linecap="round"/>
+      <circle cx="17" cy="16" r="4" fill="#1A1917"/>
+      <path d="M15.5 16l1 1 2-2" stroke="#F7F6F3" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    Sistema de Decretos
+  </div>
+  <span class="topbar-year" id="topbar-year">2026</span>
+</header>
+
+<main class="page">
+
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="slabel">Utilizados em <span id="stat-ano">2026</span></div>
+      <div class="sval" id="stat-total">0</div>
+    </div>
+    <div class="stat-card">
+      <div class="slabel">Último utilizado</div>
+      <div class="sval" id="stat-ultimo">—</div>
+    </div>
+    <div class="stat-card">
+      <div class="slabel">Próximo número</div>
+      <div class="sval" id="stat-proximo">001/2026</div>
+    </div>
+  </div>
+
+  <div class="emit-card">
+    <div class="next-num-bar">
+      <div class="next-icon">
+        <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+          <path d="M11 4v14M4 11h14" stroke="#F7F6F3" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div>
+        <div class="nlabel">Próximo número disponível</div>
+        <div class="nval" id="num-display">001/2026</div>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label for="inp-solicitante">Nome do solicitante</label>
+        <input type="text" id="inp-solicitante" placeholder="Ex: Maria Silva" autocomplete="off" />
+      </div>
+      <div class="form-group">
+        <label for="inp-unidade">Unidade</label>
+        <input type="text" id="inp-unidade" placeholder="Ex: Secretaria de Saúde" autocomplete="off" />
+      </div>
+    </div>
+    <button class="btn-emit" id="btn-emit" disabled>
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <path d="M2 8h12M8 2l6 6-6 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      Usar nº de decreto
+    </button>
+  </div>
+
+  <div class="history-header">
+    <span class="section-title">Histórico de decretos</span>
+    <div style="display:flex;gap:8px;align-items:center;">
+      <input class="search-input" type="text" id="inp-busca" placeholder="Buscar..." />
+      <button class="btn-export" id="btn-export">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+          <path d="M7 1v8M4 6l3 3 3-3M2 10v1a1 1 0 001 1h8a1 1 0 001-1v-1" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Exportar CSV
+      </button>
+    </div>
+  </div>
+
+  <div class="history-table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th class="col-num">Decreto</th>
+          <th>Solicitante</th>
+          <th class="col-unit">Unidade</th>
+          <th class="col-proad">Nº PROAD</th>
+          <th class="col-date">Data / Hora</th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+
+</main>
+
+<!-- Modal: usar decreto -->
+<div class="modal-backdrop" id="modal-emit" role="dialog" aria-modal="true" aria-labelledby="modal-emit-title">
+  <div class="modal">
+    <div class="modal-icon">
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+        <path d="M11 7v5M11 15h.01" stroke="#1A1917" stroke-width="1.8" stroke-linecap="round"/>
+        <path d="M2 11a9 9 0 1018 0 9 9 0 00-18 0z" stroke="#1A1917" stroke-width="1.5"/>
+      </svg>
+    </div>
+    <h2 id="modal-emit-title">Confirmar uso do nº</h2>
+    <div class="modal-info">
+      <div class="modal-info-row">
+        <span class="key">Número</span>
+        <span class="val big" id="modal-num">001/2026</span>
+      </div>
+      <div style="height:1px;background:var(--border);"></div>
+      <div class="modal-info-row">
+        <span class="key">Solicitante</span>
+        <span class="val" id="modal-sol">—</span>
+      </div>
+      <div class="modal-info-row">
+        <span class="key">Unidade</span>
+        <span class="val" id="modal-uni">—</span>
+      </div>
+    </div>
+    <p class="warn">Esta ação é permanente. O número não poderá ser reutilizado.</p>
+    <div class="modal-actions">
+      <button class="btn-cancel" id="btn-emit-cancel">Cancelar</button>
+      <button class="btn-confirm" id="btn-emit-confirm">Confirmar uso</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: vincular PROAD -->
+<div class="modal-backdrop" id="modal-proad" role="dialog" aria-modal="true" aria-labelledby="modal-proad-title">
+  <div class="modal">
+    <div class="modal-icon">
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+        <path d="M4 11h14M11 4l7 7-7 7" stroke="#1A1917" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <h2 id="modal-proad-title">Vincular nº de PROAD</h2>
+    <p class="modal-sub">Decreto:</p>
+    <div class="proad-modal-ref" id="proad-modal-ref">—</div>
+    <div class="proad-input-group">
+      <label for="inp-proad">Número do PROAD</label>
+      <input type="text" id="inp-proad" placeholder="Ex: 00100.000123/2026-01" autocomplete="off" />
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" id="btn-proad-cancel">Cancelar</button>
+      <button class="btn-confirm" id="btn-proad-confirm" disabled>Salvar PROAD</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const STORAGE_KEY = 'decretos-v1';
+let state = { ano: anoAtual(), ultimo: 0, decretos: [] };
+let pendingEmit = null;
+let pendingProad = null; // { index }
+
+function anoAtual() { return new Date().getFullYear(); }
+function formatNum(n, ano) { return String(n).padStart(3,'0') + '/' + ano; }
+
+/* ── STORAGE ── */
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return;
+    const saved = JSON.parse(raw);
+    const ano = anoAtual();
+    if (saved.ano !== ano) {
+      state = { ano, ultimo: 0, decretos: saved.decretos || [] };
+      saveState();
+    } else { state = saved; }
+  } catch(e) {}
+}
+function saveState() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch(e) {}
+}
+
+/* ── RENDER ── */
+function proximo() {
+  const ano = anoAtual();
+  if (state.ano !== ano) return formatNum(1, ano);
+  return formatNum(state.ultimo + 1, ano);
+}
+
+function render() {
+  const ano = anoAtual();
+  const p = proximo();
+  document.getElementById('num-display').textContent = p;
+  document.getElementById('stat-proximo').textContent = p;
+  document.getElementById('stat-ano').textContent = ano;
+  document.getElementById('topbar-year').textContent = ano;
+  document.getElementById('stat-total').textContent = state.decretos.filter(d => d.ano === ano).length;
+  document.getElementById('stat-ultimo').textContent = state.ultimo > 0 ? formatNum(state.ultimo, state.ano) : '—';
+  renderTable();
+}
+
+function renderTable(filtro) {
+  const tbody = document.getElementById('tbody');
+  let items = state.decretos.map((d,i) => ({...d, _idx: i})).sort((a,b) => b.seq - a.seq);
+  if (filtro) {
+    const f = filtro.toLowerCase();
+    items = items.filter(d =>
+      d.numero.toLowerCase().includes(f) ||
+      d.solicitante.toLowerCase().includes(f) ||
+      d.unidade.toLowerCase().includes(f) ||
+      (d.proad || '').toLowerCase().includes(f)
+    );
+  }
+  if (!items.length) {
+    tbody.innerHTML = `<tr class="empty-row"><td colspan="5">${filtro ? 'Nenhum resultado.' : 'Nenhum decreto utilizado ainda.'}</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = items.map(d => {
+    const dt = new Date(d.ts);
+    const dataStr = dt.toLocaleDateString('pt-BR') + ' ' + dt.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+    const proadCell = d.proad
+      ? `<div class="proad-cell">
+           <span class="proad-value">${esc(d.proad)}</span>
+           <button class="btn-proad-edit" onclick="openProadModal(${d._idx})" title="Editar PROAD">✎</button>
+         </div>`
+      : `<div class="proad-cell">
+           <button class="btn-proad" onclick="openProadModal(${d._idx})">
+             <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1 6h10M6 1l5 5-5 5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+             Vincular PROAD
+           </button>
+         </div>`;
+    return `<tr>
+      <td><span class="num-pill">${esc(d.numero)}</span></td>
+      <td class="td-name">${esc(d.solicitante)}</td>
+      <td class="col-unit td-unit">${esc(d.unidade)}</td>
+      <td>${proadCell}</td>
+      <td class="td-date">${dataStr}</td>
+    </tr>`;
+  }).join('');
+}
+
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+/* ── FORM EMIT ── */
+function checkForm() {
+  const ok = document.getElementById('inp-solicitante').value.trim() &&
+             document.getElementById('inp-unidade').value.trim();
+  document.getElementById('btn-emit').disabled = !ok;
+}
+document.getElementById('inp-solicitante').addEventListener('input', checkForm);
+document.getElementById('inp-unidade').addEventListener('input', checkForm);
+document.getElementById('inp-solicitante').addEventListener('keydown', e => { if(e.key==='Enter') document.getElementById('inp-unidade').focus(); });
+document.getElementById('inp-unidade').addEventListener('keydown', e => { if(e.key==='Enter' && !document.getElementById('btn-emit').disabled) openEmitModal(); });
+document.getElementById('btn-emit').addEventListener('click', openEmitModal);
+
+function openEmitModal() {
+  const s = document.getElementById('inp-solicitante').value.trim();
+  const u = document.getElementById('inp-unidade').value.trim();
+  if (!s || !u) return;
+  const ano = anoAtual();
+  const next = state.ano !== ano ? 1 : state.ultimo + 1;
+  pendingEmit = { numero: formatNum(next, ano), solicitante: s, unidade: u };
+  document.getElementById('modal-num').textContent = pendingEmit.numero;
+  document.getElementById('modal-sol').textContent = pendingEmit.solicitante;
+  document.getElementById('modal-uni').textContent = pendingEmit.unidade;
+  document.getElementById('modal-emit').classList.add('open');
+  document.getElementById('btn-emit-confirm').focus();
+}
+
+document.getElementById('btn-emit-cancel').addEventListener('click', () => { document.getElementById('modal-emit').classList.remove('open'); pendingEmit = null; });
+document.getElementById('modal-emit').addEventListener('click', function(e){ if(e.target===this){ this.classList.remove('open'); pendingEmit=null; } });
+
+document.getElementById('btn-emit-confirm').addEventListener('click', function(){
+  if (!pendingEmit) return;
+  const ano = anoAtual();
+  if (state.ano !== ano) { state.ultimo = 0; state.ano = ano; }
+  state.ultimo += 1;
+  state.decretos.unshift({ numero: pendingEmit.numero, seq: state.ultimo, ano, solicitante: pendingEmit.solicitante, unidade: pendingEmit.unidade, proad: '', ts: Date.now() });
+  saveState();
+  document.getElementById('modal-emit').classList.remove('open');
+  pendingEmit = null;
+  document.getElementById('inp-solicitante').value = '';
+  document.getElementById('inp-unidade').value = '';
+  document.getElementById('btn-emit').disabled = true;
+  showToast('Nº ' + state.decretos[0].numero + ' registrado — vincule o PROAD quando disponível');
+  render();
+});
+
+/* ── MODAL PROAD ── */
+function openProadModal(idx) {
+  pendingProad = { idx };
+  const d = state.decretos[idx];
+  document.getElementById('proad-modal-ref').textContent = d.numero;
+  const inp = document.getElementById('inp-proad');
+  inp.value = d.proad || '';
+  document.getElementById('btn-proad-confirm').disabled = !inp.value.trim();
+  document.getElementById('modal-proad').classList.add('open');
+  inp.focus();
+  inp.select();
+}
+
+document.getElementById('inp-proad').addEventListener('input', function(){
+  document.getElementById('btn-proad-confirm').disabled = !this.value.trim();
+});
+document.getElementById('inp-proad').addEventListener('keydown', function(e){
+  if (e.key === 'Enter' && !document.getElementById('btn-proad-confirm').disabled) saveProad();
+});
+
+document.getElementById('btn-proad-cancel').addEventListener('click', closeProadModal);
+document.getElementById('modal-proad').addEventListener('click', function(e){ if(e.target===this) closeProadModal(); });
+document.getElementById('btn-proad-confirm').addEventListener('click', saveProad);
+
+function closeProadModal() {
+  document.getElementById('modal-proad').classList.remove('open');
+  pendingProad = null;
+}
+
+function saveProad() {
+  if (pendingProad === null) return;
+  const val = document.getElementById('inp-proad').value.trim();
+  if (!val) return;
+  state.decretos[pendingProad.idx].proad = val;
+  saveState();
+  closeProadModal();
+  showToast('PROAD ' + val + ' vinculado com sucesso');
+  render();
+}
+
+/* ── BUSCA ── */
+document.getElementById('inp-busca').addEventListener('input', function(){ renderTable(this.value.trim()); });
+
+/* ── EXPORT CSV ── */
+document.getElementById('btn-export').addEventListener('click', function(){
+  if (!state.decretos.length) { showToast('Nenhum decreto para exportar'); return; }
+  const rows = [['Número','Solicitante','Unidade','Nº PROAD','Data','Hora']];
+  [...state.decretos].sort((a,b) => a.seq - b.seq).forEach(d => {
+    const dt = new Date(d.ts);
+    rows.push([ d.numero, '"'+d.solicitante.replace(/"/g,'""')+'"', '"'+d.unidade.replace(/"/g,'""')+'"', d.proad||'', dt.toLocaleDateString('pt-BR'), dt.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}) ]);
+  });
+  const csv = rows.map(r => r.join(';')).join('\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob(['\uFEFF'+csv], {type:'text/csv;charset=utf-8;'}));
+  a.download = 'decretos-' + anoAtual() + '.csv';
+  a.click();
+  showToast('CSV exportado');
+});
+
+/* ── TOAST ── */
+let toastTimer;
+function showToast(msg) {
+  clearTimeout(toastTimer);
+  const t = document.getElementById('toast');
+  t.textContent = '✓  ' + msg;
+  t.classList.add('show');
+  toastTimer = setTimeout(() => t.classList.remove('show'), 3500);
+}
+
+/* ── ESC ── */
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    document.getElementById('modal-emit').classList.remove('open');
+    document.getElementById('modal-proad').classList.remove('open');
+    pendingEmit = null; pendingProad = null;
+  }
+});
+
+/* ── INIT ── */
+loadState();
+render();
+</script>
+</body>
+</html>
