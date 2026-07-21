@@ -4223,9 +4223,15 @@
                     let friendlyMsg = err.message;
                     if (err.code === "auth/invalid-credential" || err.code === "auth/wrong-password" || err.code === "auth/user-not-found" || err.code === "auth/invalid-email") {
                         friendlyMsg = "Usuário ou senha incorretos.";
+                    } else if (err.code === "auth/unauthorized-domain") {
+                        friendlyMsg = "Domínio não autorizado. Adicione 'gutormin.github.io' em Firebase Console > Authentication > Settings > Authorized domains.";
+                    } else if (err.code === "auth/network-request-failed") {
+                        friendlyMsg = "Erro ao conectar ao servidor. Verifique sua conexão com a internet ou bloqueio de firewall.";
+                    } else if (err.code === "auth/too-many-requests") {
+                        friendlyMsg = "Muitas tentativas. Aguarde um momento e tente novamente.";
                     }
                     alert("Erro no login: " + friendlyMsg);
-                    addLog("Erro no login: " + err.message, true);
+                    addLog("Erro no login [" + (err.code || 'sem-codigo') + "]: " + err.message, true);
                     btn.innerText = "Entrar no Sistema";
                     btn.disabled = false;
                 }
