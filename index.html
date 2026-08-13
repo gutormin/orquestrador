@@ -536,8 +536,22 @@
         <div id="log-content"></div>
     </div>
 
+    <!-- TELA DE CARREGAMENTO INICIAL (SPLASH SCREEN) -->
+    <div id="loading-page" class="flex flex-col items-center justify-center min-h-screen bg-slate-900 px-4 transition-all duration-300">
+        <div class="text-center space-y-4">
+            <div class="inline-flex items-center justify-center w-16 h-16 bg-indigo-600 text-white rounded-xl mb-4 shadow-lg animate-bounce">
+                <i data-lucide="trending-up" class="w-8 h-8"></i>
+            </div>
+            <h1 class="text-3xl font-bold text-white">Orquestrador SecExecPres</h1>
+            <p class="text-slate-400 text-sm">Carregando a sua sessão...</p>
+            <div class="flex justify-center mt-6">
+                <div class="w-8 h-8 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
+            </div>
+        </div>
+    </div>
+
     <!-- TELA DE LOGIN -->
-    <div id="login-page" class="flex items-center justify-center min-h-screen bg-slate-900 px-4">
+    <div id="login-page" class="hidden flex items-center justify-center min-h-screen bg-slate-900 px-4">
         <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md transform transition-all">
             <div class="text-center mb-8">
                 <div class="inline-flex items-center justify-center w-16 h-16 bg-indigo-600 text-white rounded-xl mb-4 shadow-lg">
@@ -888,6 +902,7 @@
                                     <th class="px-6 py-4">Servidor</th>
                                     <th class="px-6 py-4">Data</th>
                                     <th class="px-6 py-4">Hora Cadastro</th>
+                                    <th class="px-6 py-4">Cadastrado Por</th>
                                     <th class="px-6 py-4">Ações Planejadas</th>
                                     <th class="px-6 py-4 text-center">Excluir</th>
                                 </tr>
@@ -1765,25 +1780,24 @@
 
                 <div class="col-span-2">
                     <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Nome Completo</label>
-                    <input type="text" id="edit-servant-field-name" name="name" required class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500">
+                    <input type="text" name="name" required class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500">
                 </div>
                 <div class="col-span-1">
                     <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Matrícula</label>
-                    <input type="text" id="edit-servant-field-registration" name="registration" required class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500">
+                    <input type="text" name="registration" required class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500">
                 </div>
                 <div class="col-span-1">
                     <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Cargo</label>
-                    <input type="text" id="edit-servant-field-role" name="role" required class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500">
+                    <input type="text" name="role" required class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500">
                 </div>
                 <div class="col-span-1">
                     <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Setor</label>
-                    <input type="text" id="edit-servant-field-sector" name="sector" required class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500">
+                    <input type="text" name="sector" required class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500">
                 </div>
                 <div class="col-span-1">
                     <label class="block text-xs font-bold uppercase text-slate-500 mb-1">E-mail</label>
-                    <input type="email" id="edit-servant-field-email" name="email" required class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500">
+                    <input type="email" name="email" required class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500">
                 </div>
-
                 <div class="col-span-2">
                     <label class="block text-xs font-bold uppercase text-slate-500 mb-2">Turno de Trabalho</label>
                     <div class="grid grid-cols-2 gap-2">
@@ -1818,13 +1832,13 @@
                 <h3 id="modal-process-title" class="text-xl font-bold text-slate-800">Novo Processo & Planejamento</h3>
                 <button onclick="closeModal('modal-process'); resetProcessModal()" class="text-slate-400 hover:text-rose-500"><i data-lucide="x" class="w-6 h-6"></i></button>
             </div>
-            <form id="form-process" class="p-6 overflow-y-auto max-h-[85vh]" autocomplete="off">
+            <form id="form-process" class="p-6 overflow-y-auto max-h-[85vh]">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                     <div class="space-y-4">
                         <h4 class="font-bold text-indigo-600 flex items-center gap-2 mb-2"><i data-lucide="file-text" class="w-4 h-4"></i> Dados do Processo</h4>
                         <div >
                             <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Nº Processo</label>
-                            <input type="text" name="number" required autocomplete="off" data-lpignore="true" data-form-type="other" inputmode="numeric" pattern="[0-9./-]*" class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500">
+                            <input type="text" name="number" required class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500">
                         </div>
                         <div >
                             <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Tipo</label>
@@ -1931,7 +1945,7 @@
                 <h3 class="text-xl font-bold text-slate-800">Cadastrar Controle de Prazo</h3>
                 <button onclick="closeModal('modal-deadline')" class="text-slate-400 hover:text-rose-500"><i data-lucide="x" class="w-6 h-6"></i></button>
             </div>
-            <form id="form-deadline" class="p-6 grid grid-cols-2 gap-4" autocomplete="off">
+            <form id="form-deadline" class="p-6 grid grid-cols-2 gap-4">
                 <div class="col-span-1">
                     <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Data Distribuição</label>
                     <input type="date" name="dateDist" required class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500">
@@ -1942,7 +1956,7 @@
                 </div>
                 <div class="col-span-1">
                     <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Nº Processo</label>
-                    <input type="text" name="processNumber" required autocomplete="off" data-lpignore="true" data-form-type="other" inputmode="numeric" pattern="[0-9./-]*" class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500">
+                    <input type="text" name="processNumber" required class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500">
                 </div>
                 <div class="col-span-1">
                     <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Unidade de Destino</label>
@@ -2003,6 +2017,8 @@
             firebase.initializeApp(firebaseConfig);
             const db = firebase.firestore();
             const auth = firebase.auth();
+            auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+                .catch(err => console.error("Erro ao definir persistência do Auth:", err));
             addLog("Firebase Inicializado!");
 
             let state = { users: [], servants: [], processes: [], actions: [], audit: [], deadlines: [], actionTypes: [] };
@@ -2105,8 +2121,66 @@
                             await batch.commit();
                         } else {
                             state.actionTypes = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                            
+                            // Correção automática de duplicatas no Firestore (se auto-ajusta no primeiro carregamento)
+                            if (!window.actionTypesCleaned) {
+                                window.actionTypesCleaned = true;
+                                (async () => {
+                                    try {
+                                        let hasChanges = false;
+                                        const batch = db.batch();
+                                        
+                                        const normalize = (s) => (s || '').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+                                        
+                                        const traslados = state.actionTypes.filter(t => normalize(t.label) === 'traslado');
+                                        const comunicacoes = state.actionTypes.filter(t => normalize(t.label) === 'comunicacao');
+                                        const hasApensamento = state.actionTypes.some(t => normalize(t.label) === 'apensamento' || normalize(t.key) === 'apensamento');
+
+                                        // Se temos duplicados de Traslado e não temos Apensamento, renomeia um para Apensamento
+                                        if (traslados.length > 1 && !hasApensamento) {
+                                            const docToUpdate = traslados[1];
+                                            batch.update(db.collection('actionTypes').doc(docToUpdate.id), {
+                                                key: 'apensamento',
+                                                label: 'Apensamento'
+                                            });
+                                            hasChanges = true;
+                                            addLog("Migration: Renomeando duplicata de Traslado para Apensamento.");
+                                        } else if (traslados.length > 1 && hasApensamento) {
+                                            const docToDelete = traslados[1];
+                                            batch.delete(db.collection('actionTypes').doc(docToDelete.id));
+                                            hasChanges = true;
+                                            addLog("Migration: Removendo duplicata excedente de Traslado.");
+                                        }
+
+                                        // Se temos duplicados de Comunicação, remove a duplicata
+                                        if (comunicacoes.length > 1) {
+                                            const docToDelete = comunicacoes[1];
+                                            batch.delete(db.collection('actionTypes').doc(docToDelete.id));
+                                            hasChanges = true;
+                                            addLog("Migration: Removendo duplicata de Comunicação.");
+                                        }
+
+                                        // Se não tem Apensamento no banco de todo, adiciona
+                                        if (!hasApensamento && traslados.length <= 1) {
+                                            const newRef = db.collection('actionTypes').doc();
+                                            batch.set(newRef, { key: 'apensamento', label: 'Apensamento', isDefault: true, active: true });
+                                            hasChanges = true;
+                                            addLog("Migration: Adicionando Apensamento às ações.");
+                                        }
+
+                                        if (hasChanges) {
+                                            await batch.commit();
+                                            addLog("Migration: Banco de dados corrigido com sucesso!");
+                                        }
+                                    } catch (err) {
+                                        console.error("Erro na migração de tipos de ação:", err);
+                                    }
+                                })();
+                            }
+
                             populateActionTypeSelect();
                             renderActionTypesPage();
+                            renderPlanningGrid();
                         }
                     }, (err) => addLog("Erro em 'actionTypes': " + err.message, true));
                     activeListeners.push(u6);
@@ -2131,6 +2205,10 @@
                     statusEl.className = "mt-4 text-xs font-medium px-3 py-1 rounded-full bg-emerald-100 text-emerald-600 inline-block";
                 }
                 
+                const loadingPage = document.getElementById('loading-page');
+                const loginPage = document.getElementById('login-page');
+                const appShell = document.getElementById('app-shell');
+
                 if (user) {
                     addLog("Usuário detectado em Auth: " + user.email);
                     try {
@@ -2149,8 +2227,10 @@
                         }
                         
                         if (currentUser) {
-                            document.getElementById('login-page').classList.add('hidden');
-                            document.getElementById('app-shell').classList.remove('hidden');
+                            if (loadingPage) loadingPage.classList.add('hidden');
+                            if (loginPage) loginPage.classList.add('hidden');
+                            if (appShell) appShell.classList.remove('hidden');
+                            
                             document.getElementById('user-display-name').innerText = currentUser.name;
                             document.getElementById('user-display-role').innerText = currentUser.role;
                             
@@ -2171,22 +2251,41 @@
                             
                             addLog("Login ativo: " + currentUser.name);
                             setupRealtimeListeners();
-                            showPage('dashboard');
+                            
+                            // Navegação baseada no hash da URL (persiste no F5)
+                            const initialPage = location.hash.replace('#', '') || 'dashboard';
+                            const validPages = ['dashboard', 'servants', 'processes', 'deadlines', 'actions', 'reports', 'users', 'actiontypes', 'backup-audit'];
+                            if (validPages.includes(initialPage)) {
+                                showPage(initialPage);
+                            } else {
+                                showPage('dashboard');
+                            }
                         } else {
                             addLog("Perfil do usuário não encontrado no banco de dados.", true);
                             alert("Perfil do usuário não encontrado no banco de dados.");
+                            if (loadingPage) loadingPage.classList.add('hidden');
+                            if (appShell) appShell.classList.add('hidden');
+                            if (loginPage) loginPage.classList.remove('hidden');
                             auth.signOut();
                         }
                     } catch (err) {
                         addLog("Erro ao carregar perfil: " + err.message, true);
-                        auth.signOut();
+                        if (loadingPage) loadingPage.classList.add('hidden');
+                        if (appShell) appShell.classList.add('hidden');
+                        if (loginPage) loginPage.classList.remove('hidden');
+                        const loginBtn = document.getElementById('btn-login');
+                        if (loginBtn) {
+                            loginBtn.innerText = "Entrar no Sistema";
+                            loginBtn.disabled = false;
+                        }
                     }
                 } else {
                     addLog("Sessão inativa.");
                     currentUser = null;
                     clearRealtimeListeners();
-                    document.getElementById('app-shell').classList.add('hidden');
-                    document.getElementById('login-page').classList.remove('hidden');
+                    if (loadingPage) loadingPage.classList.add('hidden');
+                    if (appShell) appShell.classList.add('hidden');
+                    if (loginPage) loginPage.classList.remove('hidden');
                     const loginBtn = document.getElementById('btn-login');
                     if (loginBtn) {
                         loginBtn.innerText = "Entrar no Sistema";
@@ -2230,6 +2329,12 @@
                     alert("Você não possui permissão para acessar esta área.");
                     return;
                 }
+
+                // Sincroniza o hash da URL (evita loops verificando se já é igual)
+                if (location.hash !== '#' + pageId) {
+                    location.hash = pageId;
+                }
+
                 // Fecha o drawer no mobile ao navegar
                 closeSidebar();
                 document.querySelectorAll('.nav-link').forEach(link => {
@@ -2255,6 +2360,20 @@
                 if(pageId === 'actiontypes') renderActionTypesPage();
                 if(pageId === 'backup-audit') renderAudit();
             }
+
+            // Ouvinte para navegação por botões Avançar/Voltar do navegador
+            window.addEventListener('hashchange', () => {
+                if (currentUser) {
+                    const pageId = location.hash.replace('#', '') || 'dashboard';
+                    const validPages = ['dashboard', 'servants', 'processes', 'deadlines', 'actions', 'reports', 'users', 'actiontypes', 'backup-audit'];
+                    if (validPages.includes(pageId)) {
+                        const activeLink = document.querySelector(`.nav-link.active[data-page="${pageId}"]`);
+                        if (!activeLink) {
+                            showPage(pageId);
+                        }
+                    }
+                }
+            });
 
             window.openModal = function(modalId) { 
                 if (!checkPermission('create')) {
@@ -2373,7 +2492,8 @@
                     if(p.qty_diligencia > 0) planned.push(`Dil: ${p.qty_diligencia}`);
                     if(p.qty_comunicacao > 0) planned.push(`Com: ${p.qty_comunicacao}`);
                     const plannedText = planned.length > 0 ? planned.join(' | ') : '<span class="text-slate-300">Nenhuma</span>';
-                    return `<tr class="hover:bg-slate-50 transition-colors"><td class="px-6 py-4 font-bold text-indigo-600">${p.number}</td><td data-label="Prioridade" class="px-6 py-4">${getPriorityBadge(p.priority)}</td><td data-label="Servidor" class="px-6 py-4">${servant ? servant.name : 'N/A'}</td><td data-label="Data" class="px-6 py-4 text-slate-500">${p.deadline}</td><td data-label="Cadastro" class="px-6 py-4 text-slate-500">${registrationTime}</td><td data-label="Ações" class="px-6 py-4 text-xs font-medium text-slate-600">${plannedText}</td><td data-label="Opções" class="px-6 py-4 text-center"><div class="flex items-center justify-center gap-1"><button onclick="editProcess('${p.id}')" class="text-indigo-500 hover:text-indigo-700 p-2" title="Editar"><i data-lucide="pencil" class="w-4 h-4"></i></button>${checkPermission('delete') ? `<button onclick="deleteItem('processes', '${p.id}')" class="text-rose-500 hover:text-rose-700 p-2" title="Excluir"><i data-lucide="trash-2" class="w-4 h-4"></i></button>` : ''}</div></td></tr>`;
+                    const createdBy = p.createdBy || '---';
+                    return `<tr class="hover:bg-slate-50 transition-colors"><td class="px-6 py-4 font-bold text-indigo-600">${p.number}</td><td data-label="Prioridade" class="px-6 py-4">${getPriorityBadge(p.priority)}</td><td data-label="Servidor" class="px-6 py-4">${servant ? servant.name : 'N/A'}</td><td data-label="Data" class="px-6 py-4 text-slate-500">${p.deadline}</td><td data-label="Cadastro" class="px-6 py-4 text-slate-500">${registrationTime}</td><td data-label="Cadastrado Por" class="px-6 py-4 text-slate-500">${createdBy}</td><td data-label="Ações" class="px-6 py-4 text-xs font-medium text-slate-600">${plannedText}</td><td data-label="Opções" class="px-6 py-4 text-center"><div class="flex items-center justify-center gap-1"><button onclick="editProcess('${p.id}')" class="text-indigo-500 hover:text-indigo-700 p-2" title="Editar"><i data-lucide="pencil" class="w-4 h-4"></i></button>${checkPermission('delete') ? `<button onclick="deleteItem('processes', '${p.id}')" class="text-rose-500 hover:text-rose-700 p-2" title="Excluir"><i data-lucide="trash-2" class="w-4 h-4"></i></button>` : ''}</div></td></tr>`;
                 }).join('');
                 lucide.createIcons();
             }
@@ -3969,32 +4089,11 @@
                 e.preventDefault();
                 const formData = new FormData(e.target);
                 const servantObj = Object.fromEntries(formData);
-
-                // Valida turno (radio não incluso no FormData se não selecionado)
-                if (!servantObj.shift) {
-                    alert('Selecione um turno de trabalho (Matutino ou Vespertino).');
-                    return;
-                }
-
                 servantObj.status = 'Ativo';
-
-                const btn = e.target.querySelector('button[type="submit"]');
-                const origText = btn.innerText;
-                btn.innerText = 'Salvando...';
-                btn.disabled = true;
-
-                try {
-                    await db.collection("servants").add(servantObj);
-                    logAction('Servidor Criado', `Novo servidor cadastrado: ${servantObj.name}`);
-                    closeModal('modal-servant');
-                    e.target.reset();
-                } catch (err) {
-                    console.error('Erro ao cadastrar servidor:', err);
-                    alert('Erro ao cadastrar servidor: ' + err.message);
-                } finally {
-                    btn.innerText = origText;
-                    btn.disabled = false;
-                }
+                await db.collection("servants").add(servantObj);
+                closeModal('modal-servant');
+                e.target.reset();
+                logAction('Servidor Criado', `Novo servidor cadastrado: ${servantObj.name}`);
             });
 
             // === EDIÇÃO DE SERVIDOR ===
@@ -4005,15 +4104,12 @@
                 document.getElementById('edit-servant-id').value = id;
                 document.getElementById('edit-servant-name').textContent = `${s.name} • Mat. ${s.registration || '—'} • ${s.sector || '—'}`;
 
-                // Preenche todos os campos de texto
-                document.getElementById('edit-servant-field-name').value = s.name || '';
-                document.getElementById('edit-servant-field-registration').value = s.registration || '';
-                document.getElementById('edit-servant-field-role').value = s.role || '';
-                document.getElementById('edit-servant-field-sector').value = s.sector || '';
-                document.getElementById('edit-servant-field-email').value = s.email || '';
-
-                // Pré-seleciona turno
                 const form = document.getElementById('form-edit-servant');
+                form.querySelector('[name="name"]').value = s.name || '';
+                form.querySelector('[name="registration"]').value = s.registration || '';
+                form.querySelector('[name="role"]').value = s.role || '';
+                form.querySelector('[name="sector"]').value = s.sector || '';
+                form.querySelector('[name="email"]').value = s.email || '';
                 form.querySelectorAll('input[name="shift"]').forEach(r => r.checked = (r.value === s.shift));
 
                 openModal('modal-edit-servant');
@@ -4026,32 +4122,22 @@
                 const formData = new FormData(e.target);
                 const data = Object.fromEntries(formData);
                 if (!data.shift) { alert('Selecione um turno.'); return; }
-                if (!data.name || !data.name.trim()) { alert('Informe o nome do servidor.'); return; }
-
-                const btn = e.target.querySelector('button[type="submit"]');
-                const origText = btn.innerText;
-                btn.innerText = 'Salvando...';
-                btn.disabled = true;
-
                 try {
                     const s = state.servants.find(x => x.id === id);
                     await db.collection('servants').doc(id).update({
-                        name: data.name.trim(),
-                        registration: data.registration || '',
-                        role: data.role || '',
-                        sector: data.sector || '',
-                        email: data.email || '',
+                        name: data.name,
+                        registration: data.registration,
+                        role: data.role,
+                        sector: data.sector,
+                        email: data.email,
                         shift: data.shift,
                         status: s ? (s.status || 'Ativo') : 'Ativo'
                     });
-                    logAction('Servidor Atualizado', `Servidor ${data.name} atualizado (turno: ${data.shift})`);
+                    logAction('Servidor Atualizado', `Servidor ${data.name || id} atualizado`);
                     closeModal('modal-edit-servant');
                 } catch (err) {
                     console.error('Erro ao atualizar servidor:', err);
-                    alert('Erro ao salvar alterações: ' + err.message);
-                } finally {
-                    btn.innerText = origText;
-                    btn.disabled = false;
+                    alert('Erro ao salvar alterações. Veja o console.');
                 }
             });
 
@@ -4137,6 +4223,7 @@
                     } else {
                         // ===== MODO CRIAÇÃO =====
                         proc.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+                        proc.createdBy = currentUser ? currentUser.name : 'Sistema';
                         const procRef = await db.collection("processes").add(proc);
                         const actionDateStr = proc.deadline || DateEngine.getToday();
                         for (let key in actionTypes) {
@@ -4258,9 +4345,15 @@
                     let friendlyMsg = err.message;
                     if (err.code === "auth/invalid-credential" || err.code === "auth/wrong-password" || err.code === "auth/user-not-found" || err.code === "auth/invalid-email") {
                         friendlyMsg = "Usuário ou senha incorretos.";
+                    } else if (err.code === "auth/unauthorized-domain") {
+                        friendlyMsg = "Domínio não autorizado. Adicione 'gutormin.github.io' em Firebase Console > Authentication > Settings > Authorized domains.";
+                    } else if (err.code === "auth/network-request-failed") {
+                        friendlyMsg = "Erro ao conectar ao servidor. Verifique sua conexão com a internet ou bloqueio de firewall.";
+                    } else if (err.code === "auth/too-many-requests") {
+                        friendlyMsg = "Muitas tentativas. Aguarde um momento e tente novamente.";
                     }
                     alert("Erro no login: " + friendlyMsg);
-                    addLog("Erro no login: " + err.message, true);
+                    addLog("Erro no login [" + (err.code || 'sem-codigo') + "]: " + err.message, true);
                     btn.innerText = "Entrar no Sistema";
                     btn.disabled = false;
                 }
@@ -4331,15 +4424,60 @@
                 { key: 'traslado',       label: 'Traslado',                 isDefault: true  },
                 { key: 'diligencia',     label: 'Diligência',               isDefault: true  },
                 { key: 'comunicacao',    label: 'Comunicação',              isDefault: true  },
+                { key: 'apensamento',    label: 'Apensamento',              isDefault: true  },
             ];
 
             // state.actionTypes será carregado do Firestore (coleção "actionTypes")
             // Se não existir, usa os defaults
             function getActiveActionTypes() {
+                let types = [];
                 if (state.actionTypes && state.actionTypes.length > 0) {
-                    return state.actionTypes.filter(t => t.active !== false);
+                    types = state.actionTypes.filter(t => t.active !== false);
+                } else {
+                    types = DEFAULT_ACTION_TYPES;
                 }
-                return DEFAULT_ACTION_TYPES;
+
+                const uniqueTypes = [];
+                const seenLabels = new Set();
+                let hasApensamento = types.some(t => t.label === 'Apensamento' || t.key === 'apensamento');
+                let trasladoCount = 0;
+
+                types.forEach(t => {
+                    // Trata a duplicata de Traslado como Apensamento caso ele não exista no banco
+                    if (t.label === 'Traslado') {
+                        trasladoCount++;
+                        if (trasladoCount > 1 && !hasApensamento) {
+                            uniqueTypes.push({
+                                id: t.id || 'apensamento_virtual',
+                                key: 'apensamento',
+                                label: 'Apensamento',
+                                isDefault: true,
+                                active: true
+                            });
+                            seenLabels.add('Apensamento');
+                            hasApensamento = true;
+                            return;
+                        }
+                    }
+
+                    if (!seenLabels.has(t.label)) {
+                        seenLabels.add(t.label);
+                        uniqueTypes.push(t);
+                    }
+                });
+
+                // Garante que o Apensamento esteja sempre na lista
+                if (!seenLabels.has('Apensamento')) {
+                    uniqueTypes.push({
+                        id: 'apensamento_default',
+                        key: 'apensamento',
+                        label: 'Apensamento',
+                        isDefault: true,
+                        active: true
+                    });
+                }
+
+                return uniqueTypes;
             }
 
             function populateActionTypeSelect() {
