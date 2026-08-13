@@ -2130,9 +2130,11 @@
                                         let hasChanges = false;
                                         const batch = db.batch();
                                         
-                                        const traslados = state.actionTypes.filter(t => t.label === 'Traslado');
-                                        const comunicacoes = state.actionTypes.filter(t => t.label === 'Comunicação');
-                                        const hasApensamento = state.actionTypes.some(t => t.label === 'Apensamento' || t.key === 'apensamento');
+                                        const normalize = (s) => (s || '').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+                                        
+                                        const traslados = state.actionTypes.filter(t => normalize(t.label) === 'traslado');
+                                        const comunicacoes = state.actionTypes.filter(t => normalize(t.label) === 'comunicacao');
+                                        const hasApensamento = state.actionTypes.some(t => normalize(t.label) === 'apensamento' || normalize(t.key) === 'apensamento');
 
                                         // Se temos duplicados de Traslado e não temos Apensamento, renomeia um para Apensamento
                                         if (traslados.length > 1 && !hasApensamento) {
