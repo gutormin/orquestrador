@@ -2017,6 +2017,17 @@
             firebase.initializeApp(firebaseConfig);
             const db = firebase.firestore();
             const auth = firebase.auth();
+            
+            // Habilita persistência de dados offline para ECONOMIZAR LEITURAS (CACHE LOCAL)
+            db.enablePersistence()
+                .catch((err) => {
+                    if (err.code == 'failed-precondition') {
+                        console.warn('Persistência: Múltiplas abas abertas.');
+                    } else if (err.code == 'unimplemented') {
+                        console.warn('Persistência não suportada pelo navegador.');
+                    }
+                });
+                
             auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
                 .catch(err => console.error("Erro ao definir persistência do Auth:", err));
             addLog("Firebase Inicializado!");
