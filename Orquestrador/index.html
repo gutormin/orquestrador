@@ -4428,10 +4428,54 @@
             // state.actionTypes será carregado do Firestore (coleção "actionTypes")
             // Se não existir, usa os defaults
             function getActiveActionTypes() {
+                let types = [];
                 if (state.actionTypes && state.actionTypes.length > 0) {
-                    return state.actionTypes.filter(t => t.active !== false);
+                    types = state.actionTypes.filter(t => t.active !== false);
+                } else {
+                    types = DEFAULT_ACTION_TYPES;
                 }
-                return DEFAULT_ACTION_TYPES;
+
+                const uniqueTypes = [];
+                const seenLabels = new Set();
+                let hasApensamento = types.some(t => t.label === 'Apensamento' || t.key === 'apensamento');
+                let trasladoCount = 0;
+
+                types.forEach(t => {
+                    // Trata a duplicata de Traslado como Apensamento caso ele não exista no banco
+                    if (t.label === 'Traslado') {
+                        trasladoCount++;
+                        if (trasladoCount > 1 && !hasApensamento) {
+                            uniqueTypes.push({
+                                id: t.id || 'apensamento_virtual',
+                                key: 'apensamento',
+                                label: 'Apensamento',
+                                isDefault: true,
+                                active: true
+                            });
+                            seenLabels.add('Apensamento');
+                            hasApensamento = true;
+                            return;
+                        }
+                    }
+
+                    if (!seenLabels.has(t.label)) {
+                        seenLabels.add(t.label);
+                        uniqueTypes.push(t);
+                    }
+                });
+
+                // Garante que o Apensamento esteja sempre na lista
+                if (!seenLabels.has('Apensamento')) {
+                    uniqueTypes.push({
+                        id: 'apensamento_default',
+                        key: 'apensamento',
+                        label: 'Apensamento',
+                        isDefault: true,
+                        active: true
+                    });
+                }
+
+                return uniqueTypes;
             }
 
             function populateActionTypeSelect() {
