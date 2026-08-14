@@ -957,14 +957,19 @@
                 <!-- RELATÓRIOS -->
                 <section id="page-reports" class="page-content hidden">
 
-                    <!-- ABAS DE NAVEGAÇÃO -->
-                    <div class="flex flex-wrap gap-1 mb-5 p-1 bg-slate-100 rounded-xl w-fit">
-                        <button onclick="switchReportTab('executive')" id="tab-executive" title="Visão Executiva" class="report-tab-btn active px-4 py-2 rounded-lg font-bold text-sm transition-all flex items-center gap-2"><i data-lucide="layout-dashboard" class="w-4 h-4"></i><span class="hidden sm:inline">Visão Executiva</span><span class="sm:hidden">Executiva</span></button>
-                        <button onclick="switchReportTab('ranking')" id="tab-ranking" title="Ranking de Produtividade" class="report-tab-btn px-4 py-2 rounded-lg font-bold text-sm transition-all flex items-center gap-2"><i data-lucide="bar-chart-horizontal" class="w-4 h-4"></i><span class="hidden sm:inline">Ranking</span></button>
-                        <button onclick="switchReportTab('evolution')" id="tab-evolution" title="Evolução Temporal" class="report-tab-btn px-4 py-2 rounded-lg font-bold text-sm transition-all flex items-center gap-2"><i data-lucide="trending-up" class="w-4 h-4"></i><span class="hidden sm:inline">Evolução</span></button>
-                        <button onclick="switchReportTab('shift')" id="tab-shift" title="Distribuição por Turno" class="report-tab-btn px-4 py-2 rounded-lg font-bold text-sm transition-all flex items-center gap-2"><i data-lucide="layers" class="w-4 h-4"></i><span class="hidden sm:inline">Por Turno</span></button>
-                        <button onclick="switchReportTab('backup')" id="tab-backup" title="Exportação de Relatórios" class="report-tab-btn px-4 py-2 rounded-lg font-bold text-sm transition-all flex items-center gap-2"><i data-lucide="download" class="w-4 h-4"></i><span class="hidden sm:inline">Exportar Relatórios</span><span class="sm:hidden">Exportar</span></button>
-                        <button onclick="switchReportTab('diretoria')" id="tab-diretoria" title="Relatório Gerencial" class="report-tab-btn px-4 py-2 rounded-lg font-bold text-sm transition-all flex items-center gap-2" style="background:linear-gradient(135deg,#7c3aed,#4f46e5);color:white;"><i data-lucide="presentation" class="w-4 h-4"></i><span class="hidden sm:inline">Gerencial</span><span class="sm:hidden">Ger.</span></button>
+                    <!-- ABAS DE NAVEGAÇÃO E AÇÕES -->
+                    <div class="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-3 mb-5">
+                        <div class="flex flex-wrap gap-1 p-1 bg-slate-100 rounded-xl w-fit">
+                            <button onclick="switchReportTab('executive')" id="tab-executive" title="Visão Executiva" class="report-tab-btn active px-4 py-2 rounded-lg font-bold text-sm transition-all flex items-center gap-2"><i data-lucide="layout-dashboard" class="w-4 h-4"></i><span class="hidden sm:inline">Visão Executiva</span><span class="sm:hidden">Executiva</span></button>
+                            <button onclick="switchReportTab('ranking')" id="tab-ranking" title="Ranking de Produtividade" class="report-tab-btn px-4 py-2 rounded-lg font-bold text-sm transition-all flex items-center gap-2"><i data-lucide="bar-chart-horizontal" class="w-4 h-4"></i><span class="hidden sm:inline">Ranking</span></button>
+                            <button onclick="switchReportTab('evolution')" id="tab-evolution" title="Evolução Temporal" class="report-tab-btn px-4 py-2 rounded-lg font-bold text-sm transition-all flex items-center gap-2"><i data-lucide="trending-up" class="w-4 h-4"></i><span class="hidden sm:inline">Evolução</span></button>
+                            <button onclick="switchReportTab('shift')" id="tab-shift" title="Distribuição por Turno" class="report-tab-btn px-4 py-2 rounded-lg font-bold text-sm transition-all flex items-center gap-2"><i data-lucide="layers" class="w-4 h-4"></i><span class="hidden sm:inline">Por Turno</span></button>
+                            <button onclick="switchReportTab('backup')" id="tab-backup" title="Exportação de Relatórios" class="report-tab-btn px-4 py-2 rounded-lg font-bold text-sm transition-all flex items-center gap-2"><i data-lucide="download" class="w-4 h-4"></i><span class="hidden sm:inline">Exportar Relatórios</span><span class="sm:hidden">Exportar</span></button>
+                            <button onclick="switchReportTab('diretoria')" id="tab-diretoria" title="Relatório Gerencial" class="report-tab-btn px-4 py-2 rounded-lg font-bold text-sm transition-all flex items-center gap-2" style="background:linear-gradient(135deg,#7c3aed,#4f46e5);color:white;"><i data-lucide="presentation" class="w-4 h-4"></i><span class="hidden sm:inline">Gerencial</span><span class="sm:hidden">Ger.</span></button>
+                        </div>
+                        <button id="btn-load-history" onclick="loadFullHistory()" class="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-xl font-bold text-sm transition-all flex items-center gap-2 shadow-sm whitespace-nowrap" title="Ignorar o limite de 60 dias e baixar todo o banco para gerar relatórios antigos">
+                            <i data-lucide="database" class="w-4 h-4"></i> Carregar Histórico Completo
+                        </button>
                     </div>
 
                     <!-- ══════════════════════════════════════════
@@ -1496,8 +1501,11 @@
                                 <div class="border border-slate-800 p-4 rounded-xl space-y-3 bg-slate-950/40">
                                     <h5 class="text-sm font-bold text-slate-200 flex items-center gap-1.5"><i data-lucide="download" class="w-4 h-4 text-indigo-400"></i> 1. Criar Cópia de Segurança</h5>
                                     <p class="text-xs text-slate-400 leading-relaxed">Baixa um arquivo .json completo contendo usuários, servidores, processos, ações, prazos, tipos de ação e auditoria.</p>
-                                    <button onclick="exportJSONBackup()" class="w-full py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-bold text-xs transition-all flex items-center justify-center gap-2 shadow-md">
+                                    <button onclick="exportJSONBackup()" class="w-full py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-bold text-xs transition-all flex items-center justify-center gap-2 shadow-md mb-2">
                                         <i data-lucide="download" class="w-3.5 h-3.5"></i> Baixar Cópia (.json)
+                                    </button>
+                                    <button onclick="runIsoDateMigration()" class="w-full py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-lg font-bold text-xs transition-all flex items-center justify-center gap-2 shadow-md">
+                                        <i data-lucide="database" class="w-3.5 h-3.5"></i> Migrar Banco (isoDate)
                                     </button>
                                 </div>
                                 <div class="border border-slate-800 p-4 rounded-xl space-y-3 bg-slate-950/40">
@@ -2019,10 +2027,10 @@
             const auth = firebase.auth();
             
             // Habilita persistência de dados offline para ECONOMIZAR LEITURAS (CACHE LOCAL)
-            db.enablePersistence()
+            db.enablePersistence({ synchronizeTabs: true })
                 .catch((err) => {
                     if (err.code == 'failed-precondition') {
-                        console.warn('Persistência: Múltiplas abas abertas.');
+                        console.warn('Persistência: Múltiplas abas abertas e synchronizeTabs falhou.');
                     } else if (err.code == 'unimplemented') {
                         console.warn('Persistência não suportada pelo navegador.');
                     }
@@ -2102,14 +2110,26 @@
                     }, (err) => addLog("Erro em 'servants': " + err.message, true));
                     activeListeners.push(u2);
 
-                    const u3 = db.collection("processes").onSnapshot((snapshot) => {
+                    const sd = new Date();
+                    sd.setDate(sd.getDate() - 60);
+                    const limitDateStr = `${sd.getFullYear()}-${String(sd.getMonth() + 1).padStart(2, '0')}-${String(sd.getDate()).padStart(2, '0')}`;
+
+                    let procQuery = db.collection("processes");
+                    let actQuery = db.collection("actions");
+
+                    if (!window.fullHistoryEnabled) {
+                        procQuery = procQuery.where("isoDate", ">=", limitDateStr);
+                        actQuery = actQuery.where("isoDate", ">=", limitDateStr);
+                    }
+
+                    const u3 = procQuery.onSnapshot((snapshot) => {
                         state.processes = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                         renderProcesses();
                         renderDashboard();
                     }, (err) => addLog("Erro em 'processes': " + err.message, true));
                     activeListeners.push(u3);
 
-                    const u4 = db.collection("actions").onSnapshot((snapshot) => {
+                    const u4 = actQuery.onSnapshot((snapshot) => {
                         state.actions = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                         renderActions();
                         renderDashboard();
@@ -3638,6 +3658,88 @@
             }
 
             // ── EXPORTAÇÃO E IMPORTAÇÃO JSON DE BACKUP (APENAS ADMIN) ──
+            window.loadFullHistory = async function() {
+                if (!confirm("Isso fará o download de todo o histórico do banco de dados (ignorando o limite de 60 dias) e consumirá mais leitura do Firebase. Deseja continuar?")) return;
+                
+                const btn = document.getElementById('btn-load-history');
+                const origHtml = btn ? btn.innerHTML : '';
+                if (btn) btn.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Carregando...';
+
+                window.fullHistoryEnabled = true;
+                clearRealtimeListeners();
+                await setupRealtimeListeners();
+                
+                if (btn) btn.innerHTML = '<i data-lucide="database" class="w-4 h-4"></i> Histórico Completo Carregado';
+                if (btn) btn.disabled = true;
+                if (btn) btn.classList.add('opacity-50', 'cursor-not-allowed');
+                lucide.createIcons();
+                alert('Histórico completo carregado com sucesso!');
+            };
+
+            window.runIsoDateMigration = async function() {
+                if (!currentUser || currentUser.role !== 'Admin') return alert('Apenas Admins.');
+                if (!confirm('Isto irá adicionar o campo isoDate a todas as ações e processos para otimizar as leituras do banco. Deseja continuar? (Pode levar alguns minutos)')) return;
+                try {
+                    const btn = document.querySelector('button[onclick="runIsoDateMigration()"]');
+                    const origHtml = btn ? btn.innerHTML : '';
+                    if (btn) btn.innerHTML = '<i data-lucide="loader-2" class="w-3.5 h-3.5 animate-spin"></i> Migrando...';
+                    
+                    addLog('Iniciando migração de isoDate em actions...');
+                    let actionsSnap = await db.collection('actions').get();
+                    let batch = db.batch();
+                    let count = 0;
+                    for (let doc of actionsSnap.docs) {
+                        const data = doc.data();
+                        if (!data.isoDate && data.date) {
+                            let isoDate = data.date;
+                            if (data.date.includes('/')) {
+                                const parts = data.date.split('/');
+                                if (parts.length === 3) isoDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
+                            }
+                            batch.update(doc.ref, { isoDate });
+                            count++;
+                            if (count % 400 === 0) {
+                                await batch.commit();
+                                batch = db.batch();
+                                addLog(`Migradas ${count} actions...`);
+                            }
+                        }
+                    }
+                    if (count % 400 !== 0) await batch.commit();
+                    addLog(`Migração de actions concluída. Total: ${count}`);
+
+                    addLog('Iniciando migração de isoDate em processes...');
+                    let procsSnap = await db.collection('processes').get();
+                    batch = db.batch();
+                    count = 0;
+                    for (let doc of procsSnap.docs) {
+                        const data = doc.data();
+                        if (!data.isoDate && data.deadline) {
+                            let isoDate = data.deadline;
+                            if (data.deadline.includes('/')) {
+                                const parts = data.deadline.split('/');
+                                if (parts.length === 3) isoDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
+                            }
+                            batch.update(doc.ref, { isoDate });
+                            count++;
+                            if (count % 400 === 0) {
+                                await batch.commit();
+                                batch = db.batch();
+                            }
+                        }
+                    }
+                    if (count % 400 !== 0) await batch.commit();
+                    addLog(`Migração de processes concluída. Total: ${count}`);
+                    
+                    if (btn) btn.innerHTML = origHtml;
+                    lucide.createIcons();
+                    alert('Migração de banco concluída com sucesso!');
+                } catch (e) {
+                    addLog('Erro na migração: ' + e.message, true);
+                    alert('Erro na migração. Verifique os logs.');
+                }
+            };
+
             window.exportJSONBackup = async function() {
                 if (!currentUser || currentUser.role !== 'Admin') {
                     alert('Acesso negado. Apenas administradores podem fazer backup do banco de dados.');
@@ -4202,7 +4304,8 @@
                             deadline: deadlineVal,
                             priority: getVal('priority'),
                             servantId: servantIdVal,
-                            obs: getVal('obs')
+                            obs: getVal('obs'),
+                            isoDate: actionDateStr
                         };
                         // Adiciona todos os campos qty_ dinamicamente
                         Object.assign(updateData, newQtys);
@@ -4224,6 +4327,7 @@
                                     servantId: servantIdVal,
                                     type: actionTypes[key],
                                     date: actionDateStr,
+                                    isoDate: actionDateStr,
                                     status: 'Concluído',
                                     obs: 'Recriada via Edição de Processo'
                                 });
@@ -4235,12 +4339,13 @@
                         // ===== MODO CRIAÇÃO =====
                         proc.createdAt = firebase.firestore.FieldValue.serverTimestamp();
                         proc.createdBy = currentUser ? currentUser.name : 'Sistema';
-                        const procRef = await db.collection("processes").add(proc);
                         const actionDateStr = proc.deadline || DateEngine.getToday();
+                        proc.isoDate = actionDateStr;
+                        const procRef = await db.collection("processes").add(proc);
                         for (let key in actionTypes) {
                             const qty = parseInt(proc[key] || 0);
                             for (let i = 0; i < qty; i++) {
-                                await db.collection("actions").add({ processId: procRef.id, servantId: proc.servantId, type: actionTypes[key], date: actionDateStr, status: 'Concluído', obs: 'Registrada via Cadastro de Processo' });
+                                await db.collection("actions").add({ processId: procRef.id, servantId: proc.servantId, type: actionTypes[key], date: actionDateStr, isoDate: actionDateStr, status: 'Concluído', obs: 'Registrada via Cadastro de Processo' });
                             }
                         }
                         logAction('Processo Criado', `Processo ${proc.number} criado com ações registradas`);
