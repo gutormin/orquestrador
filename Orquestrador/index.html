@@ -2111,8 +2111,11 @@
                     activeListeners.push(u2);
 
                     const sd = new Date();
-                    sd.setDate(sd.getDate() - 60);
-                    const limitDateStr = `${sd.getFullYear()}-${String(sd.getMonth() + 1).padStart(2, '0')}-${String(sd.getDate()).padStart(2, '0')}`;
+                    // Fixa a data no 1º dia do mês anterior para que a string da query 
+                    // não mude diariamente. Isso é fundamental para que o cache offline do Firestore
+                    // (synchronizeTabs) funcione e evite o re-download completo todos os dias.
+                    sd.setMonth(sd.getMonth() - 1);
+                    const limitDateStr = `${sd.getFullYear()}-${String(sd.getMonth() + 1).padStart(2, '0')}-01`;
 
                     let procQuery = db.collection("processes");
                     let actQuery = db.collection("actions");
