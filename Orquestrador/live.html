@@ -2003,6 +2003,20 @@
             firebase.initializeApp(firebaseConfig);
             const db = firebase.firestore();
             const auth = firebase.auth();
+
+            // Habilita persistência offline para ECONOMIZAR LEITURAS (CACHE LOCAL)
+            // Mesmo comportamento do Orquestrador/index.html
+            db.enablePersistence({ synchronizeTabs: true })
+                .catch((err) => {
+                    if (err.code == 'failed-precondition') {
+                        console.warn('Persistência: Múltiplas abas abertas e synchronizeTabs falhou.');
+                    } else if (err.code == 'unimplemented') {
+                        console.warn('Persistência não suportada pelo navegador.');
+                    }
+                });
+
+            auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+                .catch(err => console.error("Erro ao definir persistência do Auth:", err));
             addLog("Firebase Inicializado!");
 
             let state = { users: [], servants: [], processes: [], actions: [], audit: [], deadlines: [], actionTypes: [] };
@@ -2075,14 +2089,30 @@
                     }, (err) => addLog("Erro em 'servants': " + err.message, true));
                     activeListeners.push(u2);
 
-                    const u3 = db.collection("processes").onSnapshot((snapshot) => {
+                    // Janela de ~60 dias, arredondada para o 1º ou 15º do mês de 60 dias atrás.
+                    // O arredondamento mantém a string da query estável por ~15 dias, o que permite
+                    // o cache offline (resume token) reutilizar o download em vez de re-baixar tudo.
+                    const sd = new Date();
+                    sd.setDate(sd.getDate() - 60);
+                    if (sd.getDate() > 15) sd.setDate(15); else sd.setDate(1);
+                    const limitDateStr = `${sd.getFullYear()}-${String(sd.getMonth() + 1).padStart(2, '0')}-${String(sd.getDate()).padStart(2, '0')}`;
+
+                    let procQuery = db.collection("processes");
+                    let actQuery = db.collection("actions");
+
+                    if (!window.fullHistoryEnabled) {
+                        procQuery = procQuery.where("isoDate", ">=", limitDateStr);
+                        actQuery = actQuery.where("isoDate", ">=", limitDateStr);
+                    }
+
+                    const u3 = procQuery.onSnapshot((snapshot) => {
                         state.processes = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                         renderProcesses();
                         renderDashboard();
                     }, (err) => addLog("Erro em 'processes': " + err.message, true));
                     activeListeners.push(u3);
 
-                    const u4 = db.collection("actions").onSnapshot((snapshot) => {
+                    const u4 = actQuery.onSnapshot((snapshot) => {
                         state.actions = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                         renderActions();
                         renderDashboard();

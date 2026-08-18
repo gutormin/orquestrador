@@ -2110,12 +2110,13 @@
                     }, (err) => addLog("Erro em 'servants': " + err.message, true));
                     activeListeners.push(u2);
 
+                    // Janela de ~60 dias, arredondada para o 1º ou 15º do mês de 60 dias atrás.
+                    // O arredondamento mantém a string da query estável por ~15 dias, o que permite
+                    // o cache offline (resume token) reutilizar o download em vez de re-baixar tudo.
                     const sd = new Date();
-                    // Fixa a data no 1º dia do mês anterior para que a string da query 
-                    // não mude diariamente. Isso é fundamental para que o cache offline do Firestore
-                    // (synchronizeTabs) funcione e evite o re-download completo todos os dias.
-                    sd.setMonth(sd.getMonth() - 1);
-                    const limitDateStr = `${sd.getFullYear()}-${String(sd.getMonth() + 1).padStart(2, '0')}-01`;
+                    sd.setDate(sd.getDate() - 60);
+                    if (sd.getDate() > 15) sd.setDate(15); else sd.setDate(1);
+                    const limitDateStr = `${sd.getFullYear()}-${String(sd.getMonth() + 1).padStart(2, '0')}-${String(sd.getDate()).padStart(2, '0')}`;
 
                     let procQuery = db.collection("processes");
                     let actQuery = db.collection("actions");
@@ -2393,6 +2394,13 @@
                 if(pageId === 'users') renderUsers();
                 if(pageId === 'actiontypes') renderActionTypesPage();
                 if(pageId === 'backup-audit') renderAudit();
+                if(pageId === 'reports') {
+                    // Botão "Histórico Completo" só para admin (gera leituras pesadas)
+                    const btnHistory = document.getElementById('btn-load-history');
+                    if (btnHistory) {
+                        btnHistory.classList.toggle('hidden', !currentUser || currentUser.role !== 'Admin');
+                    }
+                }
             }
 
             // Ouvinte para navegação por botões Avançar/Voltar do navegador
@@ -3661,22 +3669,64 @@
             }
 
             // ── EXPORTAÇÃO E IMPORTAÇÃO JSON DE BACKUP (APENAS ADMIN) ──
-            window.loadFullHistory = async function() {
-                if (!confirm("Isso fará o download de todo o histórico do banco de dados (ignorando o limite de 60 dias) e consumirá mais leitura do Firebase. Deseja continuar?")) return;
-                
+
+            // Modo manual: o admin liga o histórico completo quando precisar
+            // gerar relatórios antigos, e desliga quando terminar, para economizar leituras.
+            function updateFullHistoryButton() {
+                const btn = document.getElementById('btn-load-history');
+                if (!btn) return;
+                if (window.fullHistoryEnabled) {
+                    btn.innerHTML = '<i data-lucide="database" class="w-4 h-4"></i> Histórico Completo ATIVO — desligar';
+                    btn.disabled = false;
+                    btn.classList.remove('bg-amber-500', 'hover:bg-amber-600', 'opacity-50', 'cursor-not-allowed');
+                    btn.classList.add('bg-rose-500', 'hover:bg-rose-600');
+                    btn.title = 'Histórico completo ativo (todo o banco carregado). Clique para voltar ao modo filtrado e economizar leituras.';
+                } else {
+                    btn.innerHTML = '<i data-lucide="database" class="w-4 h-4"></i> Carregar Histórico Completo';
+                    btn.disabled = false;
+                    btn.classList.remove('bg-rose-500', 'hover:bg-rose-600', 'opacity-50', 'cursor-not-allowed');
+                    btn.classList.add('bg-amber-500', 'hover:bg-amber-600');
+                    btn.title = 'Ignorar o limite de 60 dias e baixar todo o banco para gerar relatórios antigos';
+                }
+                if (window.lucide && lucide.createIcons) lucide.createIcons();
+            }
+
+            window.toggleFullHistory = async function() {
+                if (!currentUser || currentUser.role !== 'Admin') return alert('Apenas Admins.');
+
                 const btn = document.getElementById('btn-load-history');
                 const origHtml = btn ? btn.innerHTML : '';
-                if (btn) btn.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Carregando...';
-
-                window.fullHistoryEnabled = true;
-                clearRealtimeListeners();
-                await setupRealtimeListeners();
-                
-                if (btn) btn.innerHTML = '<i data-lucide="database" class="w-4 h-4"></i> Histórico Completo Carregado';
+                if (btn) btn.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Aguarde...';
                 if (btn) btn.disabled = true;
-                if (btn) btn.classList.add('opacity-50', 'cursor-not-allowed');
-                lucide.createIcons();
-                alert('Histórico completo carregado com sucesso!');
+
+                try {
+                    if (!window.fullHistoryEnabled) {
+                        // ── LIGAR: baixa o histórico completo ──
+                        window.fullHistoryEnabled = true;
+                        clearRealtimeListeners();
+                        await setupRealtimeListeners();
+                        if (btn) { btn.disabled = false; }
+                        updateFullHistoryButton();
+                        addLog("Histórico completo ativado. O app está carregando todo o banco. Use 'Desativar' para voltar ao modo filtrado.");
+                    } else {
+                        // ── DESLIGAR: volta ao modo filtrado (~60 dias) ──
+                        window.fullHistoryEnabled = false;
+                        clearRealtimeListeners();
+                        await setupRealtimeListeners();
+                        if (btn) { btn.disabled = false; }
+                        updateFullHistoryButton();
+                        addLog("Histórico completo desativado. Voltando ao modo filtrado (~60 dias).");
+                    }
+                } catch (e) {
+                    addLog("Erro ao alternar histórico completo: " + e.message, true);
+                    if (btn) { btn.disabled = false; }
+                    if (btn) btn.innerHTML = origHtml;
+                }
+            };
+
+            window.loadFullHistory = function() {
+                if (!currentUser || currentUser.role !== 'Admin') return alert('Apenas Admins.');
+                toggleFullHistory();
             };
 
             window.runIsoDateMigration = async function() {
