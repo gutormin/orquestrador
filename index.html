@@ -2828,12 +2828,26 @@
                 const rankingBody = document.getElementById('ranking-body');
                 const servantMonthlyStats = filteredServants.map(s => {
                     const sActionsMonth = state.actions.filter(a => s.id == a.servantId && DateEngine.normalize(a.date).startsWith(monthStr));
-                    const sProcsMonth = state.processes.filter(p => p.servantId == s.id && DateEngine.normalize(p.deadline).startsWith(monthStr)).length;
+                    const sProcsMonth = state.processes.filter(p => p.servantId == s.id && DateEngine.normalize(p.deadline).startsWith(monthStr));
                     const allTypes = getActiveActionTypes();
                     const typeCounts = {};
-                    allTypes.forEach(t => { typeCounts[t.key] = sActionsMonth.filter(a => a.type === t.label).length; });
+                    
+                    allTypes.forEach(t => {
+                        let countFromActions = sActionsMonth.filter(a => a.type === t.label).length;
+                        // Para processos desse mês do servidor que não possuem ações registradas na coleção 'actions'
+                        let countFromProcesses = 0;
+                        sProcsMonth.forEach(p => {
+                            const pActions = state.actions.filter(a => a.processId === p.id);
+                            if (pActions.length === 0) {
+                                countFromProcesses += parseInt(p[`qty_${t.key}`] || 0);
+                            }
+                        });
+                        typeCounts[t.key] = countFromActions + countFromProcesses;
+                    });
+                    
+                    const totalMonthActions = Object.values(typeCounts).reduce((sum, v) => sum + v, 0);
                     const fc = k => { const t = allTypes.find(t=>t.key===k); return t ? (typeCounts[k]||0) : 0; };
-                    return { ...s, processosDistribuidos: sProcsMonth, total: sActionsMonth.length,
+                    return { ...s, processosDistribuidos: sProcsMonth.length, total: totalMonthActions,
                         oficio: fc('oficio'), circular: fc('oficio_circular'), convite: fc('oficio_convite'),
                         email: fc('email'), traslado: fc('traslado'), diligencia: fc('diligencia'), comunicacao: fc('comunicacao'),
                         _extraTypes: allTypes.filter(t => !['oficio','oficio_circular','oficio_convite','email','traslado','diligencia','comunicacao'].includes(t.key))
@@ -2851,12 +2865,25 @@
                 updateRankingDayLabel();
                 const servantTodayStats = filteredServants.map(s => {
                     const sActionsToday = state.actions.filter(a => s.id == a.servantId && DateEngine.normalize(a.date) === rankingDateStr);
-                    const sProcsToday = state.processes.filter(p => p.servantId == s.id && DateEngine.normalize(p.deadline) === rankingDateStr).length;
+                    const sProcsToday = state.processes.filter(p => p.servantId == s.id && DateEngine.normalize(p.deadline) === rankingDateStr);
                     const allTypesD = getActiveActionTypes();
                     const typeCountsD = {};
-                    allTypesD.forEach(t => { typeCountsD[t.key] = sActionsToday.filter(a => a.type === t.label).length; });
+
+                    allTypesD.forEach(t => {
+                        let countFromActions = sActionsToday.filter(a => a.type === t.label).length;
+                        let countFromProcesses = 0;
+                        sProcsToday.forEach(p => {
+                            const pActions = state.actions.filter(a => a.processId === p.id);
+                            if (pActions.length === 0) {
+                                countFromProcesses += parseInt(p[`qty_${t.key}`] || 0);
+                            }
+                        });
+                        typeCountsD[t.key] = countFromActions + countFromProcesses;
+                    });
+
+                    const totalTodayActions = Object.values(typeCountsD).reduce((sum, v) => sum + v, 0);
                     const fcD = k => { const t = allTypesD.find(t=>t.key===k); return t ? (typeCountsD[k]||0) : 0; };
-                    return { ...s, processosDistribuidos: sProcsToday, total: sActionsToday.length,
+                    return { ...s, processosDistribuidos: sProcsToday.length, total: totalTodayActions,
                         oficio: fcD('oficio'), circular: fcD('oficio_circular'), convite: fcD('oficio_convite'),
                         email: fcD('email'), traslado: fcD('traslado'), diligencia: fcD('diligencia'), comunicacao: fcD('comunicacao'),
                         _extraTypes: allTypesD.filter(t => !['oficio','oficio_circular','oficio_convite','email','traslado','diligencia','comunicacao'].includes(t.key))
