@@ -2969,12 +2969,24 @@
 
                     const monthStr = DateEngine.getMonth();
                     const activeTypes = getActiveActionTypes();
-                    const actionTypes = activeTypes.map(t => t.label);
                     const piePalette = ['#4f46e5','#10b981','#f97316','#f59e0b','#ec4899','#8b5cf6','#64748b','#06b6d4','#ef4444','#84cc16'];
-                    const colorsFixed = actionTypes.map((_,i) => piePalette[i % piePalette.length]);
+                    const colorsFixed = activeTypes.map((_,i) => piePalette[i % piePalette.length]);
                     const servantLabels = filteredServants.map(s => s.name);
-                    const datasets = actionTypes.map((type, idx) => {
-                        return { label: type, data: filteredServants.map(s => state.actions.filter(a => a.servantId == s.id && a.type === type && DateEngine.normalize(a.date).startsWith(monthStr)).length), backgroundColor: colorsFixed[idx] };
+                    const datasets = activeTypes.map((t, idx) => {
+                        const servantCounts = filteredServants.map(s => {
+                            const sActionsMonth = state.actions.filter(a => s.id == a.servantId && a.type === t.label && DateEngine.normalize(a.date).startsWith(monthStr));
+                            const sProcsMonth = state.processes.filter(p => p.servantId == s.id && DateEngine.normalize(p.deadline).startsWith(monthStr));
+                            let countFromActions = sActionsMonth.length;
+                            let countFromProcesses = 0;
+                            sProcsMonth.forEach(p => {
+                                const pActions = state.actions.filter(a => a.processId === p.id);
+                                if (pActions.length === 0) {
+                                    countFromProcesses += parseInt(p[`qty_${t.key}`] || 0);
+                                }
+                            });
+                            return countFromActions + countFromProcesses;
+                        });
+                        return { label: t.label, data: servantCounts, backgroundColor: colorsFixed[idx] };
                     });
                     window.myChartDist = new Chart(ctxDist, { type: 'bar', data: { labels: servantLabels, datasets: datasets }, options: { responsive: true, maintainAspectRatio: false, scales: { x: { stacked: false }, y: { stacked: false, beginAtZero: true, ticks: { stepSize: 1 } } }, plugins: { legend: { position: 'bottom' } } } });
 
@@ -3211,7 +3223,7 @@
                 const start = document.getElementById(`${prefix}-start`).value;
                 const end = document.getElementById(`${prefix}-end`).value;
                 if (!start || !end) return null;
-                const acts = state.actions.filter(a => a.status === 'Concluído' && DateEngine.normalize(a.date) >= start && DateEngine.normalize(a.date) <= end);
+                const acts = state.actions.filter(a => DateEngine.normalize(a.date) >= start && DateEngine.normalize(a.date) <= end);
                 const procs = state.processes.filter(p => { const d = DateEngine.normalize(p.deadline); return d >= start && d <= end; });
 
                 // Todos os tipos ativos do Firestore — sem nenhuma string hardcoded
@@ -3219,13 +3231,23 @@
 
                 const data = state.servants.map(s => {
                     const sa = acts.filter(a => a.servantId == s.id);
-                    const sp = procs.filter(p => p.servantId == s.id).length;
+                    const sp = procs.filter(p => p.servantId == s.id);
 
                     // Conta cada tipo dinamicamente pelo label do Firestore
                     const typeCounts = {};
                     allActiveTypes.forEach(t => {
-                        typeCounts[t.key] = sa.filter(a => a.type === t.label).length;
+                        let countFromActions = sa.filter(a => a.type === t.label).length;
+                        let countFromProcesses = 0;
+                        sp.forEach(p => {
+                            const pActions = state.actions.filter(a => a.processId === p.id);
+                            if (pActions.length === 0) {
+                                countFromProcesses += parseInt(p[`qty_${t.key}`] || 0);
+                            }
+                        });
+                        typeCounts[t.key] = countFromActions + countFromProcesses;
                     });
+
+                    const servantTotalActions = Object.values(typeCounts).reduce((sum, v) => sum + v, 0);
 
                     // Mantém os aliases das chaves padrão para compatibilidade com o restante do código
                     const findCount = (...possibleKeys) => {
@@ -3238,7 +3260,7 @@
 
                     return {
                         id: s.id, name: s.name, shift: s.shift || 'Não definido',
-                        processesReceived: sp, totalActions: sa.length,
+                        processesReceived: sp.length, totalActions: servantTotalActions,
                         oficio:      findCount('oficio'),
                         circular:    findCount('oficio_circular'),
                         convite:     findCount('oficio_convite'),
