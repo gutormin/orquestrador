@@ -602,12 +602,21 @@
                 <a href="javascript:void(0)" id="nav-backup-audit" onclick="showPage('backup-audit')" class="nav-link hidden" data-page="backup-audit"><i data-lucide="shield-check" class="w-5 h-5"></i> <span>Backup & Auditoria</span></a>
             </nav>
             <div class="p-4 border-t border-slate-800">
-                <button onclick="toggleDarkMode()" class="flex items-center gap-3 w-full p-3 rounded-lg hover:bg-slate-800 transition-all mb-4"><i data-lucide="moon" class="w-5 h-5"></i> <span>Modo Escuro</span></button>
+                <button onclick="toggleDarkMode()" class="flex items-center gap-3 w-full p-3 rounded-lg hover:bg-slate-800 transition-all mb-2"><i data-lucide="moon" class="w-5 h-5"></i> <span>Modo Escuro</span></button>
+                <button id="btn-refresh-data" onclick="window.refreshHeavyCollections && window.refreshHeavyCollections()" class="flex items-center gap-3 w-full p-3 rounded-lg bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500 hover:text-white transition-all mb-2" title="Atualizar processos e ações com os dados mais recentes do servidor">
+                    <i data-lucide="refresh-cw" class="w-5 h-5"></i> <span>Atualizar Dados</span>
+                </button>
                 <button onclick="logout()" class="flex items-center gap-3 w-full p-3 rounded-lg bg-rose-500/10 text-rose-500 hover:bg-rose-500 hover:text-white transition-all"><i data-lucide="log-out" class="w-5 h-5"></i> <span>Sair</span></button>
             </div>
         </aside>
 
         <main class="flex-1 flex flex-col overflow-hidden">
+            <!-- Toast de notificação de colaboração -->
+            <div id="refresh-toast" class="hidden fixed top-4 right-4 z-50 bg-amber-500 text-white px-4 py-3 rounded-xl shadow-lg flex items-center gap-3 max-w-sm">
+                <i data-lucide="bell" class="w-5 h-5 flex-shrink-0"></i>
+                <span id="toast-msg" class="text-sm font-medium"></span>
+                <button onclick="document.getElementById('refresh-toast').classList.add('hidden')" class="ml-2 text-white/80 hover:text-white font-bold text-lg leading-none">&times;</button>
+            </div>
             <header class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-8 shadow-sm">
                 <div class="flex items-center gap-3">
                     <button id="btn-hamburger" onclick="openSidebar()" aria-label="Menu">
@@ -2126,19 +2135,43 @@
                         actQuery = actQuery.where("isoDate", ">=", limitDateStr);
                     }
 
-                    const u3 = procQuery.onSnapshot((snapshot) => {
-                        state.processes = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                        renderProcesses();
-                        renderDashboard();
-                    }, (err) => addLog("Erro em 'processes': " + err.message, true));
-                    activeListeners.push(u3);
+                    // ── MUDANÇA DEFINITIVA: Substitui onSnapshot por get() para processos e ações ──
+                    // onSnapshot mantém uma conexão permanente e re-baixa tudo quando o cache é perdido.
+                    // get() faz UMA leitura por sessão, reduzindo o consumo de ~90%.
+                    window._currentProcQuery = procQuery;
+                    window._currentActQuery = actQuery;
 
-                    const u4 = actQuery.onSnapshot((snapshot) => {
-                        state.actions = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                        renderActions();
-                        renderDashboard();
-                    }, (err) => addLog("Erro em 'actions': " + err.message, true));
-                    activeListeners.push(u4);
+                    window.refreshHeavyCollections = async function() {
+                        try {
+                            const btn = document.getElementById('btn-refresh-data');
+                            if (btn) {
+                                btn.disabled = true;
+                                btn.innerHTML = '<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i> <span>Atualizando...</span>';
+                                lucide.createIcons();
+                            }
+                            addLog('Buscando processos e ações do servidor...');
+                            const [procSnap, actSnap] = await Promise.all([
+                                window._currentProcQuery.get(),
+                                window._currentActQuery.get()
+                            ]);
+                            state.processes = procSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                            state.actions = actSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                            renderProcesses();
+                            renderActions();
+                            renderDashboard();
+                            addLog(`Atualizado: ${state.processes.length} processos, ${state.actions.length} ações.`);
+                            if (btn) {
+                                btn.disabled = false;
+                                btn.innerHTML = '<i data-lucide="refresh-cw" class="w-5 h-5"></i> <span>Atualizar Dados</span>';
+                                lucide.createIcons();
+                            }
+                        } catch (err) {
+                            addLog('Erro ao atualizar: ' + err.message, true);
+                        }
+                    };
+
+                    // Carregamento inicial — UMA leitura, sem listener permanente
+                    window.refreshHeavyCollections();
 
                     const u5 = db.collection("deadlines").onSnapshot((snapshot) => {
                         state.deadlines = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -2220,13 +2253,29 @@
                     }, (err) => addLog("Erro em 'actionTypes': " + err.message, true));
                     activeListeners.push(u6);
 
-                    if (currentUser && currentUser.role === 'Admin') {
-                        const u7 = db.collection("audit").orderBy("timestamp", "desc").limit(50).onSnapshot((snapshot) => {
-                            state.audit = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                            renderAudit();
-                        }, (err) => addLog("Erro em 'audit': " + err.message, true));
-                        activeListeners.push(u7);
-                    }
+                    // Audit: onSnapshot com limite (barato). Usado também para notificar colaboração.
+                    let _auditFirstLoad = true;
+                    const u7 = db.collection("audit").orderBy("timestamp", "desc").limit(50).onSnapshot((snapshot) => {
+                        state.audit = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                        if (currentUser && currentUser.role === 'Admin') renderAudit();
+                        if (_auditFirstLoad) { _auditFirstLoad = false; return; }
+                        // Notifica colaboração: outro usuário fez alteração
+                        snapshot.docChanges().forEach(change => {
+                            if (change.type === 'added') {
+                                const d = change.doc.data();
+                                if (d.user && currentUser && d.user !== currentUser.name) {
+                                    const toast = document.getElementById('refresh-toast');
+                                    const msg = document.getElementById('toast-msg');
+                                    if (toast && msg) {
+                                        msg.innerText = `${d.user} fez alterações — clique em "Atualizar Dados" para ver.`;
+                                        toast.classList.remove('hidden');
+                                        setTimeout(() => toast.classList.add('hidden'), 12000);
+                                    }
+                                }
+                            }
+                        });
+                    }, (err) => addLog("Erro em 'audit': " + err.message, true));
+                    activeListeners.push(u7);
 
                 } catch (e) {
                     addLog("Erro geral nos listeners: " + e.message, true);
@@ -2732,6 +2781,10 @@
                     }
 
                     await batch.commit();
+
+                    if (window.refreshHeavyCollections && (collectionName === 'processes' || collectionName === 'actions' || collectionName === 'servants')) {
+                        await window.refreshHeavyCollections();
+                    }
 
                     const cascadeMsg = cascadeCount > 0 ? ` (+ ${cascadeCount} registro(s) vinculado(s))` : '';
                     logAction('Exclusão', `Item removido da coleção ${collectionName} ID: ${id}${cascadeMsg}`);
@@ -4456,6 +4509,7 @@
                     closeModal('modal-process');
                     e.target.reset();
                     resetProcessModal();
+                    if (window.refreshHeavyCollections) await window.refreshHeavyCollections();
                 } catch (err) {
                     console.error('Erro ao salvar processo:', err);
                     alert('Erro ao salvar o processo. Veja o console para detalhes.');
@@ -4473,6 +4527,7 @@
                 await db.collection("actions").add(action);
                 closeModal('modal-action');
                 e.target.reset();
+                if (window.refreshHeavyCollections) await window.refreshHeavyCollections();
                 logAction('Ação Registrada', `Ação ${action.type} lançada para o processo ${action.processId}`);
             });
 

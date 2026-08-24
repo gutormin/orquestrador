@@ -536,8 +536,22 @@
         <div id="log-content"></div>
     </div>
 
+    <!-- TELA DE CARREGAMENTO INICIAL (SPLASH SCREEN) -->
+    <div id="loading-page" class="flex flex-col items-center justify-center min-h-screen bg-slate-900 px-4 transition-all duration-300">
+        <div class="text-center space-y-4">
+            <div class="inline-flex items-center justify-center w-16 h-16 bg-indigo-600 text-white rounded-xl mb-4 shadow-lg animate-bounce">
+                <i data-lucide="trending-up" class="w-8 h-8"></i>
+            </div>
+            <h1 class="text-3xl font-bold text-white">Orquestrador SecExecPres</h1>
+            <p class="text-slate-400 text-sm">Carregando a sua sessão...</p>
+            <div class="flex justify-center mt-6">
+                <div class="w-8 h-8 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
+            </div>
+        </div>
+    </div>
+
     <!-- TELA DE LOGIN -->
-    <div id="login-page" class="flex items-center justify-center min-h-screen bg-slate-900 px-4">
+    <div id="login-page" class="hidden flex items-center justify-center min-h-screen bg-slate-900 px-4">
         <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md transform transition-all">
             <div class="text-center mb-8">
                 <div class="inline-flex items-center justify-center w-16 h-16 bg-indigo-600 text-white rounded-xl mb-4 shadow-lg">
@@ -577,23 +591,32 @@
                 <span class="text-lg font-bold tracking-tight">Orquestrador SecExecPres</span>
             </div>
             <nav class="flex-1 px-4 space-y-2 mt-4">
-                <a href="#" onclick="showPage('dashboard')" class="nav-link active" data-page="dashboard"><i data-lucide="grid" class="w-5 h-5"></i> <span>Dashboard</span></a>
-                <a href="#" id="nav-users" onclick="showPage('users')" class="nav-link hidden" data-page="users"><i data-lucide="user-cog" class="w-5 h-5"></i> <span>Usuários do Sistema</span></a>
-                <a href="#" id="nav-servants" onclick="showPage('servants')" class="nav-link hidden" data-page="servants"><i data-lucide="users" class="w-5 h-5"></i> <span>Servidores</span></a>
-                <a href="#" onclick="showPage('processes')" class="nav-link" data-page="processes"><i data-lucide="file-text" class="w-5 h-5"></i> <span>Processos</span></a>
-                <a href="#" onclick="showPage('deadlines')" class="nav-link" data-page="deadlines"><i data-lucide="clock" class="w-5 h-5"></i> <span>Controle de Prazos</span></a>
-                <a href="#" onclick="showPage('actions')" class="nav-link" data-page="actions"><i data-lucide="activity" class="w-5 h-5"></i> <span>Ações/Tarefas</span></a>
-                <a href="#" onclick="showPage('reports')" class="nav-link" data-page="reports"><i data-lucide="bar-chart-3" class="w-5 h-5"></i> <span>Relatórios</span></a>
-                <a href="#" id="nav-action-types" onclick="showPage('actiontypes')" class="nav-link hidden" data-page="actiontypes"><i data-lucide="sliders" class="w-5 h-5"></i> <span>Tipos de Ação</span></a>
-                <a href="#" id="nav-backup-audit" onclick="showPage('backup-audit')" class="nav-link hidden" data-page="backup-audit"><i data-lucide="shield-check" class="w-5 h-5"></i> <span>Backup & Auditoria</span></a>
+                <a href="javascript:void(0)" onclick="showPage('dashboard')" class="nav-link active" data-page="dashboard"><i data-lucide="grid" class="w-5 h-5"></i> <span>Dashboard</span></a>
+                <a href="javascript:void(0)" id="nav-users" onclick="showPage('users')" class="nav-link hidden" data-page="users"><i data-lucide="user-cog" class="w-5 h-5"></i> <span>Usuários do Sistema</span></a>
+                <a href="javascript:void(0)" id="nav-servants" onclick="showPage('servants')" class="nav-link hidden" data-page="servants"><i data-lucide="users" class="w-5 h-5"></i> <span>Servidores</span></a>
+                <a href="javascript:void(0)" onclick="showPage('processes')" class="nav-link" data-page="processes"><i data-lucide="file-text" class="w-5 h-5"></i> <span>Processos</span></a>
+                <a href="javascript:void(0)" onclick="showPage('deadlines')" class="nav-link" data-page="deadlines"><i data-lucide="clock" class="w-5 h-5"></i> <span>Controle de Prazos</span></a>
+                <a href="javascript:void(0)" onclick="showPage('actions')" class="nav-link" data-page="actions"><i data-lucide="activity" class="w-5 h-5"></i> <span>Ações/Tarefas</span></a>
+                <a href="javascript:void(0)" onclick="showPage('reports')" class="nav-link" data-page="reports"><i data-lucide="bar-chart-3" class="w-5 h-5"></i> <span>Relatórios</span></a>
+                <a href="javascript:void(0)" id="nav-action-types" onclick="showPage('actiontypes')" class="nav-link hidden" data-page="actiontypes"><i data-lucide="sliders" class="w-5 h-5"></i> <span>Tipos de Ação</span></a>
+                <a href="javascript:void(0)" id="nav-backup-audit" onclick="showPage('backup-audit')" class="nav-link hidden" data-page="backup-audit"><i data-lucide="shield-check" class="w-5 h-5"></i> <span>Backup & Auditoria</span></a>
             </nav>
             <div class="p-4 border-t border-slate-800">
-                <button onclick="toggleDarkMode()" class="flex items-center gap-3 w-full p-3 rounded-lg hover:bg-slate-800 transition-all mb-4"><i data-lucide="moon" class="w-5 h-5"></i> <span>Modo Escuro</span></button>
+                <button onclick="toggleDarkMode()" class="flex items-center gap-3 w-full p-3 rounded-lg hover:bg-slate-800 transition-all mb-2"><i data-lucide="moon" class="w-5 h-5"></i> <span>Modo Escuro</span></button>
+                <button id="btn-refresh-data" onclick="window.refreshHeavyCollections && window.refreshHeavyCollections()" class="flex items-center gap-3 w-full p-3 rounded-lg bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500 hover:text-white transition-all mb-2" title="Atualizar processos e ações com os dados mais recentes do servidor">
+                    <i data-lucide="refresh-cw" class="w-5 h-5"></i> <span>Atualizar Dados</span>
+                </button>
                 <button onclick="logout()" class="flex items-center gap-3 w-full p-3 rounded-lg bg-rose-500/10 text-rose-500 hover:bg-rose-500 hover:text-white transition-all"><i data-lucide="log-out" class="w-5 h-5"></i> <span>Sair</span></button>
             </div>
         </aside>
 
         <main class="flex-1 flex flex-col overflow-hidden">
+            <!-- Toast de notificação de colaboração -->
+            <div id="refresh-toast" class="hidden fixed top-4 right-4 z-50 bg-amber-500 text-white px-4 py-3 rounded-xl shadow-lg flex items-center gap-3 max-w-sm">
+                <i data-lucide="bell" class="w-5 h-5 flex-shrink-0"></i>
+                <span id="toast-msg" class="text-sm font-medium"></span>
+                <button onclick="document.getElementById('refresh-toast').classList.add('hidden')" class="ml-2 text-white/80 hover:text-white font-bold text-lg leading-none">&times;</button>
+            </div>
             <header class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-8 shadow-sm">
                 <div class="flex items-center gap-3">
                     <button id="btn-hamburger" onclick="openSidebar()" aria-label="Menu">
@@ -888,6 +911,7 @@
                                     <th class="px-6 py-4">Servidor</th>
                                     <th class="px-6 py-4">Data</th>
                                     <th class="px-6 py-4">Hora Cadastro</th>
+                                    <th class="px-6 py-4">Cadastrado Por</th>
                                     <th class="px-6 py-4">Ações Planejadas</th>
                                     <th class="px-6 py-4 text-center">Excluir</th>
                                 </tr>
@@ -942,14 +966,19 @@
                 <!-- RELATÓRIOS -->
                 <section id="page-reports" class="page-content hidden">
 
-                    <!-- ABAS DE NAVEGAÇÃO -->
-                    <div class="flex flex-wrap gap-1 mb-5 p-1 bg-slate-100 rounded-xl w-fit">
-                        <button onclick="switchReportTab('executive')" id="tab-executive" title="Visão Executiva" class="report-tab-btn active px-4 py-2 rounded-lg font-bold text-sm transition-all flex items-center gap-2"><i data-lucide="layout-dashboard" class="w-4 h-4"></i><span class="hidden sm:inline">Visão Executiva</span><span class="sm:hidden">Executiva</span></button>
-                        <button onclick="switchReportTab('ranking')" id="tab-ranking" title="Ranking de Produtividade" class="report-tab-btn px-4 py-2 rounded-lg font-bold text-sm transition-all flex items-center gap-2"><i data-lucide="bar-chart-horizontal" class="w-4 h-4"></i><span class="hidden sm:inline">Ranking</span></button>
-                        <button onclick="switchReportTab('evolution')" id="tab-evolution" title="Evolução Temporal" class="report-tab-btn px-4 py-2 rounded-lg font-bold text-sm transition-all flex items-center gap-2"><i data-lucide="trending-up" class="w-4 h-4"></i><span class="hidden sm:inline">Evolução</span></button>
-                        <button onclick="switchReportTab('shift')" id="tab-shift" title="Distribuição por Turno" class="report-tab-btn px-4 py-2 rounded-lg font-bold text-sm transition-all flex items-center gap-2"><i data-lucide="layers" class="w-4 h-4"></i><span class="hidden sm:inline">Por Turno</span></button>
-                        <button onclick="switchReportTab('backup')" id="tab-backup" title="Exportação de Relatórios" class="report-tab-btn px-4 py-2 rounded-lg font-bold text-sm transition-all flex items-center gap-2"><i data-lucide="download" class="w-4 h-4"></i><span class="hidden sm:inline">Exportar Relatórios</span><span class="sm:hidden">Exportar</span></button>
-                        <button onclick="switchReportTab('diretoria')" id="tab-diretoria" title="Relatório Gerencial" class="report-tab-btn px-4 py-2 rounded-lg font-bold text-sm transition-all flex items-center gap-2" style="background:linear-gradient(135deg,#7c3aed,#4f46e5);color:white;"><i data-lucide="presentation" class="w-4 h-4"></i><span class="hidden sm:inline">Gerencial</span><span class="sm:hidden">Ger.</span></button>
+                    <!-- ABAS DE NAVEGAÇÃO E AÇÕES -->
+                    <div class="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-3 mb-5">
+                        <div class="flex flex-wrap gap-1 p-1 bg-slate-100 rounded-xl w-fit">
+                            <button onclick="switchReportTab('executive')" id="tab-executive" title="Visão Executiva" class="report-tab-btn active px-4 py-2 rounded-lg font-bold text-sm transition-all flex items-center gap-2"><i data-lucide="layout-dashboard" class="w-4 h-4"></i><span class="hidden sm:inline">Visão Executiva</span><span class="sm:hidden">Executiva</span></button>
+                            <button onclick="switchReportTab('ranking')" id="tab-ranking" title="Ranking de Produtividade" class="report-tab-btn px-4 py-2 rounded-lg font-bold text-sm transition-all flex items-center gap-2"><i data-lucide="bar-chart-horizontal" class="w-4 h-4"></i><span class="hidden sm:inline">Ranking</span></button>
+                            <button onclick="switchReportTab('evolution')" id="tab-evolution" title="Evolução Temporal" class="report-tab-btn px-4 py-2 rounded-lg font-bold text-sm transition-all flex items-center gap-2"><i data-lucide="trending-up" class="w-4 h-4"></i><span class="hidden sm:inline">Evolução</span></button>
+                            <button onclick="switchReportTab('shift')" id="tab-shift" title="Distribuição por Turno" class="report-tab-btn px-4 py-2 rounded-lg font-bold text-sm transition-all flex items-center gap-2"><i data-lucide="layers" class="w-4 h-4"></i><span class="hidden sm:inline">Por Turno</span></button>
+                            <button onclick="switchReportTab('backup')" id="tab-backup" title="Exportação de Relatórios" class="report-tab-btn px-4 py-2 rounded-lg font-bold text-sm transition-all flex items-center gap-2"><i data-lucide="download" class="w-4 h-4"></i><span class="hidden sm:inline">Exportar Relatórios</span><span class="sm:hidden">Exportar</span></button>
+                            <button onclick="switchReportTab('diretoria')" id="tab-diretoria" title="Relatório Gerencial" class="report-tab-btn px-4 py-2 rounded-lg font-bold text-sm transition-all flex items-center gap-2" style="background:linear-gradient(135deg,#7c3aed,#4f46e5);color:white;"><i data-lucide="presentation" class="w-4 h-4"></i><span class="hidden sm:inline">Gerencial</span><span class="sm:hidden">Ger.</span></button>
+                        </div>
+                        <button id="btn-load-history" onclick="loadFullHistory()" class="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-xl font-bold text-sm transition-all flex items-center gap-2 shadow-sm whitespace-nowrap" title="Ignorar o limite de 60 dias e baixar todo o banco para gerar relatórios antigos">
+                            <i data-lucide="database" class="w-4 h-4"></i> Carregar Histórico Completo
+                        </button>
                     </div>
 
                     <!-- ══════════════════════════════════════════
@@ -1481,8 +1510,11 @@
                                 <div class="border border-slate-800 p-4 rounded-xl space-y-3 bg-slate-950/40">
                                     <h5 class="text-sm font-bold text-slate-200 flex items-center gap-1.5"><i data-lucide="download" class="w-4 h-4 text-indigo-400"></i> 1. Criar Cópia de Segurança</h5>
                                     <p class="text-xs text-slate-400 leading-relaxed">Baixa um arquivo .json completo contendo usuários, servidores, processos, ações, prazos, tipos de ação e auditoria.</p>
-                                    <button onclick="exportJSONBackup()" class="w-full py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-bold text-xs transition-all flex items-center justify-center gap-2 shadow-md">
+                                    <button onclick="exportJSONBackup()" class="w-full py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-bold text-xs transition-all flex items-center justify-center gap-2 shadow-md mb-2">
                                         <i data-lucide="download" class="w-3.5 h-3.5"></i> Baixar Cópia (.json)
+                                    </button>
+                                    <button onclick="runIsoDateMigration()" class="w-full py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-lg font-bold text-xs transition-all flex items-center justify-center gap-2 shadow-md">
+                                        <i data-lucide="database" class="w-3.5 h-3.5"></i> Migrar Banco (isoDate)
                                     </button>
                                 </div>
                                 <div class="border border-slate-800 p-4 rounded-xl space-y-3 bg-slate-950/40">
@@ -1765,25 +1797,24 @@
 
                 <div class="col-span-2">
                     <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Nome Completo</label>
-                    <input type="text" id="edit-servant-field-name" name="name" required class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500">
+                    <input type="text" name="name" required class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500">
                 </div>
                 <div class="col-span-1">
                     <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Matrícula</label>
-                    <input type="text" id="edit-servant-field-registration" name="registration" required class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500">
+                    <input type="text" name="registration" required class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500">
                 </div>
                 <div class="col-span-1">
                     <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Cargo</label>
-                    <input type="text" id="edit-servant-field-role" name="role" required class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500">
+                    <input type="text" name="role" required class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500">
                 </div>
                 <div class="col-span-1">
                     <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Setor</label>
-                    <input type="text" id="edit-servant-field-sector" name="sector" required class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500">
+                    <input type="text" name="sector" required class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500">
                 </div>
                 <div class="col-span-1">
                     <label class="block text-xs font-bold uppercase text-slate-500 mb-1">E-mail</label>
-                    <input type="email" id="edit-servant-field-email" name="email" required class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500">
+                    <input type="email" name="email" required class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500">
                 </div>
-
                 <div class="col-span-2">
                     <label class="block text-xs font-bold uppercase text-slate-500 mb-2">Turno de Trabalho</label>
                     <div class="grid grid-cols-2 gap-2">
@@ -1818,13 +1849,13 @@
                 <h3 id="modal-process-title" class="text-xl font-bold text-slate-800">Novo Processo & Planejamento</h3>
                 <button onclick="closeModal('modal-process'); resetProcessModal()" class="text-slate-400 hover:text-rose-500"><i data-lucide="x" class="w-6 h-6"></i></button>
             </div>
-            <form id="form-process" class="p-6 overflow-y-auto max-h-[85vh]" autocomplete="off">
+            <form id="form-process" class="p-6 overflow-y-auto max-h-[85vh]">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                     <div class="space-y-4">
                         <h4 class="font-bold text-indigo-600 flex items-center gap-2 mb-2"><i data-lucide="file-text" class="w-4 h-4"></i> Dados do Processo</h4>
                         <div >
                             <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Nº Processo</label>
-                            <input type="text" name="number" required autocomplete="off" data-lpignore="true" data-form-type="other" inputmode="numeric" pattern="[0-9./-]*" class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500">
+                            <input type="text" name="number" required class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500">
                         </div>
                         <div >
                             <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Tipo</label>
@@ -1931,7 +1962,7 @@
                 <h3 class="text-xl font-bold text-slate-800">Cadastrar Controle de Prazo</h3>
                 <button onclick="closeModal('modal-deadline')" class="text-slate-400 hover:text-rose-500"><i data-lucide="x" class="w-6 h-6"></i></button>
             </div>
-            <form id="form-deadline" class="p-6 grid grid-cols-2 gap-4" autocomplete="off">
+            <form id="form-deadline" class="p-6 grid grid-cols-2 gap-4">
                 <div class="col-span-1">
                     <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Data Distribuição</label>
                     <input type="date" name="dateDist" required class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500">
@@ -1942,7 +1973,7 @@
                 </div>
                 <div class="col-span-1">
                     <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Nº Processo</label>
-                    <input type="text" name="processNumber" required autocomplete="off" data-lpignore="true" data-form-type="other" inputmode="numeric" pattern="[0-9./-]*" class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500">
+                    <input type="text" name="processNumber" required class="w-full px-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500">
                 </div>
                 <div class="col-span-1">
                     <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Unidade de Destino</label>
@@ -2003,9 +2034,8 @@
             firebase.initializeApp(firebaseConfig);
             const db = firebase.firestore();
             const auth = firebase.auth();
-
-            // Habilita persistência offline para ECONOMIZAR LEITURAS (CACHE LOCAL)
-            // Mesmo comportamento do Orquestrador/index.html
+            
+            // Habilita persistência de dados offline para ECONOMIZAR LEITURAS (CACHE LOCAL)
             db.enablePersistence({ synchronizeTabs: true })
                 .catch((err) => {
                     if (err.code == 'failed-precondition') {
@@ -2014,7 +2044,7 @@
                         console.warn('Persistência não suportada pelo navegador.');
                     }
                 });
-
+                
             auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
                 .catch(err => console.error("Erro ao definir persistência do Auth:", err));
             addLog("Firebase Inicializado!");
@@ -2105,19 +2135,43 @@
                         actQuery = actQuery.where("isoDate", ">=", limitDateStr);
                     }
 
-                    const u3 = procQuery.onSnapshot((snapshot) => {
-                        state.processes = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                        renderProcesses();
-                        renderDashboard();
-                    }, (err) => addLog("Erro em 'processes': " + err.message, true));
-                    activeListeners.push(u3);
+                    // ── MUDANÇA DEFINITIVA: Substitui onSnapshot por get() para processos e ações ──
+                    // onSnapshot mantém uma conexão permanente e re-baixa tudo quando o cache é perdido.
+                    // get() faz UMA leitura por sessão, reduzindo o consumo de ~90%.
+                    window._currentProcQuery = procQuery;
+                    window._currentActQuery = actQuery;
 
-                    const u4 = actQuery.onSnapshot((snapshot) => {
-                        state.actions = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                        renderActions();
-                        renderDashboard();
-                    }, (err) => addLog("Erro em 'actions': " + err.message, true));
-                    activeListeners.push(u4);
+                    window.refreshHeavyCollections = async function() {
+                        try {
+                            const btn = document.getElementById('btn-refresh-data');
+                            if (btn) {
+                                btn.disabled = true;
+                                btn.innerHTML = '<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i> <span>Atualizando...</span>';
+                                lucide.createIcons();
+                            }
+                            addLog('Buscando processos e ações do servidor...');
+                            const [procSnap, actSnap] = await Promise.all([
+                                window._currentProcQuery.get(),
+                                window._currentActQuery.get()
+                            ]);
+                            state.processes = procSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                            state.actions = actSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                            renderProcesses();
+                            renderActions();
+                            renderDashboard();
+                            addLog(`Atualizado: ${state.processes.length} processos, ${state.actions.length} ações.`);
+                            if (btn) {
+                                btn.disabled = false;
+                                btn.innerHTML = '<i data-lucide="refresh-cw" class="w-5 h-5"></i> <span>Atualizar Dados</span>';
+                                lucide.createIcons();
+                            }
+                        } catch (err) {
+                            addLog('Erro ao atualizar: ' + err.message, true);
+                        }
+                    };
+
+                    // Carregamento inicial — UMA leitura, sem listener permanente
+                    window.refreshHeavyCollections();
 
                     const u5 = db.collection("deadlines").onSnapshot((snapshot) => {
                         state.deadlines = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -2135,19 +2189,93 @@
                             await batch.commit();
                         } else {
                             state.actionTypes = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                            
+                            // Correção automática de duplicatas no Firestore (se auto-ajusta no primeiro carregamento)
+                            if (!window.actionTypesCleaned) {
+                                window.actionTypesCleaned = true;
+                                (async () => {
+                                    try {
+                                        let hasChanges = false;
+                                        const batch = db.batch();
+                                        
+                                        const normalize = (s) => (s || '').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+                                        
+                                        const traslados = state.actionTypes.filter(t => normalize(t.label) === 'traslado');
+                                        const comunicacoes = state.actionTypes.filter(t => normalize(t.label) === 'comunicacao');
+                                        const hasApensamento = state.actionTypes.some(t => normalize(t.label) === 'apensamento' || normalize(t.key) === 'apensamento');
+
+                                        // Se temos duplicados de Traslado e não temos Apensamento, renomeia um para Apensamento
+                                        if (traslados.length > 1 && !hasApensamento) {
+                                            const docToUpdate = traslados[1];
+                                            batch.update(db.collection('actionTypes').doc(docToUpdate.id), {
+                                                key: 'apensamento',
+                                                label: 'Apensamento'
+                                            });
+                                            hasChanges = true;
+                                            addLog("Migration: Renomeando duplicata de Traslado para Apensamento.");
+                                        } else if (traslados.length > 1 && hasApensamento) {
+                                            const docToDelete = traslados[1];
+                                            batch.delete(db.collection('actionTypes').doc(docToDelete.id));
+                                            hasChanges = true;
+                                            addLog("Migration: Removendo duplicata excedente de Traslado.");
+                                        }
+
+                                        // Se temos duplicados de Comunicação, remove a duplicata
+                                        if (comunicacoes.length > 1) {
+                                            const docToDelete = comunicacoes[1];
+                                            batch.delete(db.collection('actionTypes').doc(docToDelete.id));
+                                            hasChanges = true;
+                                            addLog("Migration: Removendo duplicata de Comunicação.");
+                                        }
+
+                                        // Se não tem Apensamento no banco de todo, adiciona
+                                        if (!hasApensamento && traslados.length <= 1) {
+                                            const newRef = db.collection('actionTypes').doc();
+                                            batch.set(newRef, { key: 'apensamento', label: 'Apensamento', isDefault: true, active: true });
+                                            hasChanges = true;
+                                            addLog("Migration: Adicionando Apensamento às ações.");
+                                        }
+
+                                        if (hasChanges) {
+                                            await batch.commit();
+                                            addLog("Migration: Banco de dados corrigido com sucesso!");
+                                        }
+                                    } catch (err) {
+                                        console.error("Erro na migração de tipos de ação:", err);
+                                    }
+                                })();
+                            }
+
                             populateActionTypeSelect();
                             renderActionTypesPage();
+                            renderPlanningGrid();
                         }
                     }, (err) => addLog("Erro em 'actionTypes': " + err.message, true));
                     activeListeners.push(u6);
 
-                    if (currentUser && currentUser.role === 'Admin') {
-                        const u7 = db.collection("audit").orderBy("timestamp", "desc").limit(50).onSnapshot((snapshot) => {
-                            state.audit = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                            renderAudit();
-                        }, (err) => addLog("Erro em 'audit': " + err.message, true));
-                        activeListeners.push(u7);
-                    }
+                    // Audit: onSnapshot com limite (barato). Usado também para notificar colaboração.
+                    let _auditFirstLoad = true;
+                    const u7 = db.collection("audit").orderBy("timestamp", "desc").limit(50).onSnapshot((snapshot) => {
+                        state.audit = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                        if (currentUser && currentUser.role === 'Admin') renderAudit();
+                        if (_auditFirstLoad) { _auditFirstLoad = false; return; }
+                        // Notifica colaboração: outro usuário fez alteração
+                        snapshot.docChanges().forEach(change => {
+                            if (change.type === 'added') {
+                                const d = change.doc.data();
+                                if (d.user && currentUser && d.user !== currentUser.name) {
+                                    const toast = document.getElementById('refresh-toast');
+                                    const msg = document.getElementById('toast-msg');
+                                    if (toast && msg) {
+                                        msg.innerText = `${d.user} fez alterações — clique em "Atualizar Dados" para ver.`;
+                                        toast.classList.remove('hidden');
+                                        setTimeout(() => toast.classList.add('hidden'), 12000);
+                                    }
+                                }
+                            }
+                        });
+                    }, (err) => addLog("Erro em 'audit': " + err.message, true));
+                    activeListeners.push(u7);
 
                 } catch (e) {
                     addLog("Erro geral nos listeners: " + e.message, true);
@@ -2161,6 +2289,10 @@
                     statusEl.className = "mt-4 text-xs font-medium px-3 py-1 rounded-full bg-emerald-100 text-emerald-600 inline-block";
                 }
                 
+                const loadingPage = document.getElementById('loading-page');
+                const loginPage = document.getElementById('login-page');
+                const appShell = document.getElementById('app-shell');
+
                 if (user) {
                     addLog("Usuário detectado em Auth: " + user.email);
                     try {
@@ -2179,8 +2311,10 @@
                         }
                         
                         if (currentUser) {
-                            document.getElementById('login-page').classList.add('hidden');
-                            document.getElementById('app-shell').classList.remove('hidden');
+                            if (loadingPage) loadingPage.classList.add('hidden');
+                            if (loginPage) loginPage.classList.add('hidden');
+                            if (appShell) appShell.classList.remove('hidden');
+                            
                             document.getElementById('user-display-name').innerText = currentUser.name;
                             document.getElementById('user-display-role').innerText = currentUser.role;
                             
@@ -2201,22 +2335,41 @@
                             
                             addLog("Login ativo: " + currentUser.name);
                             setupRealtimeListeners();
-                            showPage('dashboard');
+                            
+                            // Navegação baseada no hash da URL (persiste no F5)
+                            const initialPage = location.hash.replace('#', '') || 'dashboard';
+                            const validPages = ['dashboard', 'servants', 'processes', 'deadlines', 'actions', 'reports', 'users', 'actiontypes', 'backup-audit'];
+                            if (validPages.includes(initialPage)) {
+                                showPage(initialPage);
+                            } else {
+                                showPage('dashboard');
+                            }
                         } else {
                             addLog("Perfil do usuário não encontrado no banco de dados.", true);
                             alert("Perfil do usuário não encontrado no banco de dados.");
+                            if (loadingPage) loadingPage.classList.add('hidden');
+                            if (appShell) appShell.classList.add('hidden');
+                            if (loginPage) loginPage.classList.remove('hidden');
                             auth.signOut();
                         }
                     } catch (err) {
                         addLog("Erro ao carregar perfil: " + err.message, true);
-                        auth.signOut();
+                        if (loadingPage) loadingPage.classList.add('hidden');
+                        if (appShell) appShell.classList.add('hidden');
+                        if (loginPage) loginPage.classList.remove('hidden');
+                        const loginBtn = document.getElementById('btn-login');
+                        if (loginBtn) {
+                            loginBtn.innerText = "Entrar no Sistema";
+                            loginBtn.disabled = false;
+                        }
                     }
                 } else {
                     addLog("Sessão inativa.");
                     currentUser = null;
                     clearRealtimeListeners();
-                    document.getElementById('app-shell').classList.add('hidden');
-                    document.getElementById('login-page').classList.remove('hidden');
+                    if (loadingPage) loadingPage.classList.add('hidden');
+                    if (appShell) appShell.classList.add('hidden');
+                    if (loginPage) loginPage.classList.remove('hidden');
                     const loginBtn = document.getElementById('btn-login');
                     if (loginBtn) {
                         loginBtn.innerText = "Entrar no Sistema";
@@ -2260,6 +2413,12 @@
                     alert("Você não possui permissão para acessar esta área.");
                     return;
                 }
+
+                // Sincroniza o hash da URL (evita loops verificando se já é igual)
+                if (location.hash !== '#' + pageId) {
+                    location.hash = pageId;
+                }
+
                 // Fecha o drawer no mobile ao navegar
                 closeSidebar();
                 document.querySelectorAll('.nav-link').forEach(link => {
@@ -2284,7 +2443,28 @@
                 if(pageId === 'users') renderUsers();
                 if(pageId === 'actiontypes') renderActionTypesPage();
                 if(pageId === 'backup-audit') renderAudit();
+                if(pageId === 'reports') {
+                    // Botão "Histórico Completo" só para admin (gera leituras pesadas)
+                    const btnHistory = document.getElementById('btn-load-history');
+                    if (btnHistory) {
+                        btnHistory.classList.toggle('hidden', !currentUser || currentUser.role !== 'Admin');
+                    }
+                }
             }
+
+            // Ouvinte para navegação por botões Avançar/Voltar do navegador
+            window.addEventListener('hashchange', () => {
+                if (currentUser) {
+                    const pageId = location.hash.replace('#', '') || 'dashboard';
+                    const validPages = ['dashboard', 'servants', 'processes', 'deadlines', 'actions', 'reports', 'users', 'actiontypes', 'backup-audit'];
+                    if (validPages.includes(pageId)) {
+                        const activeLink = document.querySelector(`.nav-link.active[data-page="${pageId}"]`);
+                        if (!activeLink) {
+                            showPage(pageId);
+                        }
+                    }
+                }
+            });
 
             window.openModal = function(modalId) { 
                 if (!checkPermission('create')) {
@@ -2403,7 +2583,8 @@
                     if(p.qty_diligencia > 0) planned.push(`Dil: ${p.qty_diligencia}`);
                     if(p.qty_comunicacao > 0) planned.push(`Com: ${p.qty_comunicacao}`);
                     const plannedText = planned.length > 0 ? planned.join(' | ') : '<span class="text-slate-300">Nenhuma</span>';
-                    return `<tr class="hover:bg-slate-50 transition-colors"><td class="px-6 py-4 font-bold text-indigo-600">${p.number}</td><td data-label="Prioridade" class="px-6 py-4">${getPriorityBadge(p.priority)}</td><td data-label="Servidor" class="px-6 py-4">${servant ? servant.name : 'N/A'}</td><td data-label="Data" class="px-6 py-4 text-slate-500">${p.deadline}</td><td data-label="Cadastro" class="px-6 py-4 text-slate-500">${registrationTime}</td><td data-label="Ações" class="px-6 py-4 text-xs font-medium text-slate-600">${plannedText}</td><td data-label="Opções" class="px-6 py-4 text-center"><div class="flex items-center justify-center gap-1"><button onclick="editProcess('${p.id}')" class="text-indigo-500 hover:text-indigo-700 p-2" title="Editar"><i data-lucide="pencil" class="w-4 h-4"></i></button>${checkPermission('delete') ? `<button onclick="deleteItem('processes', '${p.id}')" class="text-rose-500 hover:text-rose-700 p-2" title="Excluir"><i data-lucide="trash-2" class="w-4 h-4"></i></button>` : ''}</div></td></tr>`;
+                    const createdBy = p.createdBy || '---';
+                    return `<tr class="hover:bg-slate-50 transition-colors"><td class="px-6 py-4 font-bold text-indigo-600">${p.number}</td><td data-label="Prioridade" class="px-6 py-4">${getPriorityBadge(p.priority)}</td><td data-label="Servidor" class="px-6 py-4">${servant ? servant.name : 'N/A'}</td><td data-label="Data" class="px-6 py-4 text-slate-500">${p.deadline}</td><td data-label="Cadastro" class="px-6 py-4 text-slate-500">${registrationTime}</td><td data-label="Cadastrado Por" class="px-6 py-4 text-slate-500">${createdBy}</td><td data-label="Ações" class="px-6 py-4 text-xs font-medium text-slate-600">${plannedText}</td><td data-label="Opções" class="px-6 py-4 text-center"><div class="flex items-center justify-center gap-1"><button onclick="editProcess('${p.id}')" class="text-indigo-500 hover:text-indigo-700 p-2" title="Editar"><i data-lucide="pencil" class="w-4 h-4"></i></button>${checkPermission('delete') ? `<button onclick="deleteItem('processes', '${p.id}')" class="text-rose-500 hover:text-rose-700 p-2" title="Excluir"><i data-lucide="trash-2" class="w-4 h-4"></i></button>` : ''}</div></td></tr>`;
                 }).join('');
                 lucide.createIcons();
             }
@@ -2601,6 +2782,10 @@
 
                     await batch.commit();
 
+                    if (window.refreshHeavyCollections && (collectionName === 'processes' || collectionName === 'actions' || collectionName === 'servants')) {
+                        await window.refreshHeavyCollections();
+                    }
+
                     const cascadeMsg = cascadeCount > 0 ? ` (+ ${cascadeCount} registro(s) vinculado(s))` : '';
                     logAction('Exclusão', `Item removido da coleção ${collectionName} ID: ${id}${cascadeMsg}`);
                 } catch (err) {
@@ -2696,12 +2881,26 @@
                 const rankingBody = document.getElementById('ranking-body');
                 const servantMonthlyStats = filteredServants.map(s => {
                     const sActionsMonth = state.actions.filter(a => s.id == a.servantId && DateEngine.normalize(a.date).startsWith(monthStr));
-                    const sProcsMonth = state.processes.filter(p => p.servantId == s.id && DateEngine.normalize(p.deadline).startsWith(monthStr)).length;
+                    const sProcsMonth = state.processes.filter(p => p.servantId == s.id && DateEngine.normalize(p.deadline).startsWith(monthStr));
                     const allTypes = getActiveActionTypes();
                     const typeCounts = {};
-                    allTypes.forEach(t => { typeCounts[t.key] = sActionsMonth.filter(a => a.type === t.label).length; });
+                    
+                    allTypes.forEach(t => {
+                        let countFromActions = sActionsMonth.filter(a => a.type === t.label).length;
+                        // Para processos desse mês do servidor que não possuem ações registradas na coleção 'actions'
+                        let countFromProcesses = 0;
+                        sProcsMonth.forEach(p => {
+                            const pActions = state.actions.filter(a => a.processId === p.id);
+                            if (pActions.length === 0) {
+                                countFromProcesses += parseInt(p[`qty_${t.key}`] || 0);
+                            }
+                        });
+                        typeCounts[t.key] = countFromActions + countFromProcesses;
+                    });
+                    
+                    const totalMonthActions = Object.values(typeCounts).reduce((sum, v) => sum + v, 0);
                     const fc = k => { const t = allTypes.find(t=>t.key===k); return t ? (typeCounts[k]||0) : 0; };
-                    return { ...s, processosDistribuidos: sProcsMonth, total: sActionsMonth.length,
+                    return { ...s, processosDistribuidos: sProcsMonth.length, total: totalMonthActions,
                         oficio: fc('oficio'), circular: fc('oficio_circular'), convite: fc('oficio_convite'),
                         email: fc('email'), traslado: fc('traslado'), diligencia: fc('diligencia'), comunicacao: fc('comunicacao'),
                         _extraTypes: allTypes.filter(t => !['oficio','oficio_circular','oficio_convite','email','traslado','diligencia','comunicacao'].includes(t.key))
@@ -2719,12 +2918,25 @@
                 updateRankingDayLabel();
                 const servantTodayStats = filteredServants.map(s => {
                     const sActionsToday = state.actions.filter(a => s.id == a.servantId && DateEngine.normalize(a.date) === rankingDateStr);
-                    const sProcsToday = state.processes.filter(p => p.servantId == s.id && DateEngine.normalize(p.deadline) === rankingDateStr).length;
+                    const sProcsToday = state.processes.filter(p => p.servantId == s.id && DateEngine.normalize(p.deadline) === rankingDateStr);
                     const allTypesD = getActiveActionTypes();
                     const typeCountsD = {};
-                    allTypesD.forEach(t => { typeCountsD[t.key] = sActionsToday.filter(a => a.type === t.label).length; });
+
+                    allTypesD.forEach(t => {
+                        let countFromActions = sActionsToday.filter(a => a.type === t.label).length;
+                        let countFromProcesses = 0;
+                        sProcsToday.forEach(p => {
+                            const pActions = state.actions.filter(a => a.processId === p.id);
+                            if (pActions.length === 0) {
+                                countFromProcesses += parseInt(p[`qty_${t.key}`] || 0);
+                            }
+                        });
+                        typeCountsD[t.key] = countFromActions + countFromProcesses;
+                    });
+
+                    const totalTodayActions = Object.values(typeCountsD).reduce((sum, v) => sum + v, 0);
                     const fcD = k => { const t = allTypesD.find(t=>t.key===k); return t ? (typeCountsD[k]||0) : 0; };
-                    return { ...s, processosDistribuidos: sProcsToday, total: sActionsToday.length,
+                    return { ...s, processosDistribuidos: sProcsToday.length, total: totalTodayActions,
                         oficio: fcD('oficio'), circular: fcD('oficio_circular'), convite: fcD('oficio_convite'),
                         email: fcD('email'), traslado: fcD('traslado'), diligencia: fcD('diligencia'), comunicacao: fcD('comunicacao'),
                         _extraTypes: allTypesD.filter(t => !['oficio','oficio_circular','oficio_convite','email','traslado','diligencia','comunicacao'].includes(t.key))
@@ -2810,12 +3022,24 @@
 
                     const monthStr = DateEngine.getMonth();
                     const activeTypes = getActiveActionTypes();
-                    const actionTypes = activeTypes.map(t => t.label);
                     const piePalette = ['#4f46e5','#10b981','#f97316','#f59e0b','#ec4899','#8b5cf6','#64748b','#06b6d4','#ef4444','#84cc16'];
-                    const colorsFixed = actionTypes.map((_,i) => piePalette[i % piePalette.length]);
+                    const colorsFixed = activeTypes.map((_,i) => piePalette[i % piePalette.length]);
                     const servantLabels = filteredServants.map(s => s.name);
-                    const datasets = actionTypes.map((type, idx) => {
-                        return { label: type, data: filteredServants.map(s => state.actions.filter(a => a.servantId == s.id && a.type === type && DateEngine.normalize(a.date).startsWith(monthStr)).length), backgroundColor: colorsFixed[idx] };
+                    const datasets = activeTypes.map((t, idx) => {
+                        const servantCounts = filteredServants.map(s => {
+                            const sActionsMonth = state.actions.filter(a => s.id == a.servantId && a.type === t.label && DateEngine.normalize(a.date).startsWith(monthStr));
+                            const sProcsMonth = state.processes.filter(p => p.servantId == s.id && DateEngine.normalize(p.deadline).startsWith(monthStr));
+                            let countFromActions = sActionsMonth.length;
+                            let countFromProcesses = 0;
+                            sProcsMonth.forEach(p => {
+                                const pActions = state.actions.filter(a => a.processId === p.id);
+                                if (pActions.length === 0) {
+                                    countFromProcesses += parseInt(p[`qty_${t.key}`] || 0);
+                                }
+                            });
+                            return countFromActions + countFromProcesses;
+                        });
+                        return { label: t.label, data: servantCounts, backgroundColor: colorsFixed[idx] };
                     });
                     window.myChartDist = new Chart(ctxDist, { type: 'bar', data: { labels: servantLabels, datasets: datasets }, options: { responsive: true, maintainAspectRatio: false, scales: { x: { stacked: false }, y: { stacked: false, beginAtZero: true, ticks: { stepSize: 1 } } }, plugins: { legend: { position: 'bottom' } } } });
 
@@ -3052,7 +3276,7 @@
                 const start = document.getElementById(`${prefix}-start`).value;
                 const end = document.getElementById(`${prefix}-end`).value;
                 if (!start || !end) return null;
-                const acts = state.actions.filter(a => a.status === 'Concluído' && DateEngine.normalize(a.date) >= start && DateEngine.normalize(a.date) <= end);
+                const acts = state.actions.filter(a => DateEngine.normalize(a.date) >= start && DateEngine.normalize(a.date) <= end);
                 const procs = state.processes.filter(p => { const d = DateEngine.normalize(p.deadline); return d >= start && d <= end; });
 
                 // Todos os tipos ativos do Firestore — sem nenhuma string hardcoded
@@ -3060,13 +3284,23 @@
 
                 const data = state.servants.map(s => {
                     const sa = acts.filter(a => a.servantId == s.id);
-                    const sp = procs.filter(p => p.servantId == s.id).length;
+                    const sp = procs.filter(p => p.servantId == s.id);
 
                     // Conta cada tipo dinamicamente pelo label do Firestore
                     const typeCounts = {};
                     allActiveTypes.forEach(t => {
-                        typeCounts[t.key] = sa.filter(a => a.type === t.label).length;
+                        let countFromActions = sa.filter(a => a.type === t.label).length;
+                        let countFromProcesses = 0;
+                        sp.forEach(p => {
+                            const pActions = state.actions.filter(a => a.processId === p.id);
+                            if (pActions.length === 0) {
+                                countFromProcesses += parseInt(p[`qty_${t.key}`] || 0);
+                            }
+                        });
+                        typeCounts[t.key] = countFromActions + countFromProcesses;
                     });
+
+                    const servantTotalActions = Object.values(typeCounts).reduce((sum, v) => sum + v, 0);
 
                     // Mantém os aliases das chaves padrão para compatibilidade com o restante do código
                     const findCount = (...possibleKeys) => {
@@ -3079,7 +3313,7 @@
 
                     return {
                         id: s.id, name: s.name, shift: s.shift || 'Não definido',
-                        processesReceived: sp, totalActions: sa.length,
+                        processesReceived: sp.length, totalActions: servantTotalActions,
                         oficio:      findCount('oficio'),
                         circular:    findCount('oficio_circular'),
                         convite:     findCount('oficio_convite'),
@@ -3537,6 +3771,130 @@
             }
 
             // ── EXPORTAÇÃO E IMPORTAÇÃO JSON DE BACKUP (APENAS ADMIN) ──
+
+            // Modo manual: o admin liga o histórico completo quando precisar
+            // gerar relatórios antigos, e desliga quando terminar, para economizar leituras.
+            function updateFullHistoryButton() {
+                const btn = document.getElementById('btn-load-history');
+                if (!btn) return;
+                if (window.fullHistoryEnabled) {
+                    btn.innerHTML = '<i data-lucide="database" class="w-4 h-4"></i> Histórico Completo ATIVO — desligar';
+                    btn.disabled = false;
+                    btn.classList.remove('bg-amber-500', 'hover:bg-amber-600', 'opacity-50', 'cursor-not-allowed');
+                    btn.classList.add('bg-rose-500', 'hover:bg-rose-600');
+                    btn.title = 'Histórico completo ativo (todo o banco carregado). Clique para voltar ao modo filtrado e economizar leituras.';
+                } else {
+                    btn.innerHTML = '<i data-lucide="database" class="w-4 h-4"></i> Carregar Histórico Completo';
+                    btn.disabled = false;
+                    btn.classList.remove('bg-rose-500', 'hover:bg-rose-600', 'opacity-50', 'cursor-not-allowed');
+                    btn.classList.add('bg-amber-500', 'hover:bg-amber-600');
+                    btn.title = 'Ignorar o limite de 60 dias e baixar todo o banco para gerar relatórios antigos';
+                }
+                if (window.lucide && lucide.createIcons) lucide.createIcons();
+            }
+
+            window.toggleFullHistory = async function() {
+                if (!currentUser || currentUser.role !== 'Admin') return alert('Apenas Admins.');
+
+                const btn = document.getElementById('btn-load-history');
+                const origHtml = btn ? btn.innerHTML : '';
+                if (btn) btn.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Aguarde...';
+                if (btn) btn.disabled = true;
+
+                try {
+                    if (!window.fullHistoryEnabled) {
+                        // ── LIGAR: baixa o histórico completo ──
+                        window.fullHistoryEnabled = true;
+                        clearRealtimeListeners();
+                        await setupRealtimeListeners();
+                        if (btn) { btn.disabled = false; }
+                        updateFullHistoryButton();
+                        addLog("Histórico completo ativado. O app está carregando todo o banco. Use 'Desativar' para voltar ao modo filtrado.");
+                    } else {
+                        // ── DESLIGAR: volta ao modo filtrado (~60 dias) ──
+                        window.fullHistoryEnabled = false;
+                        clearRealtimeListeners();
+                        await setupRealtimeListeners();
+                        if (btn) { btn.disabled = false; }
+                        updateFullHistoryButton();
+                        addLog("Histórico completo desativado. Voltando ao modo filtrado (~60 dias).");
+                    }
+                } catch (e) {
+                    addLog("Erro ao alternar histórico completo: " + e.message, true);
+                    if (btn) { btn.disabled = false; }
+                    if (btn) btn.innerHTML = origHtml;
+                }
+            };
+
+            window.loadFullHistory = function() {
+                if (!currentUser || currentUser.role !== 'Admin') return alert('Apenas Admins.');
+                toggleFullHistory();
+            };
+
+            window.runIsoDateMigration = async function() {
+                if (!currentUser || currentUser.role !== 'Admin') return alert('Apenas Admins.');
+                if (!confirm('Isto irá adicionar o campo isoDate a todas as ações e processos para otimizar as leituras do banco. Deseja continuar? (Pode levar alguns minutos)')) return;
+                try {
+                    const btn = document.querySelector('button[onclick="runIsoDateMigration()"]');
+                    const origHtml = btn ? btn.innerHTML : '';
+                    if (btn) btn.innerHTML = '<i data-lucide="loader-2" class="w-3.5 h-3.5 animate-spin"></i> Migrando...';
+                    
+                    addLog('Iniciando migração de isoDate em actions...');
+                    let actionsSnap = await db.collection('actions').get();
+                    let batch = db.batch();
+                    let count = 0;
+                    for (let doc of actionsSnap.docs) {
+                        const data = doc.data();
+                        if (!data.isoDate && data.date) {
+                            let isoDate = data.date;
+                            if (data.date.includes('/')) {
+                                const parts = data.date.split('/');
+                                if (parts.length === 3) isoDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
+                            }
+                            batch.update(doc.ref, { isoDate });
+                            count++;
+                            if (count % 400 === 0) {
+                                await batch.commit();
+                                batch = db.batch();
+                                addLog(`Migradas ${count} actions...`);
+                            }
+                        }
+                    }
+                    if (count % 400 !== 0) await batch.commit();
+                    addLog(`Migração de actions concluída. Total: ${count}`);
+
+                    addLog('Iniciando migração de isoDate em processes...');
+                    let procsSnap = await db.collection('processes').get();
+                    batch = db.batch();
+                    count = 0;
+                    for (let doc of procsSnap.docs) {
+                        const data = doc.data();
+                        if (!data.isoDate && data.deadline) {
+                            let isoDate = data.deadline;
+                            if (data.deadline.includes('/')) {
+                                const parts = data.deadline.split('/');
+                                if (parts.length === 3) isoDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
+                            }
+                            batch.update(doc.ref, { isoDate });
+                            count++;
+                            if (count % 400 === 0) {
+                                await batch.commit();
+                                batch = db.batch();
+                            }
+                        }
+                    }
+                    if (count % 400 !== 0) await batch.commit();
+                    addLog(`Migração de processes concluída. Total: ${count}`);
+                    
+                    if (btn) btn.innerHTML = origHtml;
+                    lucide.createIcons();
+                    alert('Migração de banco concluída com sucesso!');
+                } catch (e) {
+                    addLog('Erro na migração: ' + e.message, true);
+                    alert('Erro na migração. Verifique os logs.');
+                }
+            };
+
             window.exportJSONBackup = async function() {
                 if (!currentUser || currentUser.role !== 'Admin') {
                     alert('Acesso negado. Apenas administradores podem fazer backup do banco de dados.');
@@ -3999,32 +4357,11 @@
                 e.preventDefault();
                 const formData = new FormData(e.target);
                 const servantObj = Object.fromEntries(formData);
-
-                // Valida turno (radio não incluso no FormData se não selecionado)
-                if (!servantObj.shift) {
-                    alert('Selecione um turno de trabalho (Matutino ou Vespertino).');
-                    return;
-                }
-
                 servantObj.status = 'Ativo';
-
-                const btn = e.target.querySelector('button[type="submit"]');
-                const origText = btn.innerText;
-                btn.innerText = 'Salvando...';
-                btn.disabled = true;
-
-                try {
-                    await db.collection("servants").add(servantObj);
-                    logAction('Servidor Criado', `Novo servidor cadastrado: ${servantObj.name}`);
-                    closeModal('modal-servant');
-                    e.target.reset();
-                } catch (err) {
-                    console.error('Erro ao cadastrar servidor:', err);
-                    alert('Erro ao cadastrar servidor: ' + err.message);
-                } finally {
-                    btn.innerText = origText;
-                    btn.disabled = false;
-                }
+                await db.collection("servants").add(servantObj);
+                closeModal('modal-servant');
+                e.target.reset();
+                logAction('Servidor Criado', `Novo servidor cadastrado: ${servantObj.name}`);
             });
 
             // === EDIÇÃO DE SERVIDOR ===
@@ -4035,15 +4372,12 @@
                 document.getElementById('edit-servant-id').value = id;
                 document.getElementById('edit-servant-name').textContent = `${s.name} • Mat. ${s.registration || '—'} • ${s.sector || '—'}`;
 
-                // Preenche todos os campos de texto
-                document.getElementById('edit-servant-field-name').value = s.name || '';
-                document.getElementById('edit-servant-field-registration').value = s.registration || '';
-                document.getElementById('edit-servant-field-role').value = s.role || '';
-                document.getElementById('edit-servant-field-sector').value = s.sector || '';
-                document.getElementById('edit-servant-field-email').value = s.email || '';
-
-                // Pré-seleciona turno
                 const form = document.getElementById('form-edit-servant');
+                form.querySelector('[name="name"]').value = s.name || '';
+                form.querySelector('[name="registration"]').value = s.registration || '';
+                form.querySelector('[name="role"]').value = s.role || '';
+                form.querySelector('[name="sector"]').value = s.sector || '';
+                form.querySelector('[name="email"]').value = s.email || '';
                 form.querySelectorAll('input[name="shift"]').forEach(r => r.checked = (r.value === s.shift));
 
                 openModal('modal-edit-servant');
@@ -4056,32 +4390,22 @@
                 const formData = new FormData(e.target);
                 const data = Object.fromEntries(formData);
                 if (!data.shift) { alert('Selecione um turno.'); return; }
-                if (!data.name || !data.name.trim()) { alert('Informe o nome do servidor.'); return; }
-
-                const btn = e.target.querySelector('button[type="submit"]');
-                const origText = btn.innerText;
-                btn.innerText = 'Salvando...';
-                btn.disabled = true;
-
                 try {
                     const s = state.servants.find(x => x.id === id);
                     await db.collection('servants').doc(id).update({
-                        name: data.name.trim(),
-                        registration: data.registration || '',
-                        role: data.role || '',
-                        sector: data.sector || '',
-                        email: data.email || '',
+                        name: data.name,
+                        registration: data.registration,
+                        role: data.role,
+                        sector: data.sector,
+                        email: data.email,
                         shift: data.shift,
                         status: s ? (s.status || 'Ativo') : 'Ativo'
                     });
-                    logAction('Servidor Atualizado', `Servidor ${data.name} atualizado (turno: ${data.shift})`);
+                    logAction('Servidor Atualizado', `Servidor ${data.name || id} atualizado`);
                     closeModal('modal-edit-servant');
                 } catch (err) {
                     console.error('Erro ao atualizar servidor:', err);
-                    alert('Erro ao salvar alterações: ' + err.message);
-                } finally {
-                    btn.innerText = origText;
-                    btn.disabled = false;
+                    alert('Erro ao salvar alterações. Veja o console.');
                 }
             });
 
@@ -4135,7 +4459,8 @@
                             deadline: deadlineVal,
                             priority: getVal('priority'),
                             servantId: servantIdVal,
-                            obs: getVal('obs')
+                            obs: getVal('obs'),
+                            isoDate: actionDateStr
                         };
                         // Adiciona todos os campos qty_ dinamicamente
                         Object.assign(updateData, newQtys);
@@ -4157,6 +4482,7 @@
                                     servantId: servantIdVal,
                                     type: actionTypes[key],
                                     date: actionDateStr,
+                                    isoDate: actionDateStr,
                                     status: 'Concluído',
                                     obs: 'Recriada via Edição de Processo'
                                 });
@@ -4167,12 +4493,14 @@
                     } else {
                         // ===== MODO CRIAÇÃO =====
                         proc.createdAt = firebase.firestore.FieldValue.serverTimestamp();
-                        const procRef = await db.collection("processes").add(proc);
+                        proc.createdBy = currentUser ? currentUser.name : 'Sistema';
                         const actionDateStr = proc.deadline || DateEngine.getToday();
+                        proc.isoDate = actionDateStr;
+                        const procRef = await db.collection("processes").add(proc);
                         for (let key in actionTypes) {
                             const qty = parseInt(proc[key] || 0);
                             for (let i = 0; i < qty; i++) {
-                                await db.collection("actions").add({ processId: procRef.id, servantId: proc.servantId, type: actionTypes[key], date: actionDateStr, status: 'Concluído', obs: 'Registrada via Cadastro de Processo' });
+                                await db.collection("actions").add({ processId: procRef.id, servantId: proc.servantId, type: actionTypes[key], date: actionDateStr, isoDate: actionDateStr, status: 'Concluído', obs: 'Registrada via Cadastro de Processo' });
                             }
                         }
                         logAction('Processo Criado', `Processo ${proc.number} criado com ações registradas`);
@@ -4181,6 +4509,7 @@
                     closeModal('modal-process');
                     e.target.reset();
                     resetProcessModal();
+                    if (window.refreshHeavyCollections) await window.refreshHeavyCollections();
                 } catch (err) {
                     console.error('Erro ao salvar processo:', err);
                     alert('Erro ao salvar o processo. Veja o console para detalhes.');
@@ -4198,6 +4527,7 @@
                 await db.collection("actions").add(action);
                 closeModal('modal-action');
                 e.target.reset();
+                if (window.refreshHeavyCollections) await window.refreshHeavyCollections();
                 logAction('Ação Registrada', `Ação ${action.type} lançada para o processo ${action.processId}`);
             });
 
@@ -4288,9 +4618,15 @@
                     let friendlyMsg = err.message;
                     if (err.code === "auth/invalid-credential" || err.code === "auth/wrong-password" || err.code === "auth/user-not-found" || err.code === "auth/invalid-email") {
                         friendlyMsg = "Usuário ou senha incorretos.";
+                    } else if (err.code === "auth/unauthorized-domain") {
+                        friendlyMsg = "Domínio não autorizado. Adicione 'gutormin.github.io' em Firebase Console > Authentication > Settings > Authorized domains.";
+                    } else if (err.code === "auth/network-request-failed") {
+                        friendlyMsg = "Erro ao conectar ao servidor. Verifique sua conexão com a internet ou bloqueio de firewall.";
+                    } else if (err.code === "auth/too-many-requests") {
+                        friendlyMsg = "Muitas tentativas. Aguarde um momento e tente novamente.";
                     }
                     alert("Erro no login: " + friendlyMsg);
-                    addLog("Erro no login: " + err.message, true);
+                    addLog("Erro no login [" + (err.code || 'sem-codigo') + "]: " + err.message, true);
                     btn.innerText = "Entrar no Sistema";
                     btn.disabled = false;
                 }
@@ -4361,15 +4697,60 @@
                 { key: 'traslado',       label: 'Traslado',                 isDefault: true  },
                 { key: 'diligencia',     label: 'Diligência',               isDefault: true  },
                 { key: 'comunicacao',    label: 'Comunicação',              isDefault: true  },
+                { key: 'apensamento',    label: 'Apensamento',              isDefault: true  },
             ];
 
             // state.actionTypes será carregado do Firestore (coleção "actionTypes")
             // Se não existir, usa os defaults
             function getActiveActionTypes() {
+                let types = [];
                 if (state.actionTypes && state.actionTypes.length > 0) {
-                    return state.actionTypes.filter(t => t.active !== false);
+                    types = state.actionTypes.filter(t => t.active !== false);
+                } else {
+                    types = DEFAULT_ACTION_TYPES;
                 }
-                return DEFAULT_ACTION_TYPES;
+
+                const uniqueTypes = [];
+                const seenLabels = new Set();
+                let hasApensamento = types.some(t => t.label === 'Apensamento' || t.key === 'apensamento');
+                let trasladoCount = 0;
+
+                types.forEach(t => {
+                    // Trata a duplicata de Traslado como Apensamento caso ele não exista no banco
+                    if (t.label === 'Traslado') {
+                        trasladoCount++;
+                        if (trasladoCount > 1 && !hasApensamento) {
+                            uniqueTypes.push({
+                                id: t.id || 'apensamento_virtual',
+                                key: 'apensamento',
+                                label: 'Apensamento',
+                                isDefault: true,
+                                active: true
+                            });
+                            seenLabels.add('Apensamento');
+                            hasApensamento = true;
+                            return;
+                        }
+                    }
+
+                    if (!seenLabels.has(t.label)) {
+                        seenLabels.add(t.label);
+                        uniqueTypes.push(t);
+                    }
+                });
+
+                // Garante que o Apensamento esteja sempre na lista
+                if (!seenLabels.has('Apensamento')) {
+                    uniqueTypes.push({
+                        id: 'apensamento_default',
+                        key: 'apensamento',
+                        label: 'Apensamento',
+                        isDefault: true,
+                        active: true
+                    });
+                }
+
+                return uniqueTypes;
             }
 
             function populateActionTypeSelect() {
