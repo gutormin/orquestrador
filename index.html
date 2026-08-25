@@ -2047,7 +2047,31 @@
                 
             auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
                 .catch(err => console.error("Erro ao definir persistência do Auth:", err));
-            addLog("Firebase Inicializado!");
+            addLog("Firebase Inicializado com Cache Habilitado!");
+
+            // Auxiliares de Cache Local (localStorage) para dados estáticos/auxiliares
+            const LocalCache = {
+                set: (key, data) => {
+                    try {
+                        localStorage.setItem(`orq_cache_${key}`, JSON.stringify({
+                            timestamp: Date.now(),
+                            data: data
+                        }));
+                    } catch(e) {}
+                },
+                get: (key, maxAgeMs = 12 * 3600 * 1000) => {
+                    try {
+                        const item = localStorage.getItem(`orq_cache_${key}`);
+                        if (!item) return null;
+                        const parsed = JSON.parse(item);
+                        if (Date.now() - parsed.timestamp > maxAgeMs) return null;
+                        return parsed.data;
+                    } catch(e) { return null; }
+                },
+                clear: (key) => {
+                    try { localStorage.removeItem(`orq_cache_${key}`); } catch(e) {}
+                }
+            };
 
             let state = { users: [], servants: [], processes: [], actions: [], audit: [], deadlines: [], actionTypes: [] };
             let currentUser = null;
@@ -2112,8 +2136,17 @@
                         statusEl.className = "mt-4 text-xs font-medium px-3 py-1 rounded-full bg-emerald-100 text-emerald-600 inline-block";
                     }
 
+                    // Tenta carregar servidores do cache local imediatamente para exibição instantânea
+                    const cachedServants = LocalCache.get('servants', 6 * 3600 * 1000);
+                    if (cachedServants && cachedServants.length > 0) {
+                        state.servants = cachedServants;
+                        renderServants();
+                        populateSelects();
+                    }
+
                     const u2 = db.collection("servants").onSnapshot((snapshot) => {
                         state.servants = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                        LocalCache.set('servants', state.servants);
                         renderServants();
                         populateSelects();
                     }, (err) => addLog("Erro em 'servants': " + err.message, true));
@@ -2179,6 +2212,14 @@
                     }, (err) => addLog("Erro em 'deadlines': " + err.message, true));
                     activeListeners.push(u5);
 
+                    const cachedActionTypes = LocalCache.get('actionTypes', 12 * 3600 * 1000);
+                    if (cachedActionTypes && cachedActionTypes.length > 0) {
+                        state.actionTypes = cachedActionTypes;
+                        populateActionTypeSelect();
+                        renderActionTypesPage();
+                        renderPlanningGrid();
+                    }
+
                     const u6 = db.collection("actionTypes").onSnapshot(async (snapshot) => {
                         if (snapshot.empty) {
                             const batch = db.batch();
@@ -2189,6 +2230,7 @@
                             await batch.commit();
                         } else {
                             state.actionTypes = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                            LocalCache.set('actionTypes', state.actionTypes);
                             
                             // Correção automática de duplicatas no Firestore (se auto-ajusta no primeiro carregamento)
                             if (!window.actionTypesCleaned) {
