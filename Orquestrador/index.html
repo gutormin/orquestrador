@@ -976,7 +976,7 @@
                             <button onclick="switchReportTab('backup')" id="tab-backup" title="Exportação de Relatórios" class="report-tab-btn px-4 py-2 rounded-lg font-bold text-sm transition-all flex items-center gap-2"><i data-lucide="download" class="w-4 h-4"></i><span class="hidden sm:inline">Exportar Relatórios</span><span class="sm:hidden">Exportar</span></button>
                             <button onclick="switchReportTab('diretoria')" id="tab-diretoria" title="Relatório Gerencial" class="report-tab-btn px-4 py-2 rounded-lg font-bold text-sm transition-all flex items-center gap-2" style="background:linear-gradient(135deg,#7c3aed,#4f46e5);color:white;"><i data-lucide="presentation" class="w-4 h-4"></i><span class="hidden sm:inline">Gerencial</span><span class="sm:hidden">Ger.</span></button>
                         </div>
-                        <button id="btn-load-history" onclick="loadFullHistory()" class="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-xl font-bold text-sm transition-all flex items-center gap-2 shadow-sm whitespace-nowrap" title="Ignorar o limite de 60 dias e baixar todo o banco para gerar relatórios antigos">
+                        <button id="btn-load-history" onclick="loadFullHistory()" class="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-xl font-bold text-sm transition-all flex items-center gap-2 shadow-sm whitespace-nowrap" title="Ignorar o limite de 30 dias e baixar todo o banco para gerar relatórios antigos">
                             <i data-lucide="database" class="w-4 h-4"></i> Carregar Histórico Completo
                         </button>
                     </div>
@@ -2119,11 +2119,11 @@
                     }, (err) => addLog("Erro em 'servants': " + err.message, true));
                     activeListeners.push(u2);
 
-                    // Janela de ~60 dias, arredondada para o 1º ou 15º do mês de 60 dias atrás.
+                    // Janela de ~30 dias, arredondada para o 1º ou 15º do mês de 30 dias atrás.
                     // O arredondamento mantém a string da query estável por ~15 dias, o que permite
                     // o cache offline (resume token) reutilizar o download em vez de re-baixar tudo.
                     const sd = new Date();
-                    sd.setDate(sd.getDate() - 60);
+                    sd.setDate(sd.getDate() - 30);
                     if (sd.getDate() > 15) sd.setDate(15); else sd.setDate(1);
                     const limitDateStr = `${sd.getFullYear()}-${String(sd.getMonth() + 1).padStart(2, '0')}-${String(sd.getDate()).padStart(2, '0')}`;
 
@@ -3788,7 +3788,7 @@
                     btn.disabled = false;
                     btn.classList.remove('bg-rose-500', 'hover:bg-rose-600', 'opacity-50', 'cursor-not-allowed');
                     btn.classList.add('bg-amber-500', 'hover:bg-amber-600');
-                    btn.title = 'Ignorar o limite de 60 dias e baixar todo o banco para gerar relatórios antigos';
+                    btn.title = 'Ignorar o limite de 30 dias e baixar todo o banco para gerar relatórios antigos';
                 }
                 if (window.lucide && lucide.createIcons) lucide.createIcons();
             }
@@ -3811,13 +3811,13 @@
                         updateFullHistoryButton();
                         addLog("Histórico completo ativado. O app está carregando todo o banco. Use 'Desativar' para voltar ao modo filtrado.");
                     } else {
-                        // ── DESLIGAR: volta ao modo filtrado (~60 dias) ──
+                        // ── DESLIGAR: volta ao modo filtrado (~30 dias) ──
                         window.fullHistoryEnabled = false;
                         clearRealtimeListeners();
                         await setupRealtimeListeners();
                         if (btn) { btn.disabled = false; }
                         updateFullHistoryButton();
-                        addLog("Histórico completo desativado. Voltando ao modo filtrado (~60 dias).");
+                        addLog("Histórico completo desativado. Voltando ao modo filtrado (~30 dias).");
                     }
                 } catch (e) {
                     addLog("Erro ao alternar histórico completo: " + e.message, true);
