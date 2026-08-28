@@ -896,7 +896,7 @@
                     <div class="flex justify-between items-center mb-6">
                         <div class="relative w-1/3">
                             <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400"></i>
-                            <input type="text" oninput="filterTable('processes-table', this.value)" placeholder="Buscar processo..." class="w-full pl-10 pr-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500">
+                            <input type="text" oninput="window.searchProcesses && window.searchProcesses(this.value)" placeholder="Buscar processo..." class="w-full pl-10 pr-4 py-2 rounded-lg border border-slate-300 outline-none focus:ring-2 focus:ring-indigo-500">
                         </div>
                         <div class="flex items-center gap-2">
                             <button id="btn-new-process" onclick="openModal('modal-process'); resetProcessModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-all shadow-md"><i data-lucide="plus" class="w-4 h-4"></i> Novo Processo</button>
@@ -2562,14 +2562,22 @@
                 return `<span class="badge ${color}">${priority}</span>`;
             }
 
-            function renderProcesses() {
+            function renderProcesses(processesList) {
                 const body = document.getElementById('processes-body');
                 if(!body) return;
-                const sortedProcesses = [...state.processes].sort((a, b) => {
+                
+                const listToUse = processesList || state.processes;
+                let sortedProcesses = [...listToUse].sort((a, b) => {
                     const timeA = (a.createdAt && a.createdAt.seconds) ? a.createdAt.seconds : 0;
                     const timeB = (b.createdAt && b.createdAt.seconds) ? b.createdAt.seconds : 0;
                     return timeB - timeA;
                 });
+                
+                // Se for a renderização padrão (sem filtro de busca ativa),
+                // limitamos aos 100 mais recentes para máxima velocidade do navegador.
+                if (!processesList) {
+                    sortedProcesses = sortedProcesses.slice(0, 100);
+                }
 
                 body.innerHTML = sortedProcesses.map(p => {
                     const servant = state.servants.find(s => s.id == p.servantId);
@@ -2588,6 +2596,55 @@
                 }).join('');
                 lucide.createIcons();
             }
+
+            window.searchProcesses = function(query) {
+                const q = (query || '').trim();
+                
+                // Se a busca for vazia ou curta (< 3 caracteres)
+                if (q.length < 3) {
+                    if (window._searchTimeout) clearTimeout(window._searchTimeout);
+                    renderProcesses();
+                    if (q.length > 0) {
+                        filterTable('processes-table', q);
+                    }
+                    return;
+                }
+
+                // Debounce para evitar múltiplas chamadas ao banco
+                if (window._searchTimeout) clearTimeout(window._searchTimeout);
+                window._searchTimeout = setTimeout(async () => {
+                    try {
+                        addLog(`Buscando processo no Firestore por número: ${q}...`);
+                        
+                        // Busca prefixada no Firestore (ex: número começa com q)
+                        const snap = await db.collection("processes")
+                            .where("number", ">=", q)
+                            .where("number", "<=", q + "\uf8ff")
+                            .limit(50)
+                            .get();
+
+                        if (!snap.empty) {
+                            const results = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                            
+                            // Adiciona ao state.processes local sem duplicados
+                            results.forEach(res => {
+                                if (!state.processes.some(p => p.id === res.id)) {
+                                    state.processes.push(res);
+                                }
+                            });
+
+                            renderProcesses(results);
+                        } else {
+                            const body = document.getElementById('processes-body');
+                            if (body) {
+                                body.innerHTML = `<tr><td colspan="8" class="text-center py-8 text-slate-400 font-medium">Nenhum processo encontrado com o termo "${q}" no banco de dados.</td></tr>`;
+                            }
+                        }
+                    } catch (err) {
+                        addLog("Erro ao buscar no servidor: " + err.message, true);
+                    }
+                }, 400);
+            };
 
             // Estado: id do processo em edição (null = modo "novo")
             window.editingProcessId = null;
