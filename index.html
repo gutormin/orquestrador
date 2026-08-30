@@ -2112,6 +2112,30 @@
                 activeListeners = [];
             }
 
+            // ── ATUALIZAÇÃO OTIMISTA DO ESTADO ────────────────────────────────
+            // Depois de escrever no Firestore, atualizamos o `state` em memória em vez de
+            // re-baixar a coleção inteira. Isso elimina N docreads por operação de escrita.
+            function upsertDocInState(listName, doc) {
+                const list = state[listName] || (state[listName] = []);
+                const idx = list.findIndex(x => x.id === doc.id);
+                if (idx >= 0) list[idx] = doc;
+                else list.push(doc);
+                return doc;
+            }
+            function removeFromState(listName, id) {
+                if (state[listName]) state[listName] = state[listName].filter(x => x.id !== id);
+            }
+            // Reaproveitado pelas telas de processo/ação para re-renderizar sem re-buscar.
+            function renderAllFromState() {
+                if (typeof renderDashboard === 'function') { try { renderDashboard(); } catch(e) {} }
+                if (typeof renderProcesses === 'function') { try { renderProcesses(); } catch(e) {} }
+                if (typeof renderActions === 'function') { try { renderActions(); } catch(e) {} }
+                if (typeof renderDeadlines === 'function') { try { renderDeadlines(); } catch(e) {} }
+                if (typeof renderServants === 'function') { try { renderServants(); } catch(e) {} }
+                if (typeof renderUsers === 'function') { try { renderUsers(); } catch(e) {} }
+                if (window.lucide && lucide.createIcons) lucide.createIcons();
+            }
+
             function setupRealtimeListeners() {
                 const statusEl = document.getElementById('db-status');
                 addLog("Tentando conectar coleções...");
@@ -2183,12 +2207,37 @@
                                 lucide.createIcons();
                             }
                             addLog('Buscando processos e ações do servidor...');
-                            const [procSnap, actSnap] = await Promise.all([
-                                window._currentProcQuery.get(),
-                                window._currentActQuery.get()
-                            ]);
-                            state.processes = procSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                            state.actions = actSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+                            // Em modo "histórico completo", paginamos em lotes de 500 para não
+                            // estourar a cota numa única query gigante.
+                            async function getAllPaginated(query) {
+                                const docs = [];
+                                let lastDoc = null;
+                                const ref = query.limit(500);
+                                for (;;) {
+                                    const q = lastDoc ? ref.startAfter(lastDoc) : ref;
+                                    const snap = await q.get();
+                                    if (snap.empty) break;
+                                    snap.docs.forEach(d => docs.push({ id: d.id, ...d.data() }));
+                                    lastDoc = snap.docs[snap.docs.length - 1];
+                                    if (snap.size < 500) break;
+                                }
+                                return docs;
+                            }
+
+                            if (window.fullHistoryEnabled) {
+                                // Histórico completo: paginado.
+                                state.processes = await getAllPaginated(window._currentProcQuery);
+                                state.actions = await getAllPaginated(window._currentActQuery);
+                            } else {
+                                // Janela de ~30 dias: query já filtrada, um get() único é suficiente.
+                                const [procSnap, actSnap] = await Promise.all([
+                                    window._currentProcQuery.get(),
+                                    window._currentActQuery.get()
+                                ]);
+                                state.processes = procSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                                state.actions = actSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                            }
                             renderProcesses();
                             renderActions();
                             renderDashboard();
@@ -2206,11 +2255,37 @@
                     // Carregamento inicial — UMA leitura, sem listener permanente
                     window.refreshHeavyCollections();
 
-                    const u5 = db.collection("deadlines").onSnapshot((snapshot) => {
-                        state.deadlines = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    // ── ATUALIZAÇÃO LEVE (on-demand) ────────────────────────────────
+                    // Re-busca apenas as coleções pequenas (deadlines + audit) — que pararam de
+                    // usar onSnapshot. Não toca em processos/ações (já em memória). Chamado pelo
+                    // botão "Atualizar Dados" como alternativa barata ao refreshHeavyCollections.
+                    window.refreshLightData = async function() {
+                        const loaders = [];
+                        if (window._loadDeadlines) loaders.push(window._loadDeadlines());
+                        if (window._loadAudit) loaders.push(window._loadAudit());
+                        if (loaders.length) { await Promise.all(loaders); }
+                        if (typeof renderDashboard === 'function') { try { renderDashboard(); } catch(e) {} }
+                        addLog('Atualização leve concluída (prazos e auditoria).');
+                    };
+
+                    // Prazos: get() único on-demand (não onSnapshot). Coleção pequena, mas o listener
+                    // reenvia todo o doc a cada alteração para todos os usuários conectados — custo contínuo.
+                    // Cache local com TTL curto (60s) evita re-leitura a cada navegação.
+                    const cachedDeadlines = LocalCache.get('deadlines', 60 * 1000);
+                    if (cachedDeadlines) {
+                        state.deadlines = cachedDeadlines;
                         renderDeadlines();
-                    }, (err) => addLog("Erro em 'deadlines': " + err.message, true));
-                    activeListeners.push(u5);
+                    }
+                    const loadDeadlines = async () => {
+                        try {
+                            const snap = await db.collection("deadlines").get();
+                            state.deadlines = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                            LocalCache.set('deadlines', state.deadlines);
+                            renderDeadlines();
+                        } catch (err) { addLog("Erro em 'deadlines': " + err.message, true); }
+                    };
+                    window._loadDeadlines = loadDeadlines;
+                    loadDeadlines();
 
                     const cachedActionTypes = LocalCache.get('actionTypes', 12 * 3600 * 1000);
                     if (cachedActionTypes && cachedActionTypes.length > 0) {
@@ -2295,29 +2370,18 @@
                     }, (err) => addLog("Erro em 'actionTypes': " + err.message, true));
                     activeListeners.push(u6);
 
-                    // Audit: onSnapshot com limite (barato). Usado também para notificar colaboração.
-                    let _auditFirstLoad = true;
-                    const u7 = db.collection("audit").orderBy("timestamp", "desc").limit(50).onSnapshot((snapshot) => {
-                        state.audit = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                        if (currentUser && currentUser.role === 'Admin') renderAudit();
-                        if (_auditFirstLoad) { _auditFirstLoad = false; return; }
-                        // Notifica colaboração: outro usuário fez alteração
-                        snapshot.docChanges().forEach(change => {
-                            if (change.type === 'added') {
-                                const d = change.doc.data();
-                                if (d.user && currentUser && d.user !== currentUser.name) {
-                                    const toast = document.getElementById('refresh-toast');
-                                    const msg = document.getElementById('toast-msg');
-                                    if (toast && msg) {
-                                        msg.innerText = `${d.user} fez alterações — clique em "Atualizar Dados" para ver.`;
-                                        toast.classList.remove('hidden');
-                                        setTimeout(() => toast.classList.add('hidden'), 12000);
-                                    }
-                                }
-                            }
-                        });
-                    }, (err) => addLog("Erro em 'audit': " + err.message, true));
-                    activeListeners.push(u7);
+                    // Audit: get() único com limite (não onSnapshot). O listener realimentava todo o
+                    // histórico de auditoria a cada mudança para todos os usuários conectados — um dos
+                    // maiores vazamentos. O toast de colaboração deixa de existir (ver plano).
+                    const loadAudit = async () => {
+                        try {
+                            const snap = await db.collection("audit").orderBy("timestamp", "desc").limit(50).get();
+                            state.audit = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                            if (currentUser && currentUser.role === 'Admin') renderAudit();
+                        } catch (err) { addLog("Erro em 'audit': " + err.message, true); }
+                    };
+                    window._loadAudit = loadAudit;
+                    loadAudit();
 
                 } catch (e) {
                     addLog("Erro geral nos listeners: " + e.message, true);
@@ -2866,24 +2930,27 @@
                     let cascadeCount = 0;
 
                     if (collectionName === 'processes') {
-                        // Usa cache local (onSnapshot já garante dados atualizados)
-                        // { source: 'server' } bloqueava não-Admins pelas regras do Firestore
-                        const actionsSnap = await db.collection('actions').where('processId', '==', id).get();
-                        actionsSnap.forEach(doc => { batch.delete(doc.ref); cascadeCount++; });
-                        const deadlinesSnap = await db.collection('deadlines').where('processId', '==', id).get();
-                        deadlinesSnap.forEach(doc => { batch.delete(doc.ref); cascadeCount++; });
+                        // Otimizado: usa o estado em memória (já carregado) em vez de re-consultar o banco.
+                        state.actions.filter(a => a.processId == id).forEach(a => { batch.delete(db.collection('actions').doc(a.id)); cascadeCount++; });
+                        state.deadlines.filter(d => d.processId == id).forEach(d => { batch.delete(db.collection('deadlines').doc(d.id)); cascadeCount++; });
                     }
 
                     if (collectionName === 'servants') {
-                        const actionsSnap = await db.collection('actions').where('servantId', '==', id).get();
-                        actionsSnap.forEach(doc => { batch.delete(doc.ref); cascadeCount++; });
+                        state.actions.filter(a => a.servantId == id).forEach(a => { batch.delete(db.collection('actions').doc(a.id)); cascadeCount++; });
                     }
 
                     await batch.commit();
 
-                    if (window.refreshHeavyCollections && (collectionName === 'processes' || collectionName === 'actions' || collectionName === 'servants')) {
-                        await window.refreshHeavyCollections();
+                    // Atualização otimista do estado local — sem re-baixar a coleção inteira.
+                    removeFromState(collectionName, id);
+                    if (collectionName === 'processes') {
+                        state.actions = state.actions.filter(a => a.processId != id);
+                        state.deadlines = state.deadlines.filter(d => d.processId != id);
                     }
+                    if (collectionName === 'servants') {
+                        state.actions = state.actions.filter(a => a.servantId != id);
+                    }
+                    renderAllFromState();
 
                     const cascadeMsg = cascadeCount > 0 ? ` (+ ${cascadeCount} registro(s) vinculado(s))` : '';
                     logAction('Exclusão', `Item removido da coleção ${collectionName} ID: ${id}${cascadeMsg}`);
@@ -4008,9 +4075,32 @@
                 try {
                     const collections = ['users', 'servants', 'processes', 'actions', 'deadlines', 'actionTypes', 'audit'];
                     const backup = {};
+                    let processed = 0;
+                    const total = collections.length;
+
+                    // Paginação por lotes (orderBy __name__ + startAfter). Baixa o backup completo
+                    // sem disparar uma única query gigante que estoura a cota de leituras.
+                    async function readAllInPages(col) {
+                        const ref = db.collection(col).orderBy('__name__').limit(500);
+                        const docs = [];
+                        let lastDoc = null;
+                        for (;;) {
+                            const q = lastDoc ? ref.startAfter(lastDoc) : ref;
+                            const snap = await q.get();
+                            if (snap.empty) break;
+                            snap.docs.forEach(d => docs.push({ id: d.id, ...d.data() }));
+                            lastDoc = snap.docs[snap.docs.length - 1];
+                            if (snap.size < 500) break;
+                        }
+                        return docs;
+                    }
+
                     for (const col of collections) {
-                        const snap = await db.collection(col).get();
-                        backup[col] = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                        btn.innerHTML = `<i data-lucide="loader" class="w-3.5 h-3.5 animate-spin"></i> Lendo ${col}...`;
+                        if (window.lucide && lucide.createIcons) lucide.createIcons();
+                        backup[col] = await readAllInPages(col);
+                        processed++;
+                        addLog(`Backup: ${col} (${backup[col].length} docs)`);
                     }
                     const json = JSON.stringify(backup, null, 2);
                     const blob = new Blob([json], { type: 'application/json' });
@@ -4098,11 +4188,19 @@
                             };
 
                             if (overwrite) {
+                                // Sobrescrever = apagar tudo. Em vez de ler a coleção inteira (N docreads
+                                // para depois deletar), paginamos por __name__ e deletamos em lotes.
                                 for (const col of collections) {
-                                    const snap = await db.collection(col).get();
-                                    snap.forEach(doc => {
-                                        addToBatch(doc.ref, null, 'delete');
-                                    });
+                                    const ref = db.collection(col).orderBy('__name__').limit(500);
+                                    let lastDoc = null;
+                                    for (;;) {
+                                        const q = lastDoc ? ref.startAfter(lastDoc) : ref;
+                                        const snap = await q.get();
+                                        if (snap.empty) break;
+                                        snap.forEach(doc => addToBatch(doc.ref, null, 'delete'));
+                                        lastDoc = snap.docs[snap.docs.length - 1];
+                                        if (snap.size < 500) break;
+                                    }
                                 }
                             }
 
@@ -4572,11 +4670,24 @@
                             await deleteBatch.commit();
                         }
 
-                        // 6) Recria ações com os NOVOS quantitativos do formulário
+                        // 6) Atualização otimista: remove as actions antigas do state e recria as novas
+                        //    (uma única criação no banco + inserção no state, sem re-baixar a coleção).
+                        upsertDocInState('processes', { id: editingId, ...updateData });
+                        state.actions.filter(a => a.processId == editingId).forEach(a => removeFromState('actions', a.id));
                         for (const key in actionTypes) {
                             const qty = newQtys[key];
                             for (let i = 0; i < qty; i++) {
-                                await db.collection('actions').add({
+                                const newRef = await db.collection('actions').add({
+                                    processId: editingId,
+                                    servantId: servantIdVal,
+                                    type: actionTypes[key],
+                                    date: actionDateStr,
+                                    isoDate: actionDateStr,
+                                    status: 'Concluído',
+                                    obs: 'Recriada via Edição de Processo'
+                                });
+                                upsertDocInState('actions', {
+                                    id: newRef.id,
                                     processId: editingId,
                                     servantId: servantIdVal,
                                     type: actionTypes[key],
@@ -4596,10 +4707,12 @@
                         const actionDateStr = proc.deadline || DateEngine.getToday();
                         proc.isoDate = actionDateStr;
                         const procRef = await db.collection("processes").add(proc);
+                        upsertDocInState('processes', { id: procRef.id, ...proc, createdAt: { seconds: Math.floor(Date.now()/1000) } });
                         for (let key in actionTypes) {
                             const qty = parseInt(proc[key] || 0);
                             for (let i = 0; i < qty; i++) {
-                                await db.collection("actions").add({ processId: procRef.id, servantId: proc.servantId, type: actionTypes[key], date: actionDateStr, isoDate: actionDateStr, status: 'Concluído', obs: 'Registrada via Cadastro de Processo' });
+                                const newRef = await db.collection("actions").add({ processId: procRef.id, servantId: proc.servantId, type: actionTypes[key], date: actionDateStr, isoDate: actionDateStr, status: 'Concluído', obs: 'Registrada via Cadastro de Processo' });
+                                upsertDocInState('actions', { id: newRef.id, processId: procRef.id, servantId: proc.servantId, type: actionTypes[key], date: actionDateStr, isoDate: actionDateStr, status: 'Concluído', obs: 'Registrada via Cadastro de Processo' });
                             }
                         }
                         logAction('Processo Criado', `Processo ${proc.number} criado com ações registradas`);
@@ -4608,7 +4721,8 @@
                     closeModal('modal-process');
                     e.target.reset();
                     resetProcessModal();
-                    if (window.refreshHeavyCollections) await window.refreshHeavyCollections();
+                    // Atualização otimista local — sem re-baixar a coleção inteira.
+                    renderAllFromState();
                 } catch (err) {
                     console.error('Erro ao salvar processo:', err);
                     alert('Erro ao salvar o processo. Veja o console para detalhes.');
@@ -4623,10 +4737,13 @@
                 const formData = new FormData(e.target);
                 const action = Object.fromEntries(formData);
                 action.status = 'Concluído';
-                await db.collection("actions").add(action);
+                if (!action.isoDate) action.isoDate = DateEngine.getToday();
+                const newRef = await db.collection("actions").add(action);
+                // Atualização otimista local — sem re-baixar a coleção inteira.
+                upsertDocInState('actions', { id: newRef.id, ...action });
                 closeModal('modal-action');
                 e.target.reset();
-                if (window.refreshHeavyCollections) await window.refreshHeavyCollections();
+                renderAllFromState();
                 logAction('Ação Registrada', `Ação ${action.type} lançada para o processo ${action.processId}`);
             });
 
