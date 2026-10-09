@@ -4704,15 +4704,15 @@
                         // ===== MODO CRIAÇÃO =====
                         proc.createdAt = firebase.firestore.FieldValue.serverTimestamp();
                         proc.createdBy = currentUser ? currentUser.name : 'Sistema';
-                        const actionDateStr = proc.deadline || DateEngine.getToday();
-                        proc.isoDate = actionDateStr;
+                        const todayStr = DateEngine.getToday();
+                        proc.isoDate = todayStr;
                         const procRef = await db.collection("processes").add(proc);
                         upsertDocInState('processes', { id: procRef.id, ...proc, createdAt: { seconds: Math.floor(Date.now()/1000) } });
                         for (let key in actionTypes) {
                             const qty = parseInt(proc[key] || 0);
                             for (let i = 0; i < qty; i++) {
-                                const newRef = await db.collection("actions").add({ processId: procRef.id, servantId: proc.servantId, type: actionTypes[key], date: actionDateStr, isoDate: actionDateStr, status: 'Concluído', obs: 'Registrada via Cadastro de Processo' });
-                                upsertDocInState('actions', { id: newRef.id, processId: procRef.id, servantId: proc.servantId, type: actionTypes[key], date: actionDateStr, isoDate: actionDateStr, status: 'Concluído', obs: 'Registrada via Cadastro de Processo' });
+                                const newRef = await db.collection("actions").add({ processId: procRef.id, servantId: proc.servantId, type: actionTypes[key], date: todayStr, isoDate: todayStr, status: 'Concluído', obs: 'Registrada via Cadastro de Processo' });
+                                upsertDocInState('actions', { id: newRef.id, processId: procRef.id, servantId: proc.servantId, type: actionTypes[key], date: todayStr, isoDate: todayStr, status: 'Concluído', obs: 'Registrada via Cadastro de Processo' });
                             }
                         }
                         logAction('Processo Criado', `Processo ${proc.number} criado com ações registradas`);
