@@ -3053,11 +3053,11 @@
                     
                     allTypes.forEach(t => {
                         let countFromActions = sActionsMonth.filter(a => a.type === t.label).length;
-                        // Para processos desse mês do servidor que não possuem ações registradas na coleção 'actions'
                         let countFromProcesses = 0;
                         sProcsMonth.forEach(p => {
                             const pActions = state.actions.filter(a => a.processId == p.id);
-                            if (pActions.length === 0) {
+                            const hasMatchingActionInMonth = pActions.some(a => a.type === t.label && DateEngine.normalize(a.date).startsWith(monthStr));
+                            if (!hasMatchingActionInMonth) {
                                 countFromProcesses += parseInt(p[`qty_${t.key}`] || 0);
                             }
                         });
@@ -3084,7 +3084,7 @@
                 updateRankingDayLabel();
                 const servantTodayStats = filteredServants.map(s => {
                     const sActionsToday = state.actions.filter(a => s.id == a.servantId && DateEngine.normalize(a.date) === rankingDateStr);
-                    const sProcsToday = state.processes.filter(p => p.servantId == s.id && (DateEngine.normalize(p.deadline) === rankingDateStr || DateEngine.normalize(p.createdAt) === rankingDateStr));
+                    const sProcsToday = state.processes.filter(p => p.servantId == s.id && (DateEngine.normalize(p.deadline) === rankingDateStr || DateEngine.normalize(p.isoDate) === rankingDateStr || DateEngine.normalize(p.createdAt) === rankingDateStr));
                     const allTypesD = getActiveActionTypes();
                     const typeCountsD = {};
 
@@ -3093,7 +3093,9 @@
                         let countFromProcesses = 0;
                         sProcsToday.forEach(p => {
                             const pActions = state.actions.filter(a => a.processId == p.id);
-                            if (pActions.length === 0) {
+                            // Se o processo não tem ações cadastradas OU nenhuma das ações cadastradas dele caíram no filtro de sActionsToday
+                            const hasMatchingActionInToday = pActions.some(a => a.type === t.label && DateEngine.normalize(a.date) === rankingDateStr);
+                            if (!hasMatchingActionInToday) {
                                 countFromProcesses += parseInt(p[`qty_${t.key}`] || 0);
                             }
                         });
