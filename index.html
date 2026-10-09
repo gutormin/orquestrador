@@ -3056,7 +3056,7 @@
                         // Para processos desse mês do servidor que não possuem ações registradas na coleção 'actions'
                         let countFromProcesses = 0;
                         sProcsMonth.forEach(p => {
-                            const pActions = state.actions.filter(a => a.processId === p.id);
+                            const pActions = state.actions.filter(a => a.processId == p.id);
                             if (pActions.length === 0) {
                                 countFromProcesses += parseInt(p[`qty_${t.key}`] || 0);
                             }
@@ -3084,7 +3084,7 @@
                 updateRankingDayLabel();
                 const servantTodayStats = filteredServants.map(s => {
                     const sActionsToday = state.actions.filter(a => s.id == a.servantId && DateEngine.normalize(a.date) === rankingDateStr);
-                    const sProcsToday = state.processes.filter(p => p.servantId == s.id && DateEngine.normalize(p.deadline) === rankingDateStr);
+                    const sProcsToday = state.processes.filter(p => p.servantId == s.id && (DateEngine.normalize(p.deadline) === rankingDateStr || DateEngine.normalize(p.createdAt) === rankingDateStr));
                     const allTypesD = getActiveActionTypes();
                     const typeCountsD = {};
 
@@ -3092,7 +3092,7 @@
                         let countFromActions = sActionsToday.filter(a => a.type === t.label).length;
                         let countFromProcesses = 0;
                         sProcsToday.forEach(p => {
-                            const pActions = state.actions.filter(a => a.processId === p.id);
+                            const pActions = state.actions.filter(a => a.processId == p.id);
                             if (pActions.length === 0) {
                                 countFromProcesses += parseInt(p[`qty_${t.key}`] || 0);
                             }
@@ -3198,7 +3198,7 @@
                             let countFromActions = sActionsMonth.length;
                             let countFromProcesses = 0;
                             sProcsMonth.forEach(p => {
-                                const pActions = state.actions.filter(a => a.processId === p.id);
+                                const pActions = state.actions.filter(a => a.processId == p.id);
                                 if (pActions.length === 0) {
                                     countFromProcesses += parseInt(p[`qty_${t.key}`] || 0);
                                 }
