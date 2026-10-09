@@ -3047,7 +3047,7 @@
                 const rankingBody = document.getElementById('ranking-body');
                 const servantMonthlyStats = filteredServants.map(s => {
                     const sActionsMonth = state.actions.filter(a => s.id == a.servantId && DateEngine.normalize(a.date).startsWith(monthStr));
-                    const sProcsMonth = state.processes.filter(p => p.servantId == s.id && DateEngine.normalize(p.deadline).startsWith(monthStr));
+                    const sProcsMonth = state.processes.filter(p => p.servantId == s.id && (DateEngine.normalize(p.deadline).startsWith(monthStr) || DateEngine.normalize(p.isoDate || p.createdAt).startsWith(monthStr)));
                     const allTypes = getActiveActionTypes();
                     const typeCounts = {};
                     
